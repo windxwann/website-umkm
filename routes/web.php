@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\QrCodeController as AdminQrCodeController;
 use App\Http\Controllers\OrderController as CustomerOrderController;
 use App\Http\Controllers\Cashier\DashboardController as CashierDashboardController;
 use App\Http\Controllers\Cashier\OrderController as CashierOrderController;
+use App\Http\Controllers\Cashier\TransactionController; // Tambahkan ini
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CartController;
@@ -141,7 +142,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::prefix('cashier')->name('cashier.')->middleware(['auth', 'cashier'])->group(function () {
+    // Dashboard
     Route::get('/dashboard', [CashierDashboardController::class, 'index'])->name('dashboard');
+    
+    // Order Management
     Route::get('/orders', [CashierOrderController::class, 'index'])->name('orders');
     Route::get('/orders/{order}', [CashierOrderController::class, 'show'])->name('order.show');
     Route::get('/orders/{order}/details', [CashierOrderController::class, 'getOrderDetails'])->name('order.details');
@@ -151,11 +155,23 @@ Route::prefix('cashier')->name('cashier.')->middleware(['auth', 'cashier'])->gro
     Route::post('/orders/{order}/cancel', [CashierOrderController::class, 'cancelOrder'])->name('order.cancel');
     Route::get('/orders/{order}/receipt', [CashierOrderController::class, 'printReceipt'])->name('receipt');
     Route::post('/orders/{order}/completed', [CashierOrderController::class, 'markAsCompleted'])->name('order.completed');
-    Route::get('/transactions/today', [App\Http\Controllers\Cashier\TransactionController::class, 'today'])->name('transactions.today');
-    Route::get('/transactions/history', [App\Http\Controllers\Cashier\TransactionController::class, 'history'])->name('transactions.history');
-    Route::get('/transactions/daily-summary', [App\Http\Controllers\Cashier\TransactionController::class, 'dailySummary'])->name('transactions.daily-summary');
+    
+    // Transaction Routes (sudah lengkap)
+    Route::get('/transactions/today', [TransactionController::class, 'today'])->name('transactions.today');
+    Route::get('/transactions/history', [TransactionController::class, 'history'])->name('transactions.history');
+    Route::get('/transactions/daily-summary', [TransactionController::class, 'dailySummary'])->name('transactions.daily-summary');
+    Route::get('/transactions/export-excel', [TransactionController::class, 'exportExcel'])->name('transactions.export-excel');
+    Route::get('/transactions/export-pdf', [TransactionController::class, 'exportPDF'])->name('transactions.export-pdf');
+    
+    // Additional short routes for convenience
+    Route::get('/daily-summary', [TransactionController::class, 'dailySummary'])->name('daily-summary');
+    Route::get('/history', [TransactionController::class, 'history'])->name('history');
+    
+    // Transaction today orders (if still needed)
     Route::get('/transactions/today-orders', [CashierOrderController::class, 'todayTransactions'])->name('transactions.today-orders');
     Route::get('/transactions/order-history', [CashierOrderController::class, 'transactionHistory'])->name('transactions.order-history');
+    
+    // Table management
     Route::post('/table/reset', [CashierOrderController::class, 'resetTable'])->name('table.reset');
 });
 
@@ -186,6 +202,11 @@ Route::middleware(['check.qr'])->group(function () {
         $categories = App\Models\Category::with('products')->get();
         return view('menu', compact('categories'));
     })->name('menu');
+
+    // Tentang Kami
+    Route::get('/about', function () {
+        return view('about');
+    })->name('about');
 
     // Order Customer
     Route::get('/order/create', [CustomerOrderController::class, 'create'])->name('order.create');

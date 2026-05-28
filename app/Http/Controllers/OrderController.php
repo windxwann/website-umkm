@@ -146,7 +146,7 @@ class OrderController extends Controller
                 Log::warning('Broadcast notification failed: ' . $e->getMessage());
             }
 
-            // Hapus cart dari session setelah order berhasil
+            // 🔥 Hapus cart dari session dan localStorage
             session()->forget('cart');
             
             // Simpan order_number ke session untuk tracking
@@ -164,7 +164,8 @@ class OrderController extends Controller
             return response()->json([
                 'success' => true,
                 'redirect' => route('order.success', $order->order_number),
-                'order_number' => $order->order_number
+                'order_number' => $order->order_number,
+                'clear_cart' => true // 🔥 Tanda untuk clear cart di frontend
             ]);
 
         } catch (\Exception $e) {
@@ -338,6 +339,13 @@ class OrderController extends Controller
 
         $order = Order::where('order_number', $orderNumber)->firstOrFail();
 
+        if ($order->order_status === 'cancelled') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pesanan yang sudah dibatalkan tidak dapat diubah lagi.'
+            ], 422);
+        }
+
         try {
             DB::beginTransaction();
 
@@ -370,12 +378,33 @@ class OrderController extends Controller
                 'old_status' => $oldStatus
             ]);
 
+            // 🔥 RESET SESSION & QR LOCK IF COMPLETED OR CANCELLED
+            if ($newStatus === 'completed' || $newStatus === 'cancelled') {
+                if ($order->qr_code) {
+                    \App\Models\QrCode::where('code', $order->qr_code)->update([
+                        'current_session_id' => null,
+                        'session_expires_at' => null
+                    ]);
+                    \Log::info("QR session lock released via status update: {$order->qr_code}");
+                }
+                
+                if ($order->session_id) {
+                    try {
+                        event(new \App\Events\CustomerSessionReset($order->session_id));
+                    } catch (\Exception $e) {
+                        \Log::warning("CustomerSessionReset event failed: " . $e->getMessage());
+                    }
+                }
+            }
+
             // 🔥 TRIGGER NOTIFIKASI BERDASARKAN STATUS
             try {
                 if ($newStatus === 'processed' && $oldStatus !== 'processed') {
                     broadcast(new OrderProcessed($order));
                 } elseif ($newStatus === 'completed' && $oldStatus !== 'completed') {
                     broadcast(new OrderCompleted($order));
+                } elseif ($newStatus === 'cancelled' && $oldStatus !== 'cancelled') {
+                    broadcast(new OrderCompleted($order)); // Notify completion/cancellation
                 }
             } catch (\Exception $e) {
                 Log::warning('Broadcast status update failed: ' . $e->getMessage());
@@ -510,6 +539,19 @@ class OrderController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Cart cleared from session'
+        ]);
+    }
+
+    /**
+     * 🔥 RESET CART (untuk dipanggil dari frontend setelah checkout)
+     */
+    public function resetCart(Request $request)
+    {
+        session()->forget('cart');
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Cart has been reset'
         ]);
     }
 }

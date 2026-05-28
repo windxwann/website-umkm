@@ -89,6 +89,13 @@ class OrderController extends Controller
      */
     public function updateStatus(Request $request, Order $order)
     {
+        if ($order->order_status === 'cancelled') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pesanan yang sudah dibatalkan tidak dapat diubah lagi.'
+            ], 422);
+        }
+
         $request->validate([
             'status' => 'required|in:waiting,processed,completed,cancelled'
         ]);
@@ -259,6 +266,13 @@ class OrderController extends Controller
      */
     public function confirmPayment(Request $request, Order $order)
     {
+        if ($order->order_status === 'cancelled') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak dapat mengkonfirmasi pembayaran untuk pesanan yang sudah dibatalkan.'
+            ], 422);
+        }
+
         if ($order->payment_status === 'paid') {
             return response()->json([
                 'success' => false,
@@ -304,6 +318,13 @@ class OrderController extends Controller
      */
     public function processCashPayment(Request $request, Order $order)
     {
+        if ($order->order_status === 'cancelled') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak dapat memproses pembayaran untuk pesanan yang sudah dibatalkan.'
+            ], 422);
+        }
+
         $request->validate([
             'amount_paid' => 'required|numeric|min:' . $order->total_amount
         ]);

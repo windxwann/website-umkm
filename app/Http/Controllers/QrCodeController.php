@@ -188,4 +188,13 @@ class QrCodeController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Reset sesi QR code secara manual
+     */
+    public function resetSession()
+    {
+        session()->forget(['qr_code', 'qr_validated', 'session_start', 'qr_scan_time', 'order_mode', 'cart']);
+        return redirect()->route('scan.qr')->with('success', 'Sesi telah direset. Silakan scan ulang QR code meja Anda.');
+    }
 }

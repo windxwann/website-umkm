@@ -5,6 +5,23 @@
 
 @section('content')
 <div class="space-y-6">
+    <!-- Header Mobile Friendly -->
+    <div class="mb-6 md:mb-8 bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl p-4 md:p-6 text-white shadow-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold mb-1 md:mb-2">Laporan Penjualan</h1>
+                <p class="text-orange-100 text-sm md:text-base">
+                    <i class="fas fa-chart-bar mr-2"></i>Analisis data penjualan dan pendapatan
+                </p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:block">
+                    <i class="fas fa-chart-line text-6xl opacity-30"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Filter Section -->
     <div class="bg-white rounded-xl shadow-sm p-6">
         <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
@@ -255,22 +272,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const data = {!! json_encode($dailySales->pluck('total_revenue')) !!};
     
     new Chart(ctx, {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: labels,
             datasets: [{
                 label: 'Pendapatan (Rp)',
                 data: data,
                 borderColor: '#f97316',
-                backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                borderWidth: 3,
-                fill: true,
-                tension: 0.4,
-                pointBackgroundColor: '#f97316',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6
+                backgroundColor: 'rgba(249, 115, 22, 0.8)',
+                borderWidth: 1,
+                borderRadius: 4
             }]
         },
         options: {

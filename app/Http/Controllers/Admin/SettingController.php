@@ -105,7 +105,7 @@ class SettingController extends Controller
             // Pajak & Biaya
             'tax' => 'required|numeric|min:0|max:100',
             'service_charge' => 'required|numeric|min:0|max:100',
-            'packaging_fee' => 'required|numeric|min:0',
+            // 'packaging_fee' => 'required|numeric|min:0',
             
             // QRIS
             'qris_merchant_name' => 'nullable|string|max:255',
@@ -137,9 +137,9 @@ class SettingController extends Controller
             'banner3_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
 
             // Geolocation
-            'restaurant_latitude' => 'required|numeric',
-            'restaurant_longitude' => 'required|numeric',
-            'offline_radius' => 'required|numeric|min:1',
+            'restaurant_latitude' => 'nullable|numeric',
+            'restaurant_longitude' => 'nullable|numeric',
+            'offline_radius' => 'nullable|numeric|min:1',
         ]);
 
         try {

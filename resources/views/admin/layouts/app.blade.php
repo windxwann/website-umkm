@@ -74,7 +74,7 @@
             display: none;
         }
         
-        /* Scrollbar styling */
+        /* Scrollbar styling - HANYA UNTUK SIDEBAR */
         .sidebar-scrollbar::-webkit-scrollbar {
             width: 4px;
         }
@@ -185,7 +185,7 @@
                    '-translate-x-full': !sidebarOpen && window.innerWidth < 1024,
                    'translate-x-0': sidebarOpen || window.innerWidth >= 1024
                }">
-            <div class="w-72 h-full bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white overflow-y-auto sidebar-scrollbar shadow-2xl">
+            <div class="w-72 h-full bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white overflow-auto sidebar-scrollbar shadow-2xl">
                 <!-- Logo & Brand -->
                 <div class="p-6 border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-10">
                     <div class="flex items-center space-x-3">
@@ -464,7 +464,7 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto ml-0 lg:ml-72 sidebar-transition">
+        <main class="flex-1 overflow-auto ml-0 lg:ml-72 sidebar-transition">
             <!-- Top Navigation -->
             <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-30 border-b border-gray-200/50">
                 <div class="px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
@@ -509,7 +509,7 @@
                                         Tandai semua dibaca
                                     </button>
                                 </div>
-                                <div class="max-h-96 overflow-y-auto">
+                                <div class="max-h-96 overflow-auto">
                                     <template x-for="notif in notifications" :key="notif.id">
                                         <div class="p-3 hover:bg-gray-50 border-b transition-colors cursor-pointer"
                                              :class="{'bg-orange-50': !notif.is_read}"
@@ -596,24 +596,6 @@
             transition-property: all;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 300ms;
-        }
-        
-        /* Custom scrollbar for main content */
-        main::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        main::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        main::-webkit-scrollbar-thumb {
-            background: #f97316;
-            border-radius: 4px;
-        }
-        
-        main::-webkit-scrollbar-thumb:hover {
-            background: #ea580c;
         }
     </style>
 

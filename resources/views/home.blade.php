@@ -3,73 +3,66 @@
 @section('title', 'Beranda')
 
 @section('content')
-<!-- Hero Carousel Section -->
-<div class="relative mb-8 sm:mb-12 overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl bg-gray-900" 
+<!-- Hero Carousel Section - Compact & Modern -->
+<div class="relative mb-8 sm:mb-12 overflow-hidden rounded-xl shadow-lg bg-gray-900"
      x-data="{ 
         activeSlide: 0, 
         slides: [
-            @for($i = 1; $i <= 3; $i++)
+        @for($i = 1; $i <= 3; $i++)
             { 
                 image: '{{ setting("banner{$i}_image") ? asset("storage/".setting("banner{$i}_image")) : asset("carousel_promo_seafood_1776694644555.png") }}', 
-                title: '{{ setting("banner{$i}_title", ($i==1 ? "Seafood Feast Terbaik" : ($i==2 ? "Masakan Sunda Autentik" : "Suasana Nyaman & Modern"))) }}', 
+                title: '{{ setting("banner{$i}_title", ($i==1 ? "Seafood Feast" : ($i==2 ? "Masakan Sunda" : "Suasana Nyaman"))) }}', 
                 desc: '{{ setting("banner{$i}_desc", ($i==1 ? "Nikmati kelezatan hasil laut segar." : ($i==2 ? "Rasakan kehangatan masakan rumah." : "Tempat terbaik untuk kumpul keluarga."))) }}',
-                cta: '{{ $i == 1 ? "Lihat Menu" : ($i == 2 ? "Pesan Sekarang" : "Tentang Kami") }}',
-                link: '{{ setting("banner{$i}_link", ($i==1 ? route("menu") : ($i==2 ? route("order.create") : "#"))) }}'
+                cta: '{{ $i == 1 ? "Lihat Menu Seafood" : ($i == 2 ? "Lihat Masakan Sunda" : "Tentang Kami") }}',
+                link: '{{ setting("banner{$i}_link", ($i==1 ? route("menu")."?category=seafood" : ($i==2 ? route("menu")."?category=masakan-sunda" : route("about")))) }}'
             },
-            @endfor
+        @endfor
         ],
         next() { this.activeSlide = (this.activeSlide + 1) % this.slides.length },
         prev() { this.activeSlide = (this.activeSlide - 1 + this.slides.length) % this.slides.length },
-        init() { setInterval(() => this.next(), 6000) }
+        init() { setInterval(() => this.next(), 5000) }
      }">
     
     <!-- Slides -->
-    <div class="relative h-[300px] sm:h-[400px] md:h-[500px]">
+    <div class="relative h-[200px] sm:h-[280px] md:h-[320px]">
         <template x-for="(slide, index) in slides" :key="index">
             <div x-show="activeSlide === index" 
-                 x-transition:enter="transition ease-out duration-1000"
-                 x-transition:enter-start="opacity-0 transform scale-105"
-                 x-transition:enter-end="opacity-100 transform scale-100"
-                 x-transition:leave="transition ease-in duration-500"
-                 x-transition:leave-start="opacity-100"
-                 x-transition:leave-end="opacity-0"
+                 x-transition.opacity.duration.500ms
                  class="absolute inset-0">
-                <!-- Background Image -->
-                <img :src="slide.image" class="w-full h-full object-cover opacity-60">
-                <!-- Overlay Gradient -->
-                <div class="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent"></div>
+                <img :src="slide.image" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-black/50"></div>
                 
-                <!-- Content -->
-                <div class="absolute inset-0 flex items-center px-6 sm:px-12 md:px-20">
-                    <div class="max-w-2xl">
-                        <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-2 md:mb-4 leading-tight" x-text="slide.title"></h1>
-                        <p class="text-sm sm:text-lg md:text-xl text-gray-200 mb-4 md:mb-8 line-clamp-2 sm:line-clamp-none" x-text="slide.desc"></p>
-                        <div class="flex gap-4">
-                            <a :href="slide.link" 
-                               class="bg-orange-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold hover:bg-orange-700 transition shadow-lg transform hover:-translate-y-1 block text-center text-sm sm:text-base"
-                               x-text="slide.cta">
-                            </a>
-                        </div>
-                    </div>
+                <!-- Content - Centered -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+                    <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2" x-text="slide.title"></h1>
+                    <p class="text-sm sm:text-base text-gray-200 mb-4 max-w-md px-4" x-text="slide.desc"></p>
+                    <a :href="slide.link" 
+                       class="bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-orange-700 transition shadow-md text-sm sm:text-base"
+                       x-text="slide.cta">
+                    </a>
                 </div>
             </div>
         </template>
     </div>
 
-    <!-- Navigation Arrows - Hidden on very small mobile to avoid text overlap -->
-    <button @click="prev()" class="hidden sm:block absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-2 sm:p-3 rounded-full backdrop-blur-md transition">
-        <i class="fas fa-chevron-left"></i>
+    <!-- Navigation Buttons - Sejajar vertical di tengah -->
+    <button @click="prev()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white w-8 h-8 rounded-full transition backdrop-blur-sm flex items-center justify-center">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
     </button>
-    <button @click="next()" class="hidden sm:block absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-2 sm:p-3 rounded-full backdrop-blur-md transition">
-        <i class="fas fa-chevron-right"></i>
+    <button @click="next()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white w-8 h-8 rounded-full transition backdrop-blur-sm flex items-center justify-center">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
     </button>
 
-    <!-- Indicators -->
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+    <!-- Simple Dot Indicators -->
+    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
         <template x-for="(slide, index) in slides" :key="index">
             <button @click="activeSlide = index" 
-                    :class="activeSlide === index ? 'w-8 bg-orange-500' : 'w-2 bg-white/40'"
-                    class="h-2 rounded-full transition-all duration-300"></button>
+                    :class="activeSlide === index ? 'bg-white w-5' : 'bg-white/40 w-1.5'"
+                    class="h-1.5 rounded-full transition-all duration-300"></button>
         </template>
     </div>
 </div>

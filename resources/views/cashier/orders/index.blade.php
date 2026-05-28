@@ -3,15 +3,15 @@
 @section('title', 'Daftar Pesanan')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="mb-8 bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl p-6 text-white shadow-lg">
-        <div class="flex justify-between items-center">
+<div class="container mx-auto px-4 py-4 md:py-8">
+    <!-- Header Mobile Friendly -->
+    <div class="mb-4 md:mb-8 bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl p-4 md:p-6 text-white shadow-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
             <div>
-                <h1 class="text-3xl font-bold mb-2">Daftar Pesanan</h1>
-                <p class="text-orange-100">
+                <h1 class="text-2xl md:text-3xl font-bold mb-1 md:mb-2">Daftar Pesanan</h1>
+                <p class="text-orange-100 text-sm md:text-base">
                     <i class="fas fa-list mr-2"></i>Kelola semua pesanan pelanggan
-                    <i class="fas fa-calendar ml-4 mr-2"></i>{{ now()->format('d F Y') }}
+                    <i class="fas fa-calendar ml-2 md:ml-4 mr-2"></i>{{ now()->format('d F Y') }}
                 </p>
             </div>
             <div class="hidden md:block">
@@ -20,28 +20,28 @@
         </div>
     </div>
 
-    <!-- Filter Section -->
-    <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-        <form method="GET" action="{{ route('cashier.orders') }}" class="flex flex-wrap gap-4">
+    <!-- Filter Section - Responsive -->
+    <div class="bg-white rounded-xl shadow-lg p-4 md:p-6 mb-6 md:mb-8">
+        <form method="GET" action="{{ route('cashier.orders') }}" class="flex flex-col md:flex-row flex-wrap gap-3 md:gap-4">
             <!-- Search -->
             <div class="flex-1 min-w-[200px]">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Cari Pesanan</label>
                 <div class="relative">
-                    <span class="absolute left-3 top-3 text-gray-400">
+                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
                         <i class="fas fa-search"></i>
                     </span>
                     <input type="text" 
                            name="search" 
                            value="{{ request('search') }}"
                            placeholder="No. Order atau Nama Customer..."
-                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                           class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm">
                 </div>
             </div>
 
             <!-- Filter Status -->
-            <div class="w-48">
+            <div class="w-full md:w-48">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Status Pesanan</label>
-                <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                <select name="status" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm">
                     <option value="">Semua Status</option>
                     <option value="waiting" {{ request('status') == 'waiting' ? 'selected' : '' }}>⏳ Menunggu</option>
                     <option value="processed" {{ request('status') == 'processed' ? 'selected' : '' }}>⚙️ Diproses</option>
@@ -51,9 +51,9 @@
             </div>
 
             <!-- Filter Pembayaran -->
-            <div class="w-48">
+            <div class="w-full md:w-48">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Status Pembayaran</label>
-                <select name="payment" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                <select name="payment" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm">
                     <option value="">Semua</option>
                     <option value="pending" {{ request('payment') == 'pending' ? 'selected' : '' }}>⏳ Pending</option>
                     <option value="paid" {{ request('payment') == 'paid' ? 'selected' : '' }}>✅ Lunas</option>
@@ -61,80 +61,81 @@
             </div>
 
             <!-- Filter Tanggal -->
-            <div class="w-48">
+            <div class="w-full md:w-48">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
                 <input type="date" 
                        name="date" 
                        value="{{ request('date') }}"
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm">
             </div>
 
             <!-- Buttons -->
-            <div class="flex items-end space-x-2">
-                <button type="submit" class="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition">
+            <div class="flex gap-2 items-end">
+                <button type="submit" class="bg-orange-600 text-white px-4 md:px-6 py-2.5 rounded-lg hover:bg-orange-700 transition text-sm flex-1 md:flex-none">
                     <i class="fas fa-filter mr-2"></i>Filter
                 </button>
-                <a href="{{ route('cashier.orders') }}" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition">
+                <a href="{{ route('cashier.orders') }}" class="bg-gray-500 text-white px-4 md:px-6 py-2.5 rounded-lg hover:bg-gray-600 transition text-sm flex-1 md:flex-none">
                     <i class="fas fa-redo-alt mr-2"></i>Reset
                 </a>
             </div>
         </form>
     </div>
 
-    <!-- Stats Cards - 5 Kolom -->
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+    <!-- Stats Cards - Mobile Responsive Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 mb-6 md:mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-yellow-500 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-sm text-gray-500">Menunggu</p>
-                    <p class="text-2xl font-bold text-yellow-600">{{ $stats['waiting'] ?? 0 }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Menunggu</p>
+                    <p class="text-xl md:text-2xl font-bold text-yellow-600">{{ $stats['waiting'] ?? 0 }}</p>
                 </div>
-                <div class="bg-yellow-100 w-12 h-12 flex items-center justify-center rounded-full">
-                    <i class="fas fa-clock text-yellow-600"></i>
+                <div class="bg-yellow-100 w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full">
+                    <i class="fas fa-clock text-yellow-600 text-sm md:text-base"></i>
                 </div>
             </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-blue-500 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-sm text-gray-500">Diproses</p>
-                    <p class="text-2xl font-bold text-blue-600">{{ $stats['processed'] ?? 0 }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Diproses</p>
+                    <p class="text-xl md:text-2xl font-bold text-blue-600">{{ $stats['processed'] ?? 0 }}</p>
                 </div>
-                <div class="bg-blue-100 w-12 h-12 flex items-center justify-center rounded-full">
-                    <i class="fas fa-spinner text-blue-600"></i>
+                <div class="bg-blue-100 w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full">
+                    <i class="fas fa-spinner text-blue-600 text-sm md:text-base"></i>
                 </div>
             </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-green-500 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-sm text-gray-500">Selesai Hari Ini</p>
-                    <p class="text-2xl font-bold text-green-600">{{ $stats['completed_today'] ?? 0 }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Selesai Hari Ini</p>
+                    <p class="text-xl md:text-2xl font-bold text-green-600">{{ $stats['completed_today'] ?? 0 }}</p>
                 </div>
-                <div class="bg-green-100 w-12 h-12 flex items-center justify-center rounded-full">
-                    <i class="fas fa-check-circle text-green-600"></i>
+                <div class="bg-green-100 w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full">
+                    <i class="fas fa-check-circle text-green-600 text-sm md:text-base"></i>
                 </div>
             </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-orange-500 hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-sm text-gray-500">Pending Payment</p>
-                    <p class="text-2xl font-bold text-orange-600">{{ $stats['pending_payment'] ?? 0 }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Pending Payment</p>
+                    <p class="text-xl md:text-2xl font-bold text-orange-600">{{ $stats['pending_payment'] ?? 0 }}</p>
                 </div>
-                <div class="bg-orange-100 w-12 h-12 flex items-center justify-center rounded-full">
-                    <i class="fas fa-credit-card text-orange-600"></i>
+                <div class="bg-orange-100 w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full">
+                    <i class="fas fa-credit-card text-orange-600 text-sm md:text-base"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Orders Table -->
+    <!-- Orders Section - Desktop Table & Mobile Cards -->
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-        <div class="overflow-x-auto">
+        <!-- Desktop Table View - SAMA DENGAN DASHBOARD -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-100 whitespace-nowrap">
                     <tr>
@@ -144,11 +145,11 @@
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Metode</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Pembayaran</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanggal</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Waktu</th>
                         <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 whitespace-nowrap">
+                <tbody class="divide-y divide-gray-200">
                     @forelse($orders as $order)
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-mono text-sm font-medium">{{ $order->order_number }}</td>
@@ -191,7 +192,7 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500">
-                            {{ $order->created_at->format('d/m/Y H:i') }}
+                            {{ $order->created_at->format('H:i') }}
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex space-x-2">
@@ -201,7 +202,7 @@
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 
-                                @if($order->payment_method === 'cashier' && $order->payment_status === 'pending')
+                                @if($order->payment_method === 'cashier' && $order->payment_status === 'pending' && $order->order_status !== 'cancelled')
                                 <button onclick="processPayment({{ $order->id }}, {{ $order->total_amount }}, '{{ $order->order_number }}')" 
                                         class="bg-green-100 text-green-600 w-8 h-8 flex items-center justify-center rounded-lg border border-green-200 hover:bg-green-200 transition"
                                         title="Proses Pembayaran Tunai">
@@ -209,19 +210,10 @@
                                 </button>
                                 @endif
                                 
-                                @if($order->payment_method !== 'cashier' && $order->payment_status === 'pending')
+                                @if($order->payment_method !== 'cashier' && $order->payment_status === 'pending' && $order->order_status !== 'cancelled')
                                 <button onclick="confirmPayment({{ $order->id }})" 
                                         class="bg-yellow-100 text-yellow-600 w-8 h-8 flex items-center justify-center rounded-lg border border-yellow-200 hover:bg-yellow-200 transition"
                                         title="Konfirmasi Pembayaran">
-                                    <i class="fas fa-check-circle"></i>
-                                </button>
-                                @endif
-                                
-                                {{-- 🔥 TOMBOL UNTUK SELESAI (COMPLETED) - RESET SESSION --}}
-                                @if($order->order_status === 'ready' && $order->payment_status === 'paid')
-                                <button onclick="markAsCompleted({{ $order->id }}, '{{ $order->order_number }}', '{{ $order->session_id }}')" 
-                                        class="bg-green-600 text-white w-8 h-8 flex items-center justify-center rounded-lg hover:bg-green-700 transition"
-                                        title="Pesanan Selesai (Reset Meja)">
                                     <i class="fas fa-check-circle"></i>
                                 </button>
                                 @endif
@@ -246,23 +238,103 @@
             </table>
         </div>
 
+        <!-- Mobile Card View -->
+        <div class="md:hidden divide-y divide-gray-200">
+            @forelse($orders as $order)
+            <div class="p-4 hover:bg-gray-50 transition">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-orange-600 text-xs"></i>
+                        </div>
+                        <div>
+                            <div class="font-mono font-bold text-orange-600">{{ $order->order_number }}</div>
+                            <div class="text-xs text-gray-500">{{ $order->customer_name }}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-orange-600 text-sm">
+                            Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                        </div>
+                        <div class="text-xs text-gray-500">{{ $order->created_at->format('H:i') }}</div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 mb-3">
+                    <span class="text-xs text-gray-600">
+                        <i class="fas fa-chair mr-1"></i>Meja {{ $order->qr_code }}
+                    </span>
+                    <span class="text-xs px-2 py-0.5 rounded-full 
+                        @if($order->payment_method === 'cashier') bg-green-100 text-green-700
+                        @elseif($order->payment_method === 'e_wallet') bg-purple-100 text-purple-700
+                        @else bg-blue-100 text-blue-700 @endif">
+                        {{ $order->payment_method === 'cashier' ? 'Kasir' : ($order->payment_method === 'e_wallet' ? 'E-Wallet' : 'Transfer') }}
+                    </span>
+                    <span class="text-xs px-2 py-0.5 rounded-full 
+                        @if($order->order_status === 'waiting') bg-yellow-100 text-yellow-700
+                        @elseif($order->order_status === 'processed') bg-blue-100 text-blue-700
+                        @elseif($order->order_status === 'completed') bg-green-100 text-green-700
+                        @else bg-red-100 text-red-700 @endif">
+                        @if($order->order_status === 'waiting') Menunggu
+                        @elseif($order->order_status === 'processed') Diproses
+                        @elseif($order->order_status === 'completed') Selesai
+                        @else Batal @endif
+                    </span>
+                    <span class="text-xs px-2 py-0.5 rounded-full 
+                        @if($order->payment_status === 'paid') bg-green-100 text-green-700
+                        @else bg-yellow-100 text-yellow-700 @endif">
+                        {{ $order->payment_status === 'paid' ? 'Lunas' : 'Pending' }}
+                    </span>
+                </div>
+                
+                <div class="flex justify-end space-x-2">
+                    <a href="{{ route('cashier.order.show', $order) }}" 
+                       class="bg-blue-100 text-blue-600 px-3 py-1.5 rounded-lg text-xs flex items-center hover:bg-blue-200 transition">
+                        <i class="fas fa-eye mr-1"></i>Detail
+                    </a>
+                    @if($order->payment_method === 'cashier' && $order->payment_status === 'pending' && $order->order_status !== 'cancelled')
+                    <button onclick="processPayment({{ $order->id }}, {{ $order->total_amount }}, '{{ $order->order_number }}')" 
+                            class="bg-green-100 text-green-600 px-3 py-1.5 rounded-lg text-xs flex items-center hover:bg-green-200 transition">
+                        <i class="fas fa-money-bill-wave mr-1"></i>Bayar
+                    </button>
+                    @endif
+                    @if($order->payment_method !== 'cashier' && $order->payment_status === 'pending' && $order->order_status !== 'cancelled')
+                    <button onclick="confirmPayment({{ $order->id }})" 
+                            class="bg-yellow-100 text-yellow-600 px-3 py-1.5 rounded-lg text-xs flex items-center hover:bg-yellow-200 transition">
+                        <i class="fas fa-check-circle mr-1"></i>Konfirmasi
+                    </button>
+                    @endif
+                    <a href="{{ route('cashier.receipt', $order) }}" target="_blank" 
+                       class="bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg text-xs flex items-center hover:bg-gray-200 transition">
+                        <i class="fas fa-print mr-1"></i>Struk
+                    </a>
+                </div>
+            </div>
+            @empty
+            <div class="p-8 text-center text-gray-500">
+                <i class="fas fa-shopping-cart text-5xl mb-3 text-gray-300"></i>
+                <p class="text-lg">Tidak ada pesanan</p>
+            </div>
+            @endforelse
+        </div>
+
         <!-- Pagination -->
-        @if(isset($orders) && method_exists($orders, 'links'))
-        <div class="px-6 py-4 border-t">
+        @if(isset($orders) && method_exists($orders, 'links') && $orders->hasPages())
+        <div class="px-4 md:px-6 py-4 border-t">
             {{ $orders->appends(request()->query())->links() }}
         </div>
         @endif
     </div>
 </div>
 
-<!-- Payment Modal -->
-<div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 transform transition-all">
-        <div class="p-5 border-b bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-t-xl">
+<!-- Payment Modal - Mobile Responsive -->
+<div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-auto transform transition-all">
+        <div class="p-4 md:p-5 border-b bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-t-xl">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl font-bold flex items-center">
+                <h2 class="text-lg md:text-xl font-bold flex items-center">
                     <i class="fas fa-money-bill-wave mr-2"></i>
-                    Proses Pembayaran Tunai
+                    Proses Pembayaran
                 </h2>
                 <button onclick="closePaymentModal()" class="text-white hover:text-orange-200 transition">
                     <i class="fas fa-times text-xl"></i>
@@ -270,8 +342,8 @@
             </div>
         </div>
         
-        <div class="p-6">
-            <div id="paymentDetail" class="mb-6 p-5 bg-orange-50 rounded-xl border border-orange-200">
+        <div class="p-4 md:p-6">
+            <div id="paymentDetail" class="mb-4 md:mb-6 p-4 md:p-5 bg-orange-50 rounded-xl border border-orange-200">
                 <!-- Payment details will be loaded here -->
             </div>
             
@@ -279,38 +351,38 @@
                 @csrf
                 <input type="hidden" id="orderId" name="order_id">
                 
-                <div class="mb-5">
-                    <label class="block text-gray-700 font-semibold mb-2">
+                <div class="mb-4 md:mb-5">
+                    <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">
                         <i class="fas fa-money-bill text-green-600 mr-1"></i>
                         Jumlah Dibayar
                     </label>
                     <div class="relative">
-                        <span class="absolute left-4 top-3 text-gray-500 font-medium">Rp</span>
+                        <span class="absolute left-3 md:left-4 top-2.5 md:top-3 text-gray-500 font-medium text-sm md:text-base">Rp</span>
                         <input type="number" id="amountPaid" name="amount_paid" 
-                               class="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition"
+                               class="w-full pl-10 md:pl-12 pr-3 md:pr-4 py-2.5 md:py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition text-sm md:text-base"
                                placeholder="0"
                                min="0"
                                required>
                     </div>
                 </div>
                 
-                <div class="mb-6">
-                    <label class="block text-gray-700 font-semibold mb-2">
+                <div class="mb-4 md:mb-6">
+                    <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">
                         <i class="fas fa-undo-alt text-blue-600 mr-1"></i>
                         Kembalian
                     </label>
-                    <div class="p-4 bg-gray-100 rounded-xl font-bold text-2xl text-gray-600 text-right" id="changeDisplay">
+                    <div class="p-3 md:p-4 bg-gray-100 rounded-xl font-bold text-xl md:text-2xl text-gray-600 text-right" id="changeDisplay">
                         Rp 0
                     </div>
                 </div>
                 
                 <div class="flex gap-3">
                     <button type="button" onclick="closePaymentModal()" 
-                            class="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl hover:bg-gray-300 transition font-semibold">
+                            class="flex-1 bg-gray-200 text-gray-700 py-2.5 md:py-3 rounded-xl hover:bg-gray-300 transition font-semibold text-sm md:text-base">
                         <i class="fas fa-times mr-2"></i>Batal
                     </button>
                     <button type="submit" 
-                            class="flex-1 bg-orange-600 text-white py-3 rounded-xl hover:bg-orange-700 transition font-semibold shadow-lg hover:shadow-xl">
+                            class="flex-1 bg-orange-600 text-white py-2.5 md:py-3 rounded-xl hover:bg-orange-700 transition font-semibold shadow-lg text-sm md:text-base">
                         <i class="fas fa-check-circle mr-2"></i>Proses
                     </button>
                 </div>
@@ -323,276 +395,32 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 // ============================================
-// FUNCTION KONFIRMASI PERUBAHAN STATUS (DENGAN STATUS READY)
-// ============================================
-function confirmStatusChange(orderId, status, orderNumber, sessionId) {
-    let statusText = '';
-    let statusColor = '';
-    let statusIcon = '';
-    let statusDesc = '';
-    
-    switch(status) {
-        case 'waiting': 
-            statusText = 'MENUNGGU'; 
-            statusColor = '#f59e0b';
-            statusIcon = '⏳';
-            statusDesc = 'Pesanan menunggu diproses';
-            break;
-        case 'processed': 
-            statusText = 'DIPROSES'; 
-            statusColor = '#3b82f6';
-            statusIcon = '⚙️';
-            statusDesc = 'Pesanan sedang dimasak';
-            break;
-        case 'completed': 
-            statusText = 'SELESAI'; 
-            statusColor = '#10b981';
-            statusIcon = '✅';
-            
-            // KONFIRMASI KHUSUS UNTUK COMPLETED (DENGAN INFO RESET SESSION)
-            Swal.fire({
-                title: 'Selesaikan Pesanan?',
-                html: `
-                    <div class="text-left">
-                        <p class="mb-3">Pesanan <strong>#${orderNumber}</strong> akan ditandai <span class="text-green-600 font-bold">SELESAI</span>.</p>
-                        <div class="bg-green-100 p-4 rounded-lg mb-3">
-                            <p class="text-green-800 font-semibold flex items-center">
-                                <i class="fas fa-sync-alt mr-2"></i>
-                                <span class="text-left">Meja akan otomatis di-reset! Customer akan dialihkan ke halaman scan QR.</span>
-                            </p>
-                            <p class="text-xs text-green-600 mt-2">Session ID: ${sessionId || 'Tidak ada'}</p>
-                        </div>
-                    </div>
-                `,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#10b981',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Ya, Selesaikan & Reset Meja',
-                cancelButtonText: 'Batal',
-                reverseButtons: true,
-                customClass: {
-                    popup: 'rounded-xl'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    markAsCompleted(orderId);
-                } else {
-                    event.target.value = event.target.defaultValue;
-                }
-            });
-            return;
-            
-        case 'cancelled': 
-            statusText = 'DIBATALKAN'; 
-            statusColor = '#ef4444';
-            statusIcon = '❌';
-            
-            // KONFIRMASI KHUSUS UNTUK CANCELLED
-            Swal.fire({
-                title: 'Batalkan Pesanan?',
-                html: `
-                    <div class="text-left">
-                        <p class="mb-3">Pesanan <strong>#${orderNumber}</strong> akan dibatalkan.</p>
-                        <div class="bg-red-100 p-3 rounded-lg">
-                            <p class="text-red-800 text-sm">Tindakan ini tidak dapat dibatalkan.</p>
-                        </div>
-                    </div>
-                `,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Ya, Batalkan',
-                cancelButtonText: 'Tidak',
-                reverseButtons: true,
-                customClass: {
-                    popup: 'rounded-xl'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    updateOrderStatus(orderId, status);
-                } else {
-                    event.target.value = event.target.defaultValue;
-                }
-            });
-            return;
-    }
-    
-    // Untuk status waiting/processed
-    Swal.fire({
-        title: `Ubah Status Pesanan?`,
-        html: `
-            <div class="text-left">
-                <p class="mb-2">Anda akan mengubah status pesanan <strong>#${orderNumber}</strong> menjadi:</p>
-                <div class="flex items-center justify-center p-3 rounded-lg" style="background-color: ${statusColor}20; border: 1px solid ${statusColor}">
-                    <span class="font-bold text-lg" style="color: ${statusColor}">${statusIcon} ${statusText}</span>
-                </div>
-                <p class="text-sm text-gray-600 mt-2">${statusDesc}</p>
-            </div>
-        `,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: statusColor,
-        cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Ya, Ubah!',
-        cancelButtonText: 'Batal',
-        reverseButtons: true,
-        customClass: {
-            popup: 'rounded-xl'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            updateOrderStatus(orderId, status);
-        } else {
-            event.target.value = event.target.defaultValue;
-        }
-    });
-}
-
-// ============================================
-// FUNCTION UPDATE STATUS PESANAN
-// ============================================
-function updateOrderStatus(orderId, status) {
-    // Tampilkan loading di dropdown
-    const select = event.target;
-    select.disabled = true;
-    select.style.opacity = '0.5';
-    
-    // Tampilkan loading alert
-    Swal.fire({
-        title: 'Memproses...',
-        html: 'Sedang mengubah status pesanan',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-    
-    fetch(`/cashier/orders/${orderId}/status`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ status: status })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: data.message,
-                timer: 2000,
-                showConfirmButton: false,
-                customClass: {
-                    popup: 'rounded-xl'
-                }
-            });
-            // Update defaultValue ke status baru
-            select.defaultValue = status;
-            
-            // Reload setelah 2 detik
-            setTimeout(() => location.reload(), 2000);
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: data.message,
-                customClass: {
-                    popup: 'rounded-xl',
-                    confirmButton: 'bg-orange-600 px-6 py-2 rounded-lg'
-                }
-            });
-            // Kembalikan ke nilai sebelumnya
-            select.value = select.defaultValue;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error!',
-            text: 'Terjadi kesalahan saat update status',
-            customClass: {
-                popup: 'rounded-xl',
-                confirmButton: 'bg-orange-600 px-6 py-2 rounded-lg'
-            }
-        });
-        select.value = select.defaultValue;
-    })
-    .finally(() => {
-        select.disabled = false;
-        select.style.opacity = '1';
-    });
-}
-
-
-// ============================================
-// 🔥 TANDAI PESANAN SELESAI (COMPLETED) - RESET SESSION
-// ============================================
-function markAsCompleted(orderId) {
-    fetch(`/cashier/orders/${orderId}/completed`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        }
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: data.message,
-                timer: 2000,
-                showConfirmButton: false
-            });
-            setTimeout(() => location.reload(), 2000);
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal!',
-                text: data.message
-            });
-        }
-    });
-}
-
-// ============================================
 // FUNCTION PROCESS CASH PAYMENT
 // ============================================
 function processPayment(orderId, totalAmount, orderNumber) {
-    // Set data ke modal
     document.getElementById('orderId').value = orderId;
     document.getElementById('paymentDetail').innerHTML = `
         <div class="space-y-3">
             <div class="flex justify-between items-center pb-2 border-b border-orange-200">
-                <span class="text-gray-600 font-medium">No. Order:</span>
-                <span class="font-mono font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-lg">${orderNumber}</span>
+                <span class="text-gray-600 font-medium text-sm">No. Order:</span>
+                <span class="font-mono font-bold text-orange-600 bg-orange-100 px-3 py-1 rounded-lg text-sm">${orderNumber}</span>
             </div>
-            <div class="flex justify-between items-center text-lg">
-                <span class="text-gray-700 font-semibold">Total Bayar:</span>
-                <span class="font-bold text-orange-600 text-2xl">Rp ${formatPrice(totalAmount)}</span>
+            <div class="flex justify-between items-center">
+                <span class="text-gray-700 font-semibold text-base">Total Bayar:</span>
+                <span class="font-bold text-orange-600 text-xl md:text-2xl">Rp ${formatPrice(totalAmount)}</span>
             </div>
         </div>
     `;
     
-    // Reset form
     document.getElementById('amountPaid').value = '';
     document.getElementById('changeDisplay').textContent = 'Rp 0';
     document.getElementById('changeDisplay').classList.add('text-gray-600');
     document.getElementById('changeDisplay').classList.remove('text-green-600', 'text-red-600');
     
-    // Tampilkan modal
     const modal = document.getElementById('paymentModal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     
-    // Focus ke input
     setTimeout(() => {
         document.getElementById('amountPaid').focus();
     }, 100);
@@ -633,7 +461,6 @@ document.getElementById('paymentForm')?.addEventListener('submit', function(e) {
     const orderId = document.getElementById('orderId').value;
     const amountPaid = document.getElementById('amountPaid').value;
     
-    // Validasi jumlah pembayaran
     const totalText = document.getElementById('paymentDetail').innerHTML;
     const match = totalText.match(/Rp ([\d.]+)/g);
     
@@ -655,7 +482,6 @@ document.getElementById('paymentForm')?.addEventListener('submit', function(e) {
     
     const formData = new FormData(this);
     
-    // Disable submit button
     const submitBtn = this.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.disabled = true;
@@ -690,7 +516,8 @@ document.getElementById('paymentForm')?.addEventListener('submit', function(e) {
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal!',
-                text: data.message
+                text: data.message,
+                confirmButtonColor: '#f97316'
             });
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
@@ -701,7 +528,8 @@ document.getElementById('paymentForm')?.addEventListener('submit', function(e) {
         Swal.fire({
             icon: 'error',
             title: 'Error!',
-            text: 'Terjadi kesalahan saat memproses pembayaran'
+            text: 'Terjadi kesalahan saat memproses pembayaran',
+            confirmButtonColor: '#f97316'
         });
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
@@ -717,7 +545,7 @@ function confirmPayment(orderId) {
         html: `
             <p class="mb-3">Apakah Anda yakin ingin mengkonfirmasi pembayaran ini?</p>
             <div class="bg-yellow-100 p-3 rounded-lg">
-                <p class="text-yellow-800 text-sm">Pesanan akan ditandai SIAP dan masuk ke dapur.</p>
+                <p class="text-yellow-800 text-sm">Pesanan akan diproses oleh dapur.</p>
             </div>
         `,
         icon: 'question',
@@ -740,7 +568,8 @@ function confirmPayment(orderId) {
             fetch(`/cashier/orders/${orderId}/confirm-payment`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
                 }
             })
             .then(res => res.json())
@@ -758,9 +587,18 @@ function confirmPayment(orderId) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Gagal!',
-                        text: data.message
+                        text: data.message,
+                        confirmButtonColor: '#f97316'
                     });
                 }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan',
+                    confirmButtonColor: '#f97316'
+                });
             });
         }
     });
@@ -789,7 +627,7 @@ function formatPrice(price) {
 }
 
 // ============================================
-// EVENT: CLICK OUTSIDE MODAL
+// CLICK OUTSIDE MODAL
 // ============================================
 document.getElementById('paymentModal')?.addEventListener('click', function(e) {
     if (e.target === this) {
@@ -798,7 +636,7 @@ document.getElementById('paymentModal')?.addEventListener('click', function(e) {
 });
 
 // ============================================
-// EVENT: ENTER KEY ON AMOUNT INPUT
+// ENTER KEY ON AMOUNT INPUT
 // ============================================
 document.getElementById('amountPaid')?.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {

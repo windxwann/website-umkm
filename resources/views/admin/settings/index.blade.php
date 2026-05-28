@@ -6,7 +6,7 @@
 @section('content')
 <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <div class="p-6 bg-gradient-to-r from-gray-800 to-gray-700 text-white">
+        <div class="p-6 bg-gradient-to-r from-orange-600 to-orange-500 text-white">
             <h2 class="text-2xl font-bold">
                 <i class="fas fa-cog mr-2"></i>Pengaturan Umum
             </h2>
@@ -258,7 +258,6 @@
 
                 <!-- Removed Geolocation Settings -->
             </div>
-            </div>
 
             <!-- Banner Promosi -->
             <div class="pt-6 border-t border-gray-100">
@@ -283,8 +282,26 @@
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">Link Tujuan (Opsional)</label>
                                     <input type="text" name="banner{{ $i }}_link" value="{{ old('banner'.$i.'_link', $settings['banner'.$i.'_link'] ?? '') }}"
-                                           placeholder="Contoh: /menu atau #testimoni"
+                                           placeholder="Contoh: /menu?category=seafood"
                                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500">
+                                    <div class="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                        <p class="text-xs text-blue-700 font-semibold mb-1"><i class="fas fa-lightbulb mr-1"></i>Tips Link Kategori:</p>
+                                        <div class="flex flex-wrap gap-2">
+                                            @php $cats = [['slug'=>'seafood','label'=>'Seafood'],['slug'=>'masakan-sunda','label'=>'Sunda'],['slug'=>'minuman','label'=>'Minuman'],['slug'=>'gorengan','label'=>'Gorengan']]; @endphp
+                                            @foreach($cats as $cat)
+                                            <button type="button"
+                                                onclick="document.querySelector('[name=banner{{ $i }}_link]').value='/menu?category={{ $cat["slug"] }}'" 
+                                                class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded-md transition">
+                                                {{ $cat['label'] }}
+                                            </button>
+                                            @endforeach
+                                            <button type="button"
+                                                onclick="document.querySelector('[name=banner{{ $i }}_link]').value='/about'" 
+                                                class="text-xs bg-orange-100 hover:bg-orange-200 text-orange-700 px-2 py-1 rounded-md transition">
+                                                Tentang Kami
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div x-data="{ preview: '{{ isset($settings['banner'.$i.'_image']) && $settings['banner'.$i.'_image'] ? asset('storage/'.$settings['banner'.$i.'_image']) : '' }}' }">
@@ -324,43 +341,5 @@
 </div>
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-function getCurrentLocation() {
-    if (!navigator.geolocation) {
-        Swal.fire('Error', 'Browser Anda tidak mendukung Geolocation', 'error');
-        return;
-    }
-
-    Swal.fire({
-        title: 'Mendapatkan Lokasi...',
-        text: 'Mohon tunggu sebentar',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            document.getElementById('restaurant_latitude').value = position.coords.latitude;
-            document.getElementById('restaurant_longitude').value = position.coords.longitude;
-            Swal.fire({
-                icon: 'success',
-                title: 'Lokasi Berhasil Diambil!',
-                text: 'Latitude dan Longitude telah diperbarui.',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        },
-        (error) => {
-            console.error('Error getting location:', error);
-            let message = 'Gagal mendapatkan lokasi.';
-            if (error.code === 1) message = 'Akses lokasi ditolak oleh browser.';
-            Swal.fire('Gagal', message, 'error');
-        },
-        { enableHighAccuracy: true }
-    );
-}
-</script>
 @endpush
 @endsection

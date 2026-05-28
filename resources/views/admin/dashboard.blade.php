@@ -7,7 +7,7 @@
 <!-- Stats Cards - Improved responsive grid -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
     <!-- Total Pendapatan Hari Ini -->
-    <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4 md:p-6 border border-gray-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+    <div class="bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6 border-l-4 border-green-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
         <div class="flex items-center justify-between gap-3">
             <div class="flex-1 min-w-0">
                 <p class="text-gray-500 text-xs sm:text-sm font-medium truncate">Pendapatan Hari Ini</p>
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Total Pesanan Hari Ini -->
-    <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4 md:p-6 border border-gray-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+    <div class="bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
         <div class="flex items-center justify-between gap-3">
             <div class="flex-1 min-w-0">
                 <p class="text-gray-500 text-xs sm:text-sm font-medium truncate">Pesanan Hari Ini</p>
@@ -49,7 +49,7 @@
     </div>
 
     <!-- Menunggu Diproses -->
-    <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4 md:p-6 border border-gray-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+    <div class="bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6 border-l-4 border-yellow-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
         <div class="flex items-center justify-between gap-3">
             <div class="flex-1 min-w-0">
                 <p class="text-gray-500 text-xs sm:text-sm font-medium truncate">Menunggu Diproses</p>
@@ -70,7 +70,7 @@
     </div>
 
     <!-- Total Produk -->
-    <div class="bg-white rounded-xl shadow-sm p-3 sm:p-4 md:p-6 border border-gray-100 hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+    <div class="bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6 border-l-4 border-purple-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
         <div class="flex items-center justify-between gap-3">
             <div class="flex-1 min-w-0">
                 <p class="text-gray-500 text-xs sm:text-sm font-medium truncate">Total Produk</p>
@@ -188,7 +188,7 @@
                 <i class="fas fa-chevron-right ml-1 text-xs group-hover:translate-x-1 transition-transform"></i>
             </a>
         </div>
-        <div class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+        <div class="divide-y divide-gray-100 max-h-[400px] overflow-auto">
             @forelse($recentOrders ?? [] as $order)
             <div class="p-3 sm:p-4 hover:bg-gray-50/50 transition">
                 <div class="flex items-center justify-between gap-3">
@@ -248,7 +248,7 @@
                 <span>Produk Terlaris</span>
             </h3>
         </div>
-        <div class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
+        <div class="divide-y divide-gray-100 max-h-[400px] overflow-auto">
             @forelse($topProducts ?? [] as $index => $product)
             <div class="p-3 sm:p-4 hover:bg-gray-50/50 transition">
                 <div class="flex items-center gap-2 sm:gap-3">
@@ -329,22 +329,22 @@
 @push('styles')
 <style>
     /* Custom scrollbar untuk list pesanan */
-    .overflow-y-auto::-webkit-scrollbar {
+    .overflow-auto::-webkit-scrollbar {
         width: 6px;
         height: 6px;
     }
     
-    .overflow-y-auto::-webkit-scrollbar-track {
+    .overflow-auto::-webkit-scrollbar-track {
         background: #f1f1f1;
         border-radius: 10px;
     }
     
-    .overflow-y-auto::-webkit-scrollbar-thumb {
+    .overflow-auto::-webkit-scrollbar-thumb {
         background: #c1c1c1;
         border-radius: 10px;
     }
     
-    .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    .overflow-auto::-webkit-scrollbar-thumb:hover {
         background: #a8a8a8;
     }
     
@@ -386,22 +386,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const chartData = {!! json_encode($chartData ?? []) !!};
         
         new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: chartLabels,
                 datasets: [{
                     label: 'Pendapatan (Rp)',
                     data: chartData,
                     borderColor: '#f97316',
-                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#f97316',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: window.innerWidth < 640 ? 3 : 4,
-                    pointHoverRadius: window.innerWidth < 640 ? 5 : 6
+                    backgroundColor: 'rgba(249, 115, 22, 0.8)',
+                    borderWidth: 1,
+                    borderRadius: 4
                 }]
             },
             options: {

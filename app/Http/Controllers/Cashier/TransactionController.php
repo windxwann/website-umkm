@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Cashier;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\Table;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,20 +14,31 @@ class TransactionController extends Controller
     /**
      * Show today's transactions.
      */
-    public function today()
+    public function today(Request $request)
     {
-        $transactions = Order::whereDate('created_at', today())
-            ->with('items')
-            ->latest()
-            ->get();
+        $query = Order::whereDate('created_at', today())
+            ->with(['items', 'table']); // Eager load table relation
 
-        // 🔥 UBAH KE ARRAY (bukan object)
+        // Apply filters
+        if ($request->filled('status')) {
+            $query->where('order_status', $request->status);
+        }
+
+        if ($request->filled('payment_method')) {
+            $query->where('payment_method', $request->payment_method);
+        }
+
+        $transactions = $query->latest()->paginate(10);
+        
+        // 🔥 Summary data
+        $allTodayTransactions = Order::whereDate('created_at', today())->get();
+        
         $summary = [
-            'total' => $transactions->count(),
-            'revenue' => $transactions->where('payment_status', 'paid')->sum('total_amount'),
-            'cash' => $transactions->where('payment_method', 'cashier')->where('payment_status', 'paid')->sum('total_amount'),
-            'ewallet' => $transactions->where('payment_method', 'e_wallet')->where('payment_status', 'paid')->sum('total_amount'),
-            'transfer' => $transactions->where('payment_method', 'bank_transfer')->where('payment_status', 'paid')->sum('total_amount'),
+            'total' => $allTodayTransactions->count(),
+            'revenue' => $allTodayTransactions->where('payment_status', 'paid')->sum('total_amount'),
+            'cash' => $allTodayTransactions->where('payment_method', 'cashier')->where('payment_status', 'paid')->sum('total_amount'),
+            'ewallet' => $allTodayTransactions->where('payment_method', 'e_wallet')->where('payment_status', 'paid')->sum('total_amount'),
+            'transfer' => $allTodayTransactions->where('payment_method', 'bank_transfer')->where('payment_status', 'paid')->sum('total_amount'),
         ];
 
         return view('cashier.transactions.today', compact('transactions', 'summary'));
@@ -37,7 +49,7 @@ class TransactionController extends Controller
      */
     public function history(Request $request)
     {
-        $query = Order::with('items');
+        $query = Order::with(['items', 'table']); // Eager load table
 
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
@@ -60,7 +72,8 @@ class TransactionController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('order_number', 'like', '%' . $request->search . '%');
+            $query->where('order_number', 'like', '%' . $request->search . '%')
+                  ->orWhere('customer_name', 'like', '%' . $request->search . '%');
         }
 
         $orders = $query->latest()->paginate(20);
@@ -77,12 +90,12 @@ class TransactionController extends Controller
     {
         $selectedDate = $request->input('date', today()->format('Y-m-d'));
         
-        // Data untuk tanggal yang dipilih
+        // Data untuk tanggal yang dipilih dengan relasi table
         $transactions = Order::whereDate('created_at', $selectedDate)
-            ->with('user')
+            ->with(['table'])
             ->get();
 
-        // Summary untuk tanggal yang dipilih (tetap array)
+        // Summary untuk tanggal yang dipilih
         $summary = [
             'total_transactions' => $transactions->count(),
             'total_revenue' => $transactions->where('payment_status', 'paid')->sum('total_amount'),
@@ -98,6 +111,23 @@ class TransactionController extends Controller
             'cancelled_count' => $transactions->where('order_status', 'cancelled')->count(),
         ];
 
+        // Statistik berdasarkan lokasi meja
+        $summary['indoor_transactions'] = $transactions->filter(function($transaction) {
+            return $transaction->table && $transaction->table->location === 'indoor';
+        })->count();
+        
+        $summary['outdoor_transactions'] = $transactions->filter(function($transaction) {
+            return $transaction->table && $transaction->table->location === 'outdoor';
+        })->count();
+        
+        $summary['indoor_revenue'] = $transactions->filter(function($transaction) {
+            return $transaction->table && $transaction->table->location === 'indoor' && $transaction->payment_status === 'paid';
+        })->sum('total_amount');
+        
+        $summary['outdoor_revenue'] = $transactions->filter(function($transaction) {
+            return $transaction->table && $transaction->table->location === 'outdoor' && $transaction->payment_status === 'paid';
+        })->sum('total_amount');
+
         // Hitung persentase
         $total = $summary['total_transactions'] ?: 1;
         $summary['waiting_percentage'] = round(($summary['waiting_count'] / $total) * 100);
@@ -105,7 +135,7 @@ class TransactionController extends Controller
         $summary['completed_percentage'] = round(($summary['completed_count'] / $total) * 100);
         $summary['cancelled_percentage'] = round(($summary['cancelled_count'] / $total) * 100);
 
-        // Data untuk grafik (7 hari terakhir)
+        // Data untuk grafik (7 hari terakhir) - menggunakan Query Builder untuk kompatibilitas
         $weeklyData = Order::select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('COUNT(*) as total'),
@@ -117,10 +147,10 @@ class TransactionController extends Controller
             ->get()
             ->keyBy('date');
 
-        // Data peak hours (jam sibuk)
+        // Data peak hours (jam sibuk) - menggunakan Query Builder
         $peakHours = Order::whereDate('created_at', $selectedDate)
             ->select(
-                DB::raw('strftime("%H:00", created_at) as hour'),
+                DB::raw("strftime('%H', created_at) as hour"),
                 DB::raw('COUNT(*) as count')
             )
             ->groupBy('hour')
@@ -129,9 +159,27 @@ class TransactionController extends Controller
             ->map(function($item) use ($transactions) {
                 $total = $transactions->count() ?: 1;
                 return [
-                    'hour' => $item->hour,
+                    'hour' => sprintf('%02d:00', $item->hour),
                     'count' => $item->count,
                     'percentage' => round(($item->count / $total) * 100)
+                ];
+            });
+
+        // Data transaksi per jam untuk hari yang dipilih
+        $hourlyTransactions = Order::whereDate('created_at', $selectedDate)
+            ->select(
+                DB::raw("strftime('%H', created_at) as hour"),
+                DB::raw('COUNT(*) as count'),
+                DB::raw('SUM(total_amount) as revenue')
+            )
+            ->groupBy('hour')
+            ->orderBy('hour')
+            ->get()
+            ->map(function($item) {
+                return [
+                    'hour' => sprintf('%02d:00', $item->hour),
+                    'count' => $item->count,
+                    'revenue' => $item->revenue
                 ];
             });
 
@@ -140,8 +188,101 @@ class TransactionController extends Controller
             'summary', 
             'selectedDate',
             'weeklyData',
-            'peakHours'
+            'peakHours',
+            'hourlyTransactions'
         ));
+    }
+
+    /**
+     * Show order detail
+     */
+    public function show(Order $order)
+    {
+        $order->load(['items.product', 'table']);
+        return view('cashier.orders.show', compact('order'));
+    }
+
+    /**
+     * Show receipt
+     */
+    public function receipt(Order $order)
+    {
+        $order->load(['items.product', 'table']);
+        return view('cashier.receipt', compact('order'));
+    }
+
+    /**
+     * Edit order
+     */
+    public function edit(Order $order)
+    {
+        if ($order->order_status === 'completed' || $order->order_status === 'cancelled') {
+            return redirect()->back()->with('error', 'Transaksi yang sudah selesai atau dibatalkan tidak dapat diedit.');
+        }
+        
+        $products = Product::where('is_active', true)->get();
+        $order->load(['items.product']);
+        
+        return view('cashier.orders.edit', compact('order', 'products'));
+    }
+
+    /**
+     * Update order
+     */
+    public function update(Request $request, Order $order)
+    {
+        if ($order->order_status === 'completed' || $order->order_status === 'cancelled') {
+            return redirect()->back()->with('error', 'Transaksi yang sudah selesai atau dibatalkan tidak dapat diedit.');
+        }
+        
+        $request->validate([
+            'customer_name' => 'required|string|max:255',
+            'table_id' => 'nullable|exists:tables,id',
+            'items' => 'required|array',
+            'items.*.id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+        ]);
+        
+        DB::beginTransaction();
+        try {
+            // Update order info
+            $order->update([
+                'customer_name' => $request->customer_name,
+                'table_id' => $request->table_id,
+            ]);
+            
+            // Update items
+            $updatedItems = [];
+            $totalAmount = 0;
+            
+            foreach ($request->items as $item) {
+                $product = Product::find($item['id']);
+                $subtotal = $product->price * $item['quantity'];
+                $totalAmount += $subtotal;
+                
+                $updatedItems[$item['id']] = [
+                    'quantity' => $item['quantity'],
+                    'price' => $product->price,
+                    'subtotal' => $subtotal
+                ];
+            }
+            
+            // Sync items
+            $order->items()->sync($updatedItems);
+            
+            // Update total amount
+            $order->update(['total_amount' => $totalAmount]);
+            
+            DB::commit();
+            
+            return redirect()->route('cashier.order.show', $order)
+                ->with('success', 'Order berhasil diupdate');
+                
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->with('error', 'Gagal mengupdate order: ' . $e->getMessage());
+        }
     }
 
     /**

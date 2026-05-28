@@ -128,6 +128,13 @@ class OrderController extends Controller
      */
     public function updateStatus(Request $request, Order $order)
     {
+        if ($order->order_status === 'cancelled') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pesanan yang sudah dibatalkan tidak dapat diubah lagi.'
+            ], 422);
+        }
+
         $request->validate([
             'status' => 'required|in:waiting,processed,completed,cancelled'
         ]);
@@ -138,19 +145,21 @@ class OrderController extends Controller
         ]);
 
         // LOGIKA PENUNJANG
-        if ($request->status === 'cancelled') {
-            // 1. Kembalikan Stok
-            foreach ($order->items as $item) {
-                $product = App\Models\Product::find($item->product_id);
-                if ($product) {
-                    $product->increment('stock', $item->quantity);
+        if ($request->status === 'cancelled' || $request->status === 'completed') {
+            // 1. Kembalikan Stok jika dibatalkan
+            if ($request->status === 'cancelled') {
+                foreach ($order->items as $item) {
+                    $product = Product::find($item->product_id);
+                    if ($product) {
+                        $product->increment('stock', $item->quantity);
+                    }
                 }
+                
+                // Tandai Pembayaran Gagal
+                $order->update(['payment_status' => 'failed']);
             }
             
-            // 2. Tandai Pembayaran Gagal
-            $order->update(['payment_status' => 'failed']);
-
-            // 3. Reset Session Customer & QR Lock
+            // 2. Reset Session Customer & QR Lock
             if ($order->session_id) {
                 try {
                     event(new \App\Events\CustomerSessionReset($order->session_id));
@@ -163,7 +172,7 @@ class OrderController extends Controller
                 ]);
             }
             
-            // 4. Broadcast Notification
+            // 3. Broadcast Notification
             try {
                 broadcast(new \App\Events\OrderCompleted($order));
             } catch (\Exception $e) {}
@@ -187,6 +196,13 @@ class OrderController extends Controller
      */
     public function confirmPayment(Order $order)
     {
+        if ($order->order_status === 'cancelled') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak dapat mengkonfirmasi pembayaran untuk pesanan yang sudah dibatalkan.'
+            ], 422);
+        }
+
         if ($order->payment_status === 'paid') {
             return response()->json([
                 'success' => false,

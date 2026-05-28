@@ -4,10 +4,19 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-4">
-    <!-- Header -->
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-orange-600 mb-2">Manajemen Pesanan</h1>
-        <p class="text-gray-600">Kelola semua pesanan customer</p>
+    <!-- Header Mobile Friendly -->
+    <div class="mb-6 md:mb-8 bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl p-4 md:p-6 text-white shadow-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold mb-1 md:mb-2">Manajemen Pesanan</h1>
+                <p class="text-orange-100 text-sm md:text-base">
+                    <i class="fas fa-shopping-cart mr-2"></i>Kelola semua pesanan customer
+                </p>
+            </div>
+            <div class="hidden md:block">
+                <i class="fas fa-file-invoice-dollar text-6xl opacity-30"></i>
+            </div>
+        </div>
     </div>
 
     <!-- Status Tabs -->
@@ -52,51 +61,51 @@
     </div>
 
     <!-- Stats Summary - Grid 2x2 untuk tampilan lebih rapi -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-lg shadow p-5 hover:shadow-md transition">
-            <div class="flex items-center justify-between">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-gray-500 text-sm mb-1">Total Pesanan</p>
-                    <p class="text-2xl font-bold text-gray-800">{{ $stats['total_orders'] }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Total Pesanan</p>
+                    <p class="text-xl md:text-2xl font-bold text-blue-600">{{ $stats['total_orders'] }}</p>
                 </div>
-                <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-shopping-cart text-orange-600"></i>
+                <div class="bg-blue-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-shopping-cart text-blue-600 text-sm md:text-base"></i>
                 </div>
             </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-5 hover:shadow-md transition">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-yellow-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-gray-500 text-sm mb-1">Pending Payment</p>
-                    <p class="text-2xl font-bold text-yellow-600">{{ $stats['pending_payment'] }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Pending Payment</p>
+                    <p class="text-xl md:text-2xl font-bold text-yellow-600">{{ $stats['pending_payment'] }}</p>
                 </div>
-                <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-clock text-yellow-600"></i>
+                <div class="bg-yellow-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-clock text-yellow-600 text-sm md:text-base"></i>
                 </div>
             </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-5 hover:shadow-md transition">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-orange-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-gray-500 text-sm mb-1">Pesanan Aktif</p>
-                    <p class="text-2xl font-bold text-blue-600">{{ $stats['waiting'] + $stats['processed'] }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Pesanan Aktif</p>
+                    <p class="text-xl md:text-2xl font-bold text-orange-600">{{ $stats['waiting'] + $stats['processed'] }}</p>
                 </div>
-                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-spinner text-blue-600"></i>
+                <div class="bg-orange-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-spinner text-orange-600 text-sm md:text-base"></i>
                 </div>
             </div>
         </div>
         
-        <div class="bg-white rounded-lg shadow p-5 hover:shadow-md transition">
-            <div class="flex items-center justify-between">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-green-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-gray-500 text-sm mb-1">Total Revenue</p>
-                    <p class="text-2xl font-bold text-green-600">Rp {{ number_format($stats['total_revenue'], 0, ',', '.') }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Total Revenue</p>
+                    <p class="text-lg md:text-xl font-bold text-green-600">Rp {{ number_format($stats['total_revenue'], 0, ',', '.') }}</p>
                 </div>
-                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-money-bill-wave text-green-600"></i>
+                <div class="bg-green-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-money-bill-wave text-green-600 text-sm md:text-base"></i>
                 </div>
             </div>
         </div>
@@ -206,7 +215,8 @@
                         <!-- Status Pesanan -->
                         <td class="px-6 py-4">
                             <select onchange="updateOrderStatus({{ $order->id }}, this.value)" 
-                                    class="text-sm border-0 bg-transparent focus:ring-2 focus:ring-orange-500 rounded-lg px-2 py-1 font-medium">
+                                    class="text-sm border-0 bg-transparent focus:ring-2 focus:ring-orange-500 rounded-lg px-2 py-1 font-medium"
+                                    {{ in_array($order->order_status, ['completed', 'cancelled']) ? 'disabled' : '' }}>
                                 <option value="waiting" {{ $order->order_status == 'waiting' ? 'selected' : '' }} class="text-yellow-600">⏳ Menunggu</option>
                                 <option value="processed" {{ $order->order_status == 'processed' ? 'selected' : '' }} class="text-blue-600">⚙️ Diproses</option>
                                 <option value="completed" {{ $order->order_status == 'completed' ? 'selected' : '' }} class="text-green-600">✅ Selesai</option>
@@ -221,10 +231,16 @@
                                     <i class="fas fa-check-circle mr-1"></i> Lunas
                                 </span>
                             @else
-                                <button onclick="confirmPayment({{ $order->id }})"
-                                        class="inline-flex items-center px-3 py-1 bg-yellow-500 text-white rounded-lg text-xs font-medium hover:bg-yellow-600 transition">
-                                    <i class="fas fa-check mr-1"></i> Konfirmasi
-                                </button>
+                                @if($order->order_status !== 'cancelled')
+                                    <button onclick="confirmPayment({{ $order->id }})"
+                                            class="inline-flex items-center px-3 py-1 bg-yellow-500 text-white rounded-lg text-xs font-medium hover:bg-yellow-600 transition">
+                                        <i class="fas fa-check mr-1"></i> Konfirmasi
+                                    </button>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <i class="fas fa-times-circle mr-1"></i> Batal
+                                    </span>
+                                @endif
                             @endif
                         </td>
                         

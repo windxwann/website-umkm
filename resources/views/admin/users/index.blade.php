@@ -5,13 +5,25 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Manajemen User</h1>
-        <a href="{{ route('admin.users.create') }}" 
-           class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition flex items-center gap-2">
-            <i class="fas fa-plus"></i> Tambah User
-        </a>
+    <!-- Header Mobile Friendly -->
+    <div class="mb-6 md:mb-8 bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl p-4 md:p-6 text-white shadow-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold mb-1 md:mb-2">Manajemen User</h1>
+                <p class="text-orange-100 text-sm md:text-base">
+                    <i class="fas fa-users mr-2"></i>Kelola hak akses dan pengguna sistem
+                </p>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="{{ route('admin.users.create') }}" 
+                   class="bg-white text-orange-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition flex items-center text-sm font-semibold shadow-md">
+                    <i class="fas fa-plus mr-2"></i>Tambah User
+                </a>
+                <div class="hidden md:block">
+                    <i class="fas fa-id-card text-6xl opacity-30"></i>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Filter & Search -->

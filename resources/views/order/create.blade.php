@@ -370,7 +370,10 @@ function orderForm() {
             .then(data => {
                 if (data.success) {
                     // Hapus cart dari localStorage
-                    localStorage.removeItem('cart');
+                    localStorage.removeItem('restaurant_cart');
+                    
+                    // Set flag untuk reset cart di halaman lain
+                    sessionStorage.setItem('order_success', 'true');
                     
                     // Redirect ke halaman sukses
                     window.location.href = data.redirect;

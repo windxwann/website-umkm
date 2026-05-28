@@ -12,7 +12,7 @@
     </div>
 
     <!-- Order Info Card -->
-    <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
         <div class="bg-gradient-to-r from-orange-600 to-orange-500 px-6 py-4">
             <div class="flex justify-between items-center text-white">
                 <div>

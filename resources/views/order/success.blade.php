@@ -63,4 +63,11 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script>
+    // Pastikan cart kosong di halaman sukses
+    localStorage.removeItem('restaurant_cart');
+    sessionStorage.setItem('order_success', 'true');
+</script>
+@endpush
 @endsection

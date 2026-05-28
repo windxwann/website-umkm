@@ -5,51 +5,82 @@
 
 @section('content')
 <div class="space-y-6">
+    <!-- Header Mobile Friendly -->
+    <div class="mb-6 md:mb-8 bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl p-4 md:p-6 text-white shadow-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold mb-1 md:mb-2">Manajemen QR Code</h1>
+                <p class="text-orange-100 text-sm md:text-base">
+                    <i class="fas fa-qrcode mr-2"></i>Kelola kode QR untuk meja dan area makan
+                </p>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="{{ route('admin.qrcodes.create') }}" 
+                   class="bg-white text-orange-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition flex items-center text-sm font-semibold shadow-md">
+                    <i class="fas fa-plus mr-2"></i>Buat QR
+                </a>
+                <div class="hidden md:block">
+                    <i class="fas fa-expand text-6xl opacity-30"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-blue-500">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-gray-500 text-xs">Total QR</p>
-                    <p class="text-2xl font-bold">{{ $stats['total'] }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Total QR</p>
+                    <p class="text-xl md:text-2xl font-bold text-blue-600">{{ $stats['total'] }}</p>
                 </div>
-                <i class="fas fa-qrcode text-blue-500 text-2xl"></i>
+                <div class="bg-blue-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-qrcode text-blue-600 text-sm md:text-base"></i>
+                </div>
             </div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-green-500">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-green-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-gray-500 text-xs">Aktif</p>
-                    <p class="text-2xl font-bold">{{ $stats['active'] }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Aktif</p>
+                    <p class="text-xl md:text-2xl font-bold text-green-600">{{ $stats['active'] }}</p>
                 </div>
-                <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                <div class="bg-green-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600 text-sm md:text-base"></i>
+                </div>
             </div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-red-500">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-red-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-gray-500 text-xs">Nonaktif</p>
-                    <p class="text-2xl font-bold">{{ $stats['inactive'] }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Nonaktif</p>
+                    <p class="text-xl md:text-2xl font-bold text-red-600">{{ $stats['inactive'] }}</p>
                 </div>
-                <i class="fas fa-times-circle text-red-500 text-2xl"></i>
+                <div class="bg-red-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-times-circle text-red-600 text-sm md:text-base"></i>
+                </div>
             </div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-purple-500">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-purple-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-gray-500 text-xs">Permanent</p>
-                    <p class="text-2xl font-bold">{{ $stats['permanent'] }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Permanent</p>
+                    <p class="text-xl md:text-2xl font-bold text-purple-600">{{ $stats['permanent'] }}</p>
                 </div>
-                <i class="fas fa-infinity text-purple-500 text-2xl"></i>
+                <div class="bg-purple-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-infinity text-purple-600 text-sm md:text-base"></i>
+                </div>
             </div>
         </div>
-        <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-orange-500">
+        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-orange-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-gray-500 text-xs">Total Scan</p>
-                    <p class="text-2xl font-bold">{{ $stats['total_scans'] }}</p>
+                    <p class="text-xs md:text-sm text-gray-500">Total Scan</p>
+                    <p class="text-xl md:text-2xl font-bold text-orange-600">{{ $stats['total_scans'] }}</p>
                 </div>
-                <i class="fas fa-eye text-orange-500 text-2xl"></i>
+                <div class="bg-orange-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
+                    <i class="fas fa-eye text-orange-600 text-sm md:text-base"></i>
+                </div>
             </div>
         </div>
     </div>

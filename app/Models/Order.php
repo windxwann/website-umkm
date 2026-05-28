@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property float $total_amount
  * @property float $paid_amount
  * @property string|null $notes
+ * @property int|null $table_id
  * @property \Illuminate\Support\Carbon|null $payment_due_at
  * @property \Illuminate\Support\Carbon|null $paid_at
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -29,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read int|null $items_count
  * @property-read \App\Models\PaymentNotification|null $paymentNotification
  * @property-read \App\Models\QrCode|null $qrCodeRelation
+ * @property-read \App\Models\Table|null $table
  */
 class Order extends Model
 {
@@ -61,6 +63,7 @@ class Order extends Model
         'notes',
         'delivery_address',
         'packaging_fee',
+        'table_id', // Tambahkan table_id
         'payment_due_at',
         'paid_at',
         'completed_at'
@@ -121,6 +124,44 @@ class Order extends Model
     ];
 
     /**
+     * Cek apakah order bisa berpindah ke status baru
+     */
+    public function canTransitionTo(string $newStatus): bool
+    {
+        $currentStatus = $this->order_status;
+        
+        // Jika status sama, izinkan (no-op)
+        if ($currentStatus === $newStatus) {
+            return true;
+        }
+
+        // Status akhir tidak bisa diubah lagi
+        if (in_array($currentStatus, [self::STATUS_COMPLETED, self::STATUS_CANCELLED])) {
+            return false;
+        }
+
+        // Logika transisi
+        switch ($newStatus) {
+            case self::STATUS_PROCESSED:
+                return $currentStatus === self::STATUS_WAITING;
+                
+            case 'ready':
+                return $currentStatus === self::STATUS_PROCESSED;
+
+            case self::STATUS_COMPLETED:
+                // Bisa selesai dari waiting, processed, atau ready
+                return in_array($currentStatus, [self::STATUS_WAITING, self::STATUS_PROCESSED, 'ready']);
+                
+            case self::STATUS_CANCELLED:
+                // Bisa dibatalkan jika belum selesai
+                return in_array($currentStatus, [self::STATUS_WAITING, self::STATUS_PROCESSED, 'ready']);
+                
+            default:
+                return false;
+        }
+    }
+
+    /**
      * Relasi ke OrderItem
      */
     public function items(): HasMany
@@ -145,6 +186,14 @@ class Order extends Model
     }
 
     /**
+     * Relasi ke Table
+     */
+    public function table(): BelongsTo
+    {
+        return $this->belongsTo(Table::class, 'table_id', 'id');
+    }
+
+    /**
      * Generate nomor order unik
      */
     public static function generateOrderNumber(): string
@@ -163,220 +212,201 @@ class Order extends Model
     }
 
     /**
-     * Scope untuk order yang masih aktif (belum selesai)
+     * Accessor untuk mendapatkan nomor meja dengan format yang lebih baik
      */
-    public function scopeActive($query)
+    public function getTableNumberAttribute()
     {
-        return $query->whereIn('order_status', [
-            self::STATUS_WAITING, 
-            self::STATUS_PROCESSED,
-            // self::STATUS_READY // DIKOMENTAR
-        ]);
-    }
-
-    /**
-     * Scope untuk order yang sudah selesai
-     */
-    public function scopeCompleted($query)
-    {
-        return $query->where('order_status', self::STATUS_COMPLETED);
-    }
-
-    /**
-     * Scope untuk order yang sudah dibayar
-     */
-    public function scopePaid($query)
-    {
-        return $query->where('payment_status', self::PAYMENT_PAID);
-    }
-
-    /**
-     * Scope untuk order yang siap diantar/diambil
-     * CATATAN: Sementara pakai 'processed' karena 'ready' belum ada
-     */
-    public function scopeReady($query)
-    {
-        // Gunakan 'processed' sebagai pengganti 'ready' sementara
-        return $query->where('order_status', self::STATUS_PROCESSED);
-    }
-
-    /**
-     * Scope untuk order yang sedang diproses
-     */
-    public function scopeProcessed($query)
-    {
-        return $query->where('order_status', self::STATUS_PROCESSED);
-    }
-
-    /**
-     * Scope untuk order yang menunggu
-     */
-    public function scopeWaiting($query)
-    {
-        return $query->where('order_status', self::STATUS_WAITING);
-    }
-
-    /**
-     * Cek apakah order masih aktif (belum selesai)
-     */
-    public function isActive(): bool
-    {
-        return in_array($this->order_status, [
-            self::STATUS_WAITING,
-            self::STATUS_PROCESSED,
-            // self::STATUS_READY // DIKOMENTAR
-        ]);
-    }
-
-    /**
-     * Cek apakah order sudah siap diantar
-     * CATATAN: Sementara pakai 'processed' karena 'ready' belum ada
-     */
-    public function isReady(): bool
-    {
-        // Sementara return false atau cek 'processed'
-        return $this->order_status === self::STATUS_PROCESSED;
-    }
-
-    /**
-     * Cek apakah order sedang diproses
-     */
-    public function isProcessed(): bool
-    {
-        return $this->order_status === self::STATUS_PROCESSED;
-    }
-
-    /**
-     * Cek apakah order sedang menunggu
-     */
-    public function isWaiting(): bool
-    {
-        return $this->order_status === self::STATUS_WAITING;
-    }
-
-    /**
-     * Cek apakah order sudah selesai
-     */
-    public function isCompleted(): bool
-    {
-        return $this->order_status === self::STATUS_COMPLETED;
-    }
-
-    /**
-     * Cek apakah order dibatalkan
-     */
-    public function isCancelled(): bool
-    {
-        return $this->order_status === self::STATUS_CANCELLED;
-    }
-
-    /**
-     * Cek apakah pembayaran sudah lunas
-     */
-    public function isPaid(): bool
-    {
-        return $this->payment_status === self::PAYMENT_PAID;
-    }
-
-    /**
-     * Cek apakah pembayaran pending
-     */
-    public function isPaymentPending(): bool
-    {
-        return $this->payment_status === self::PAYMENT_PENDING;
-    }
-
-    /**
-     * Hitung kembalian (jika bayar tunai)
-     */
-    public function getChangeAttribute(): float
-    {
-        if ($this->payment_method === 'cashier' && $this->paid_amount > $this->total_amount) {
-            return $this->paid_amount - $this->total_amount;
+        if (!$this->table_id) {
+            return null;
         }
-        return 0;
+        return $this->table->table_number ?? null;
     }
 
     /**
-     * Get status badge class untuk tampilan
+     * Accessor untuk mendapatkan lokasi meja (indoor/outdoor)
      */
-    public function getStatusBadgeClass(): string
+    public function getTableLocationAttribute()
     {
-        return match($this->order_status) {
-            self::STATUS_WAITING => 'bg-yellow-100 text-yellow-800',
-            self::STATUS_PROCESSED => 'bg-blue-100 text-blue-800',
-            // self::STATUS_READY => 'bg-purple-100 text-purple-800', // DIKOMENTAR
-            self::STATUS_COMPLETED => 'bg-green-100 text-green-800',
-            self::STATUS_CANCELLED => 'bg-red-100 text-red-800',
-            default => 'bg-gray-100 text-gray-800'
-        };
+        if (!$this->table_id) {
+            return null;
+        }
+        return $this->table->location ?? null;
     }
 
     /**
-     * Get status text dalam bahasa Indonesia
+     * Accessor untuk mendapatkan display meja yang lengkap
      */
-    public function getStatusTextAttribute(): string
+    public function getTableDisplayAttribute(): object
     {
-        return self::ORDER_STATUSES[$this->order_status] ?? $this->order_status;
-    }
+        if (!$this->table_id || !$this->table) {
+            return (object) [
+                'name' => '-',
+                'location' => null,
+                'location_name' => '-',
+                'icon' => 'fa-chair',
+                'badge_class' => 'bg-gray-100 text-gray-600',
+                'full_display' => '-'
+            ];
+        }
 
-    /**
-     * Get payment status badge class
-     */
-    public function getPaymentBadgeClass(): string
-    {
-        return $this->payment_status === self::PAYMENT_PAID 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-yellow-100 text-yellow-800';
-    }
+        $location = $this->table->location ?? 'indoor';
+        $locationName = $location === 'indoor' ? 'Indoor' : 'Outdoor';
+        $icon = $location === 'indoor' ? 'fa-building' : 'fa-tree';
+        $badgeClass = $location === 'indoor' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700';
+        
+        $fullDisplay = $this->table->table_number . ' (' . $locationName . ')';
 
-    /**
-     * Get payment status text
-     */
-    public function getPaymentStatusTextAttribute(): string
-    {
-        return self::PAYMENT_STATUSES[$this->payment_status] ?? $this->payment_status;
-    }
-
-    /**
-     * Format total amount ke rupiah
-     */
-    public function getTotalAmountFormattedAttribute(): string
-    {
-        return 'Rp ' . number_format($this->total_amount, 0, ',', '.');
-    }
-
-    /**
-     * Format paid amount ke rupiah
-     */
-    public function getPaidAmountFormattedAttribute(): string
-    {
-        return 'Rp ' . number_format($this->paid_amount, 0, ',', '.');
-    }
-
-    /**
-     * Get waktu order dalam format yang mudah dibaca
-     */
-    public function getTimeAgoAttribute(): string
-    {
-        return $this->created_at->diffForHumans();
-    }
-
-    /**
-     * Cek apakah bisa diubah ke status tertentu
-     * Disesuaikan dengan status yang tersedia di database
-     */
-    public function canTransitionTo(string $newStatus): bool
-    {
-        // Transisi tanpa 'ready'
-        $transitions = [
-            self::STATUS_WAITING => [self::STATUS_PROCESSED, self::STATUS_COMPLETED, self::STATUS_CANCELLED],
-            self::STATUS_PROCESSED => [self::STATUS_COMPLETED, self::STATUS_CANCELLED],
-            self::STATUS_COMPLETED => [],
-            self::STATUS_CANCELLED => []
+        return (object) [
+            'name' => $this->table->table_number,
+            'location' => $location,
+            'location_name' => $locationName,
+            'icon' => $icon,
+            'badge_class' => $badgeClass,
+            'full_display' => $fullDisplay
         ];
+    }
 
-        return in_array($newStatus, $transitions[$this->order_status] ?? []);
+    /**
+     * Cek apakah order dine-in (di meja)
+     */
+    public function isDineIn(): bool
+    {
+        return !is_null($this->table_id);
+    }
+
+    /**
+     * Scope untuk order dine-in
+     */
+    public function scopeDineIn($query)
+    {
+        return $query->whereNotNull('table_id');
+    }
+
+    /**
+     * Scope berdasarkan lokasi meja
+     */
+    public function scopeByTableLocation($query, $location)
+    {
+        return $query->whereHas('table', function($q) use ($location) {
+            $q->where('location', $location);
+        });
+    }
+
+    /**
+     * Scope untuk order indoor
+     */
+    public function scopeIndoor($query)
+    {
+        return $this->scopeByTableLocation($query, 'indoor');
+    }
+
+    /**
+     * Scope untuk order outdoor
+     */
+    public function scopeOutdoor($query)
+    {
+        return $this->scopeByTableLocation($query, 'outdoor');
+    }
+
+    /**
+     * Get deskripsi lengkap lokasi
+     */
+    public function getLocationDescriptionAttribute(): string
+    {
+        if (!$this->table_id || !$this->table) {
+            return '-';
+        }
+        
+        $location = $this->table->location ?? 'indoor';
+        $locationName = $location === 'indoor' ? 'Indoor' : 'Outdoor';
+        return $this->table->table_number . ' - ' . $locationName;
+    }
+
+    /**
+     * Get icon untuk lokasi
+     */
+    public function getLocationIconAttribute(): string
+    {
+        if (!$this->table_id || !$this->table) {
+            return 'fa-chair';
+        }
+        
+        $location = $this->table->location ?? 'indoor';
+        return $location === 'indoor' ? 'fa-building' : 'fa-tree';
+    }
+
+    /**
+     * Get badge class untuk lokasi
+     */
+    public function getLocationBadgeClassAttribute(): string
+    {
+        if (!$this->table_id || !$this->table) {
+            return 'bg-gray-100 text-gray-600';
+        }
+        
+        $location = $this->table->location ?? 'indoor';
+        return $location === 'indoor' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700';
+    }
+
+    /**
+     * Scope untuk order berdasarkan rentang tanggal
+     */
+    public function scopeDateRange($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('created_at', [$startDate, $endDate]);
+    }
+
+    /**
+     * Scope untuk order berdasarkan metode pembayaran
+     */
+    public function scopeByPaymentMethod($query, $method)
+    {
+        return $query->where('payment_method', $method);
+    }
+
+    /**
+     * Scope untuk order berdasarkan status pembayaran
+     */
+    public function scopeByPaymentStatus($query, $status)
+    {
+        return $query->where('payment_status', $status);
+    }
+
+    /**
+     * Scope untuk order berdasarkan status order
+     */
+    public function scopeByOrderStatus($query, $status)
+    {
+        return $query->where('order_status', $status);
+    }
+
+    /**
+     * Hitung total item dalam order
+     */
+    public function getTotalItemsAttribute(): int
+    {
+        return $this->items->sum('quantity');
+    }
+
+    /**
+     * Get daftar produk yang dipesan
+     */
+    public function getProductListAttribute(): string
+    {
+        $products = $this->items->map(function($item) {
+            return $item->product->name . ' (' . $item->quantity . 'x)';
+        });
+        
+        return $products->implode(', ');
+    }
+
+    /**
+     * Scope untuk mencari order berdasarkan nomor order atau nama customer
+     */
+    public function scopeSearch($query, $search)
+    {
+        return $query->where('order_number', 'like', '%' . $search . '%')
+                     ->orWhere('customer_name', 'like', '%' . $search . '%');
     }
 
     /**
@@ -390,6 +420,11 @@ class Order extends Model
         static::creating(function ($order) {
             if (empty($order->order_number)) {
                 $order->order_number = self::generateOrderNumber();
+            }
+            
+            // Set default order_type
+            if (empty($order->order_type)) {
+                $order->order_type = 'dine_in';
             }
         });
 
@@ -414,6 +449,26 @@ class Order extends Model
                     ]);
                 }
             }
+            
+            // Log perubahan pembayaran
+            if ($order->isDirty('payment_status')) {
+                $oldStatus = $order->getOriginal('payment_status');
+                $newStatus = $order->payment_status;
+                
+                \Log::info("Payment status changed: {$order->order_number} from {$oldStatus} to {$newStatus}", [
+                    'order_id' => $order->id
+                ]);
+            }
+        });
+        
+        // Event setelah order dibuat
+        static::created(function ($order) {
+            \Log::info("New order created: {$order->order_number}", [
+                'order_id' => $order->id,
+                'total_amount' => $order->total_amount,
+                'order_type' => $order->order_type,
+                'table_id' => $order->table_id
+            ]);
         });
     }
-} 
+}

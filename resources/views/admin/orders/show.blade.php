@@ -19,9 +19,11 @@
             <a href="{{ route('admin.orders.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition flex items-center">
                 <i class="fas fa-arrow-left mr-2"></i> Kembali
             </a>
+            @if(!in_array($order->order_status, ['completed', 'cancelled']))
             <a href="{{ route('admin.orders.edit', $order->id) }}" class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition flex items-center">
                 <i class="fas fa-edit mr-2"></i> Edit
             </a>
+            @endif
             <a href="{{ route('admin.orders.invoice', $order->id) }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition flex items-center" target="_blank">
                 <i class="fas fa-file-invoice mr-2"></i> Invoice
             </a>
@@ -317,7 +319,7 @@
                         @method('PATCH')
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Status Pesanan</label>
-                            <select name="order_status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" required>
+                            <select name="order_status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-gray-100" required {{ in_array($order->order_status, ['completed', 'cancelled']) ? 'disabled' : '' }}>
                                 <option value="waiting" {{ $order->order_status == 'waiting' ? 'selected' : '' }}>⏳ Menunggu</option>
                                 <option value="processed" {{ $order->order_status == 'processed' ? 'selected' : '' }}>⚙️ Diproses</option>
                                 <option value="completed" {{ $order->order_status == 'completed' ? 'selected' : '' }}>✅ Selesai</option>
@@ -326,7 +328,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="block text-gray-700 text-sm font-bold mb-2">Status Pembayaran</label>
-                            <select name="payment_status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                            <select name="payment_status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-gray-100" {{ in_array($order->order_status, ['completed', 'cancelled']) ? 'disabled' : '' }}>
                                 <option value="pending" {{ $order->payment_status == 'pending' ? 'selected' : '' }}>⏳ Pending</option>
                                 <option value="paid" {{ $order->payment_status == 'paid' ? 'selected' : '' }}>✅ Lunas</option>
                             </select>
@@ -335,9 +337,12 @@
                             <label class="block text-gray-700 text-sm font-bold mb-2">Catatan (Opsional)</label>
                             <textarea name="notes" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" rows="3" placeholder="Tambahkan catatan untuk perubahan status..."></textarea>
                         </div>
-                        <button type="submit" class="w-full bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition flex items-center justify-center">
+                        <button type="submit" class="w-full bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition flex items-center justify-center disabled:bg-gray-400 disabled:cursor-not-allowed" {{ in_array($order->order_status, ['completed', 'cancelled']) ? 'disabled' : '' }}>
                             <i class="fas fa-save mr-2"></i> Update Status
                         </button>
+                        @if(in_array($order->order_status, ['completed', 'cancelled']))
+                        <p class="text-xs text-center text-red-500 mt-2 italic">* Pesanan sudah final dan tidak dapat diubah</p>
+                        @endif
                     </form>
                 </div>
             </div>

@@ -1,277 +1,155 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Edit Produk')
-@section('page-title', 'Edit Produk')
+@section('page-title', 'Produk')
 
 @section('content')
-<div class="container mx-auto px-4 py-4 md:py-8">
-    <!-- Header Mobile Friendly -->
-    <div class="mb-6 md:mb-8 bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl p-4 md:p-6 text-white shadow-lg">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold mb-1 md:mb-2">Edit Produk</h1>
-                <p class="text-orange-100 text-sm md:text-base">
-                    <i class="fas fa-edit mr-2"></i>Edit informasi produk yang sudah ada
-                </p>
-            </div>
-            <div class="hidden md:block">
-                <i class="fas fa-box-open text-6xl opacity-30"></i>
-            </div>
+<div class="max-w-4xl mx-auto">
+    <!-- Breadcrumb & Header - Compact -->
+    <div class="flex items-center gap-3 mb-6">
+        <a href="{{ route('admin.products.index') }}" 
+           class="p-2 bg-white border border-slate-100 text-slate-400 hover:text-slate-600 rounded-xl transition-all shadow-sm">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </a>
+        <div>
+            <h1 class="text-lg font-black text-slate-900 tracking-tight leading-none">Edit Produk</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">#PROD-{{ str_pad($product->id, 4, '0', STR_PAD_LEFT) }}</p>
         </div>
     </div>
 
-    <!-- Form Card -->
-    <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="p-4 md:p-8">
-                @csrf
-                @method('PUT')
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                    <!-- Nama Produk -->
-                    <div class="col-span-2">
-                        <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">
-                            Nama Produk <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                <i class="fas fa-tag"></i>
-                            </span>
-                            <input type="text" 
-                                   name="name" 
-                                   value="{{ old('name', $product->name) }}" 
-                                   required
-                                   placeholder="Contoh: Nasi Goreng Spesial"
-                                   class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition">
-                        </div>
-                        @error('name')
-                            <p class="text-red-500 text-sm mt-1 flex items-center">
-                                <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                            </p>
-                        @enderror
-                    </div>
-
-                    <!-- Kategori -->
-                    <div>
-                        <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">
-                            Kategori <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                <i class="fas fa-folder"></i>
-                            </span>
-                            <select name="category_id" required class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent appearance-none">
-                                <option value="">Pilih Kategori</option>
-                                @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-                                <i class="fas fa-chevron-down"></i>
-                            </span>
-                        </div>
-                        @error('category_id')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Harga -->
-                    <div>
-                        <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">
-                            Harga <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </span>
-                            <input type="number" 
-                                   name="price" 
-                                   value="{{ old('price', $product->price) }}" 
-                                   required
-                                   placeholder="Contoh: 25000"
-                                   class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition">
-                        </div>
-                        @error('price')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Deskripsi -->
-                    <div class="col-span-2">
-                        <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">
-                            Deskripsi Produk
-                        </label>
-                        <div class="relative">
-                            <textarea name="description" 
-                                      rows="4" 
-                                      placeholder="Masukkan deskripsi produk (opsional) - Contoh: Nasi goreng dengan bumbu spesial, telur, dan pilihan topping..."
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition resize-y">{{ old('description', $product->description) }}</textarea>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">
-                            <i class="fas fa-info-circle mr-1"></i>Deskripsi akan membantu pelanggan mengetahui detail produk
-                        </p>
-                    </div>
-
-                    <!-- Gambar Saat Ini -->
-                    @if($product->image)
-                    <div class="col-span-2">
-                        <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">
-                            Gambar Saat Ini
-                        </label>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                            @php
-                                $imagePath = $product->image;
-                                if (!str_contains($imagePath, 'products/')) {
-                                    $imagePath = 'products/' . $imagePath;
-                                }
-                            @endphp
-                            <img src="{{ asset('storage/' . $imagePath) }}" 
-                                 alt="{{ $product->name }}" 
-                                 class="w-24 h-24 object-cover rounded-lg border-2 border-orange-500 shadow-md" 
-                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Image';">
-                            <div class="flex-1">
-                                <p class="text-sm text-gray-600 mb-2">{{ basename($product->image) }}</p>
-                                <label class="inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="remove_image" value="1" class="w-4 h-4 text-red-600 rounded focus:ring-red-500 mr-2">
-                                    <span class="text-sm text-red-600 hover:text-red-700 transition">
-                                        <i class="fas fa-trash-alt mr-1"></i>Hapus gambar
-                                    </span>
-                                </label>
+    <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: Basic Info -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8">
+                    <div class="space-y-5">
+                        <!-- Nama Produk -->
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Nama Produk <span class="text-rose-500">*</span></label>
+                            <div class="relative group">
+                                <i data-lucide="tag" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"></i>
+                                <input type="text" name="name" value="{{ old('name', $product->name) }}" required
+                                       placeholder="Contoh: Nasi Goreng Spesial"
+                                       class="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all">
                             </div>
+                            @error('name') <p class="text-rose-500 text-[10px] font-bold mt-1 px-1">{{ $message }}</p> @enderror
                         </div>
-                    </div>
-                    @endif
 
-                    <!-- Upload Gambar Baru -->
-                    <div class="col-span-2" x-data="{ imagePreview: '', imageName: '' }">
-                        <label class="block text-gray-700 font-semibold mb-2 text-sm md:text-base">
-                            Gambar Baru
-                        </label>
-                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                            <!-- Preview Area -->
-                            <div class="flex-shrink-0">
-                                <template x-if="!imagePreview">
-                                    <div class="w-24 h-24 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
-                                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-1"></i>
-                                        <span class="text-xs text-gray-400">Preview</span>
-                                    </div>
-                                </template>
-                                <template x-if="imagePreview">
-                                    <div class="relative">
-                                        <img :src="imagePreview" 
-                                             class="w-24 h-24 object-cover rounded-lg border-2 border-orange-500 shadow-md">
-                                        <button type="button" 
-                                                @click="imagePreview = ''; $refs.fileInput.value = ''; imageName = ''"
-                                                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition">
-                                            <i class="fas fa-times text-xs"></i>
-                                        </button>
-                                    </div>
-                                </template>
-                            </div>
-                            
-                            <!-- Upload Area -->
-                            <div class="flex-1">
-                                <div class="relative">
-                                    <input type="file" name="image" accept="image/*" x-ref="fileInput"
-                                           @change="
-                                               const file = $event.target.files[0];
-                                               if (file) {
-                                                   imagePreview = URL.createObjectURL(file);
-                                                   imageName = file.name;
-                                               } else {
-                                                   imagePreview = '';
-                                                   imageName = '';
-                                               }
-                                           "
-                                           class="hidden">
-                                    <button type="button" 
-                                            @click="$refs.fileInput.click()"
-                                            class="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition text-gray-600 flex items-center justify-center gap-2">
-                                        <i class="fas fa-upload text-orange-500"></i>
-                                        <span x-text="imageName || 'Klik untuk pilih gambar baru'"></span>
-                                    </button>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <!-- Kategori -->
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Kategori <span class="text-rose-500">*</span></label>
+                                <div class="relative group">
+                                    <i data-lucide="grid" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"></i>
+                                    <select name="category_id" required class="w-full pl-11 pr-10 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all appearance-none cursor-pointer">
+                                        <option value="">Pilih Kategori</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"></i>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-2 flex items-center gap-2">
-                                    <i class="fas fa-info-circle"></i>
-                                    Kosongkan jika tidak ingin mengubah gambar | Format: JPG, PNG, JPEG | Maks: 2MB
-                                </p>
+                            </div>
+
+                            <!-- Harga -->
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Harga (Rp) <span class="text-rose-500">*</span></label>
+                                <div class="relative group">
+                                    <i data-lucide="banknote" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"></i>
+                                    <input type="number" name="price" value="{{ old('price', $product->price) }}" required
+                                           placeholder="25000"
+                                           class="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all">
+                                </div>
+                                @error('price') <p class="text-rose-500 text-[10px] font-bold mt-1 px-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
-                        @error('image')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
 
-                    <!-- Status Tersedia -->
-                    <div class="col-span-2">
-                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <label class="flex items-center cursor-pointer">
-                                <div class="relative">
-                                    <input type="checkbox" name="is_available" value="1" 
-                                           {{ old('is_available', $product->is_available) ? 'checked' : '' }}
-                                           class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-orange-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                                </div>
-                                <span class="ml-3 text-gray-700 font-medium">
-                                    <i class="fas fa-check-circle text-green-600 mr-1"></i>
-                                    Produk tersedia untuk dipesan
-                                </span>
-                            </label>
-                            <p class="text-xs text-gray-500 mt-2 ml-12">
-                                Nonaktifkan jika produk sedang habis atau tidak tersedia sementara
-                            </p>
+                        <!-- Deskripsi -->
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Deskripsi Produk</label>
+                            <textarea name="description" rows="4" 
+                                      placeholder="Jelaskan detail menu ini kepada pelanggan..."
+                                      class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all resize-none">{{ old('description', $product->description) }}</textarea>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Button Actions -->
-                <div class="flex flex-col sm:flex-row gap-3 mt-8 pt-4 border-t">
-                    <!-- Button Submit -->
-                    <button 
-                        type="submit"
-                        class="bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition font-semibold flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
-                        <i class="fas fa-save mr-2"></i>
-                        Update Produk
+            <!-- Right Column: Media & Status -->
+            <div class="space-y-6">
+                <!-- Image Upload Card -->
+                <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8" x-data="{ imagePreview: '{{ $product->image ? asset('storage/' . (str_contains($product->image, 'products/') ? $product->image : 'products/' . $product->image)) : null }}' }">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-1">Foto Menu</h3>
+                    
+                    <div class="relative group">
+                        <input type="file" name="image" accept="image/*" class="hidden" x-ref="fileInput"
+                               @change="const file = $event.target.files[0]; if (file) imagePreview = URL.createObjectURL(file);">
+                        
+                        <div @click="$refs.fileInput.click()" 
+                             class="aspect-square bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 group-hover:border-orange-500 group-hover:bg-orange-50/30 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center gap-3">
+                            
+                            <template x-if="!imagePreview">
+                                <div class="flex flex-col items-center justify-center text-center px-4">
+                                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-300 shadow-sm mb-2 group-hover:scale-110 transition-transform">
+                                        <i data-lucide="image-plus" class="w-6 h-6"></i>
+                                    </div>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">Klik untuk Upload</p>
+                                    <p class="text-[8px] font-bold text-slate-300 uppercase mt-1">PNG, JPG up to 2MB</p>
+                                </div>
+                            </template>
+
+                            <template x-if="imagePreview">
+                                <div class="w-full h-full relative">
+                                    <img :src="imagePreview" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/300?text=Error+Loading+Image'">
+                                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <p class="text-white text-[10px] font-black uppercase tracking-widest">Ganti Gambar</p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    @error('image') <p class="text-rose-500 text-[10px] font-bold mt-2 px-1">{{ $message }}</p> @enderror
+                </div>
+
+                <!-- Availability Card -->
+                <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-1">Pengaturan</h3>
+                    
+                    <label class="flex items-center justify-between p-3 bg-slate-50 rounded-2xl cursor-pointer group hover:bg-orange-50/50 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-white rounded-xl flex items-center justify-center text-emerald-500 shadow-sm">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-slate-900 uppercase">Tersedia</p>
+                                <p class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">Dapat dipesan pembeli</p>
+                            </div>
+                        </div>
+                        <div class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="is_available" value="1" {{ old('is_available', $product->is_available) ? 'checked' : '' }} class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-600 shadow-inner"></div>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    <button type="submit" 
+                            class="w-full py-4 bg-orange-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest shadow-xl shadow-orange-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
+                        <i data-lucide="save" class="w-4 h-4 group-hover:rotate-12 transition-transform"></i>
+                        Simpan Perubahan
                     </button>
-
-                    <!-- Button Cancel -->
-                    <a 
-                        href="{{ route('admin.products.index') }}"
-                        role="button"
-                        class="bg-gray-500 text-white py-3 px-4 rounded-lg hover:bg-gray-600 transition text-center font-semibold flex items-center justify-center shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-400">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Batal
+                    
+                    <a href="{{ route('admin.products.index') }}" 
+                       class="w-full py-3 bg-white border border-slate-200 text-slate-400 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest hover:text-slate-600 hover:bg-slate-50 transition-all flex items-center justify-center">
+                        Batal & Kembali
                     </a>
                 </div>
-            </form>
-        </div>
-
-        <!-- Informasi Tambahan -->
-        <div class="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
-            <div class="flex items-start gap-3">
-                <i class="fas fa-lightbulb text-blue-500 text-xl mt-0.5"></i>
-                <div>
-                    <h4 class="font-semibold text-blue-800 text-sm md:text-base">Tips Mengedit Produk</h4>
-                    <ul class="text-xs md:text-sm text-blue-700 mt-1 space-y-1">
-                        <li><i class="fas fa-check-circle mr-1 text-xs"></i> Periksa kembali data produk sebelum menyimpan perubahan</li>
-                        <li><i class="fas fa-check-circle mr-1 text-xs"></i> Update gambar jika perlu untuk tampilan yang lebih menarik</li>
-                        <li><i class="fas fa-check-circle mr-1 text-xs"></i> Nonaktifkan produk sementara jika sedang habis, jangan dihapus</li>
-                        <li><i class="fas fa-check-circle mr-1 text-xs"></i> Perubahan akan langsung tampil di halaman menu</li>
-                    </ul>
-                </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
-
-@push('styles')
-<style>
-    /* Toggle Switch Animation */
-    .peer:checked ~ .peer-checked\:bg-orange-600 {
-        background-color: #f97316;
-    }
-</style>
-@endpush
 @endsection

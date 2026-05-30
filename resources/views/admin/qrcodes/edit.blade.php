@@ -1,58 +1,68 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Edit QR Code')
-@section('page-title', 'Edit QR Code')
+@section('page-title', 'QR Codes')
 
 @section('content')
-<div class="max-w-lg mx-auto">
-    <div class="bg-white rounded-xl shadow-sm">
-        <div class="bg-orange-600 px-6 py-4 rounded-t-xl">
-            <h2 class="text-white font-semibold text-lg">Edit QR Code</h2>
+<div class="max-w-xl mx-auto">
+    <!-- Breadcrumb & Header - Compact -->
+    <div class="flex items-center gap-3 mb-6">
+        <a href="{{ route('admin.qrcodes.index') }}" 
+           class="p-2 bg-white border border-slate-100 text-slate-400 hover:text-slate-600 rounded-xl transition-all shadow-sm">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </a>
+        <div>
+            <h1 class="text-lg font-black text-slate-900 tracking-tight leading-none">Edit QR Code</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">#{{ $qrcode->code }}</p>
         </div>
-
-        <form action="{{ route('admin.qrcodes.update', $qrcode) }}" method="POST" class="p-6">
-            @csrf
-            @method('PUT')
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Kode QR</label>
-                <input type="text" value="{{ $qrcode->code }}" class="w-full px-4 py-2 border rounded-lg bg-gray-100" readonly>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Nomor Meja</label>
-                <input type="text" name="meja" value="{{ str_replace('Meja ', '', $qrcode->meja ?? '') }}"
-                       class="w-full px-4 py-2 border rounded-lg focus:border-orange-500">
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Nama Tempat/Lokasi</label>
-                <input type="text" name="nama_tempat" value="{{ $qrcode->nama_tempat }}"
-                       class="w-full px-4 py-2 border rounded-lg focus:border-orange-500">
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Status</label>
-                <select name="status" class="w-full px-4 py-2 border rounded-lg focus:border-orange-500">
-                    <option value="active" {{ $qrcode->status === 'active' ? 'selected' : '' }}>Aktif</option>
-                    <option value="inactive" {{ $qrcode->status === 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                </select>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Catatan</label>
-                <textarea name="notes" rows="3" class="w-full px-4 py-2 border rounded-lg focus:border-orange-500">{{ $qrcode->notes }}</textarea>
-            </div>
-
-            <div class="flex gap-3">
-                <button type="submit" class="flex-1 bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700">
-                    <i class="fas fa-save mr-2"></i> Update
-                </button>
-                <a href="{{ route('admin.qrcodes.index') }}" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 text-center">
-                    Batal
-                </a>
-            </div>
-        </form>
     </div>
+
+    <form action="{{ route('admin.qrcodes.update', $qrcode) }}" method="POST">
+        @csrf
+        @method('PUT')
+        
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8 space-y-6">
+            
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Nomor Meja</label>
+                <div class="relative group">
+                    <i data-lucide="hash" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"></i>
+                    <input type="text" name="meja" value="{{ old('meja', str_replace('Meja ', '', $qrcode->meja ?? '')) }}"
+                           class="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Nama Lokasi</label>
+                <div class="relative group">
+                    <i data-lucide="map-pin" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"></i>
+                    <input type="text" name="nama_tempat" value="{{ old('nama_tempat', $qrcode->nama_tempat) }}"
+                           class="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Status</label>
+                <div class="relative group">
+                    <i data-lucide="power" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"></i>
+                    <select name="status" class="w-full pl-11 pr-10 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all appearance-none cursor-pointer">
+                        <option value="active" {{ $qrcode->status === 'active' ? 'selected' : '' }}>Aktif</option>
+                        <option value="inactive" {{ $qrcode->status === 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+                    </select>
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5 absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 pointer-events-none"></i>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Catatan</label>
+                <textarea name="notes" rows="3" class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all resize-none">{{ old('notes', $qrcode->notes) }}</textarea>
+            </div>
+
+            <button type="submit" class="w-full py-4 bg-orange-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest shadow-xl shadow-orange-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
+                <i data-lucide="save" class="w-4 h-4 group-hover:rotate-12 transition-transform"></i>
+                Simpan Perubahan
+            </button>
+        </div>
+    </form>
 </div>
 @endsection

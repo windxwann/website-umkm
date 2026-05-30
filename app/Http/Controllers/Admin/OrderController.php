@@ -259,14 +259,12 @@ class OrderController extends Controller
     /**
      * Export PDF
      */
-    public function exportPdf(Request $request)
+    public function exportPdf(Order $order)
     {
-        $orders = Order::where('payment_status', 'paid')->get();
+        $order->load('items');
 
-        $total = $orders->sum('total_amount');
+        $pdf = Pdf::loadView('admin.orders.pdf', compact('order'));
 
-        $pdf = Pdf::loadView('admin.orders.pdf', compact('orders', 'total'));
-
-        return $pdf->download('laporan.pdf');
+        return $pdf->download('invoice-' . $order->order_number . '.pdf');
     }
 }

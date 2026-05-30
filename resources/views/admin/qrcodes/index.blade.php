@@ -1,259 +1,146 @@
 @extends('admin.layouts.app')
 
-@section('title', 'QR Code')
-@section('page-title', 'Daftar QR Code')
+@section('title', 'Manajemen QR Code')
+@section('page-title', 'QR Codes')
 
 @section('content')
-<div class="space-y-6">
-    <!-- Header Mobile Friendly -->
-    <div class="mb-6 md:mb-8 bg-gradient-to-r from-orange-600 to-orange-500 rounded-xl p-4 md:p-6 text-white shadow-lg">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold mb-1 md:mb-2">Manajemen QR Code</h1>
-                <p class="text-orange-100 text-sm md:text-base">
-                    <i class="fas fa-qrcode mr-2"></i>Kelola kode QR untuk meja dan area makan
-                </p>
-            </div>
-            <div class="flex items-center gap-4">
-                <a href="{{ route('admin.qrcodes.create') }}" 
-                   class="bg-white text-orange-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition flex items-center text-sm font-semibold shadow-md">
-                    <i class="fas fa-plus mr-2"></i>Buat QR
-                </a>
-                <div class="hidden md:block">
-                    <i class="fas fa-expand text-6xl opacity-30"></i>
-                </div>
-            </div>
-        </div>
+<!-- Actions & Stats - Compact -->
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ route('admin.qrcodes.create') }}" 
+           class="flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-orange-600/20 hover:scale-[1.02] transition-all">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            Buat QR
+        </a>
+        <a href="{{ route('admin.qrcodes.export') }}" 
+           class="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm hover:bg-slate-50 transition-all">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            Export
+        </a>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-blue-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-xs md:text-sm text-gray-500">Total QR</p>
-                    <p class="text-xl md:text-2xl font-bold text-blue-600">{{ $stats['total'] }}</p>
-                </div>
-                <div class="bg-blue-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
-                    <i class="fas fa-qrcode text-blue-600 text-sm md:text-base"></i>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-green-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-xs md:text-sm text-gray-500">Aktif</p>
-                    <p class="text-xl md:text-2xl font-bold text-green-600">{{ $stats['active'] }}</p>
-                </div>
-                <div class="bg-green-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
-                    <i class="fas fa-check-circle text-green-600 text-sm md:text-base"></i>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-red-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-xs md:text-sm text-gray-500">Nonaktif</p>
-                    <p class="text-xl md:text-2xl font-bold text-red-600">{{ $stats['inactive'] }}</p>
-                </div>
-                <div class="bg-red-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
-                    <i class="fas fa-times-circle text-red-600 text-sm md:text-base"></i>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-purple-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-xs md:text-sm text-gray-500">Permanent</p>
-                    <p class="text-xl md:text-2xl font-bold text-purple-600">{{ $stats['permanent'] }}</p>
-                </div>
-                <div class="bg-purple-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
-                    <i class="fas fa-infinity text-purple-600 text-sm md:text-base"></i>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white rounded-xl shadow-lg p-3 md:p-4 border-l-4 border-orange-500 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-xs md:text-sm text-gray-500">Total Scan</p>
-                    <p class="text-xl md:text-2xl font-bold text-orange-600">{{ $stats['total_scans'] }}</p>
-                </div>
-                <div class="bg-orange-100 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center">
-                    <i class="fas fa-eye text-orange-600 text-sm md:text-base"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Filter & Actions -->
-    <div class="bg-white rounded-xl shadow-sm">
-        <div class="p-4 border-b">
-            <div class="flex flex-wrap justify-between items-center gap-3">
-                <form method="GET" action="{{ route('admin.qrcodes.index') }}" class="flex flex-wrap gap-2 flex-1">
-                    <div class="flex-1 min-w-[200px]">
-                        <input type="text" name="search" placeholder="Cari kode, meja, atau tempat..." 
-                               value="{{ request('search') }}"
-                               class="w-full px-4 py-2 border rounded-lg focus:border-orange-500 focus:ring-1 focus:ring-orange-200">
-                    </div>
-                    <div class="w-32">
-                        <select name="status" class="w-full px-4 py-2 border rounded-lg">
-                            <option value="">All Status</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
-                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700">
-                        <i class="fas fa-search"></i> Filter
-                    </button>
-                    @if(request()->has('filter_type') || request()->has('status') || request()->has('search'))
-                    <a href="{{ route('admin.qrcodes.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
-                        <i class="fas fa-times"></i> Reset
-                    </a>
-                    @endif
-                </form>
-                <div class="flex gap-2">
-                    <a href="{{ route('admin.qrcodes.export') }}" 
-                       class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2">
-                        <i class="fas fa-download"></i> Export
-                    </a>
-                    <a href="{{ route('admin.qrcodes.create') }}" 
-                       class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center gap-2">
-                        <i class="fas fa-plus"></i> Buat QR
-                    </a>
-                </div>
-            </div>
+    <form method="GET" action="{{ route('admin.qrcodes.index') }}" class="w-full lg:w-auto flex flex-wrap gap-2">
+        <div class="relative w-full sm:w-64">
+            <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input type="text" name="search" placeholder="Cari kode atau meja..." 
+                   value="{{ request('search') }}"
+                   class="w-full pl-9 pr-3 py-2 bg-white border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:ring-4 focus:ring-orange-500/5 transition-all shadow-sm">
         </div>
 
-        <!-- QR Grid -->
-        <div class="p-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                @forelse($qrCodes as $qr)
-                <div class="bg-white border rounded-xl hover:shadow-md transition group">
-                    <!-- QR Image -->
-                    <div class="bg-gray-50 p-4 flex justify-center border-b">
-                        @if($qr->qr_image)
-                            <img src="{{ $qr->qr_image }}" class="w-24 h-24">
-                        @else
-                            <div class="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-qrcode text-3xl text-gray-400"></i>
-                            </div>
-                        @endif
-                    </div>
-                    
-                    <div class="p-4">
-                        <!-- Kode QR -->
-                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">Kode QR</p>
-                        <p class="font-mono text-xs font-semibold text-gray-800 break-all">{{ $qr->code }}</p>
-                        
-                        <!-- Meja & Status -->
-                        <div class="grid grid-cols-2 gap-2 mt-3">
-                            <div>
-                                <p class="text-xs text-gray-500">Meja</p>
-                                <p class="font-medium text-gray-800">{{ $qr->meja ?? '-' }}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-xs text-gray-500">Status</p>
-                                <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium {{ $qr->status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                                    {{ $qr->status === 'active' ? 'Aktif' : 'Nonaktif' }}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <!-- 🔥 INFORMASI MASA BERLAKU -->
-                        <div class="mt-3 pt-3 border-t border-gray-100">
-                            @if($qr->is_permanent)
-                                {{-- QR PERMANEN --}}
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs text-gray-500">Masa Berlaku</span>
-                                    <span class="text-xs font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
-                                        <i class="fas fa-infinity mr-1"></i> Permanen
-                                    </span>
-                                </div>
-                            @elseif($qr->expired_at)
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="text-xs text-gray-500">Kadaluarsa</span>
-                                    <span class="text-xs font-semibold {{ $qr->expired_at->isPast() ? 'text-red-600' : 'text-orange-600' }}">
-                                        <i class="fas fa-calendar-times mr-1"></i>
-                                        {{ $qr->expired_at->format('d/m/Y H:i') }}
-                                    </span>
-                                </div>
-                                @if($qr->expired_at->isPast())
-                                    <p class="text-xs text-red-500 mt-2 flex items-center justify-end">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>
-                                        Sudah kadaluarsa!
-                                    </p>
-                                @else
-                                    <p class="text-xs text-green-500 mt-2 flex items-center justify-end">
-                                        <i class="fas fa-clock mr-1"></i>
-                                        Masih berlaku
-                                    </p>
-                                @endif
-                            @else
-                                <div class="flex items-center justify-between mt-2">
-                                    <span class="text-xs text-gray-500">Status</span>
-                                    <span class="text-xs font-semibold text-green-600">
-                                        <i class="fas fa-check-circle mr-1"></i> Aktif
-                                    </span>
-                                </div>
-                            @endif
-                        </div>
-                        
-                        <!-- Scan Count & Actions -->
-                        <div class="flex justify-between items-center mt-3">
-                            <div>
-                                <p class="text-xs text-gray-500">Total Scan</p>
-                                <p class="font-semibold text-gray-800">{{ $qr->scan_count }}x</p>
-                            </div>
-                            <div class="flex gap-1">
-                                <a href="{{ route('admin.qrcodes.show', $qr) }}" 
-                                   class="text-blue-600 hover:text-blue-800 p-1.5 rounded-lg hover:bg-blue-50 transition"
-                                   title="Detail">
-                                    <i class="fas fa-eye text-sm"></i>
-                                </a>
-                                <a href="{{ route('admin.qrcodes.edit', $qr) }}" 
-                                   class="text-yellow-600 hover:text-yellow-800 p-1.5 rounded-lg hover:bg-yellow-50 transition"
-                                   title="Edit">
-                                    <i class="fas fa-edit text-sm"></i>
-                                </a>
-                                <a href="{{ route('admin.qrcodes.download', $qr) }}" 
-                                   class="text-green-600 hover:text-green-800 p-1.5 rounded-lg hover:bg-green-50 transition"
-                                   title="Download">
-                                    <i class="fas fa-download text-sm"></i>
-                                </a>
-                                <button onclick="deleteSingle({{ $qr->id }})" 
-                                        class="text-red-600 hover:text-red-800 p-1.5 rounded-lg hover:bg-red-50 transition"
-                                        title="Hapus">
-                                    <i class="fas fa-trash text-sm"></i>
-                                </button>
-                                <form id="delete-form-{{ $qr->id }}" action="{{ route('admin.qrcodes.destroy', $qr->id) }}" method="POST" style="display: none;">
-                                    @csrf
-                                    @method('DELETE')
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @empty
-                <div class="col-span-full text-center py-12">
-                    <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-qrcode text-4xl text-gray-400"></i>
-                    </div>
-                    <p class="text-gray-500">Belum ada QR Code</p>
-                    <a href="{{ route('admin.qrcodes.create') }}" class="inline-block mt-3 text-orange-600 hover:text-orange-700">
-                        Buat QR sekarang
-                    </a>
-                </div>
-                @endforelse
-            </div>
+        <div class="relative w-full sm:w-36">
+            <i data-lucide="filter" class="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
+            <select name="status" class="w-full pl-9 pr-8 py-2 bg-white border border-gray-100 rounded-xl text-[11px] font-bold focus:outline-none focus:ring-4 focus:ring-orange-500/5 transition-all appearance-none cursor-pointer">
+                <option value="">Semua</option>
+                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
+                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+            </select>
         </div>
 
-        <!-- Pagination -->
-        @if($qrCodes->hasPages())
-        <div class="p-4 border-t">
-            {{ $qrCodes->appends(request()->query())->links() }}
-        </div>
+        @if(request('search') || request('status'))
+        <a href="{{ route('admin.qrcodes.index') }}" 
+           class="flex items-center justify-center p-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200 transition-all shrink-0 shadow-sm"
+           title="Hapus Filter">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        </a>
         @endif
+    </form>
+</div>
+
+<!-- Stats Bar - Compact -->
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4 mb-8">
+    <div class="bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+        <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600"><i data-lucide="qr-code" class="w-4 h-4"></i></div>
+        <div>
+            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Total</p>
+            <p class="text-xs font-black text-slate-900 leading-none mt-0.5">{{ $stats['total'] }}</p>
+        </div>
     </div>
+    <div class="bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+        <div class="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600"><i data-lucide="check-circle" class="w-4 h-4"></i></div>
+        <div>
+            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Aktif</p>
+            <p class="text-xs font-black text-slate-900 leading-none mt-0.5">{{ $stats['active'] }}</p>
+        </div>
+    </div>
+    <div class="bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+        <div class="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center text-rose-600"><i data-lucide="x-circle" class="w-4 h-4"></i></div>
+        <div>
+            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Nonaktif</p>
+            <p class="text-xs font-black text-slate-900 leading-none mt-0.5">{{ $stats['inactive'] }}</p>
+        </div>
+    </div>
+    <div class="bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+        <div class="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600"><i data-lucide="infinity" class="w-4 h-4"></i></div>
+        <div>
+            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Permanent</p>
+            <p class="text-xs font-black text-slate-900 leading-none mt-0.5">{{ $stats['permanent'] }}</p>
+        </div>
+    </div>
+    <div class="bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
+        <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center text-orange-600"><i data-lucide="eye" class="w-4 h-4"></i></div>
+        <div>
+            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest">Scan</p>
+            <p class="text-xs font-black text-slate-900 leading-none mt-0.5">{{ $stats['total_scans'] }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- QR Grid - Compact Design -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mb-8">
+    @forelse($qrCodes as $qr)
+    <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col">
+        <div class="p-4 bg-slate-50 rounded-t-[2rem] flex justify-center border-b border-slate-100">
+            @if($qr->qr_image)
+                <img src="{{ $qr->qr_image }}" class="w-20 h-20 rounded-xl shadow-sm">
+            @else
+                <div class="w-20 h-20 bg-slate-200 rounded-xl flex items-center justify-center text-slate-400">
+                    <i data-lucide="qrcode" class="w-8 h-8"></i>
+                </div>
+            @endif
+        </div>
+        
+        <div class="p-5 flex-1">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Meja</p>
+                    <p class="text-sm font-black text-slate-900">{{ $qr->meja ?? '-' }}</p>
+                </div>
+                <span class="inline-block px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest 
+                    {{ $qr->status === 'active' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600' }}">
+                    {{ $qr->status }}
+                </span>
+            </div>
+            
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Kode</p>
+            <p class="font-mono text-[10px] font-black text-slate-700 bg-slate-50 p-2 rounded-lg mb-4 break-all">{{ $qr->code }}</p>
+            
+            <div class="flex items-center justify-between text-[10px] font-bold text-slate-500">
+                <span class="flex items-center gap-1.5"><i data-lucide="eye" class="w-3 h-3"></i> {{ $qr->scan_count }}x Scan</span>
+                @if($qr->is_permanent)
+                    <span class="text-purple-600"><i data-lucide="infinity" class="w-3 h-3"></i></span>
+                @elseif($qr->expired_at && $qr->expired_at->isPast())
+                    <span class="text-rose-500"><i data-lucide="calendar-x" class="w-3 h-3"></i> Expired</span>
+                @else
+                    <span class="text-emerald-500"><i data-lucide="calendar-check" class="w-3 h-3"></i> Valid</span>
+                @endif
+            </div>
+        </div>
+
+        <div class="p-4 border-t border-slate-50 flex items-center justify-center gap-2">
+            <a href="{{ route('admin.qrcodes.edit', $qr) }}" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100" title="Edit"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></a>
+            <a href="{{ route('admin.qrcodes.download', $qr) }}" class="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100" title="Download"><i data-lucide="download" class="w-3.5 h-3.5"></i></a>
+            <button onclick="deleteSingle({{ $qr->id }})" class="p-2 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100" title="Hapus"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            <form id="delete-form-{{ $qr->id }}" action="{{ route('admin.qrcodes.destroy', $qr->id) }}" method="POST" class="hidden">@csrf @method('DELETE')</form>
+        </div>
+    </div>
+    @empty
+    <div class="col-span-full py-16 text-center">
+        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-dashed border-slate-200">
+            <i data-lucide="qrcode" class="w-8 h-8 text-slate-200"></i>
+        </div>
+        <p class="text-slate-400 font-black uppercase tracking-[0.2em] text-[10px]">Belum Ada QR Code</p>
+    </div>
+    @endforelse
 </div>
 
 @push('scripts')
@@ -261,24 +148,17 @@
 <script>
 function deleteSingle(id) {
     Swal.fire({
-        title: 'Hapus QR Code?',
+        title: '<span class="font-black uppercase tracking-tighter text-xl text-rose-600">HAPUS QR CODE?</span>',
         text: 'Tindakan ini tidak dapat dibatalkan!',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ef4444',
-        confirmButtonText: 'Ya, Hapus',
-        cancelButtonText: 'Batal',
-        reverseButtons: true
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'YA, HAPUS',
+        cancelButtonText: 'BATAL',
+        borderRadius: '1.5rem'
     }).then((result) => {
         if (result.isConfirmed) {
-            Swal.fire({
-                title: 'Memproses...',
-                text: 'Sedang menghapus QR Code',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
             document.getElementById('delete-form-' + id).submit();
         }
     });

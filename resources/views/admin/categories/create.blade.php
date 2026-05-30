@@ -1,106 +1,97 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Tambah Kategori')
-@section('page-title', 'Tambah Kategori Baru')
+@section('page-title', 'Kategori')
 
 @section('content')
-<div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <div class="p-6 bg-gradient-to-r from-orange-600 to-orange-500">
-            <h2 class="text-2xl font-bold text-white">
-                <i class="fas fa-plus-circle mr-2"></i>Tambah Kategori Baru
-            </h2>
+<div class="max-w-3xl mx-auto">
+    <!-- Breadcrumb & Header - Compact -->
+    <div class="flex items-center gap-3 mb-6">
+        <a href="{{ route('admin.categories.index') }}" 
+           class="p-2 bg-white border border-slate-100 text-slate-400 hover:text-slate-600 rounded-xl transition-all shadow-sm">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </a>
+        <div>
+            <h1 class="text-lg font-black text-slate-900 tracking-tight leading-none">Tambah Kategori</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Buat Kategori Menu Baru</p>
         </div>
-
-        <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
-            @csrf
-
-            <div class="space-y-6">
-                <!-- Nama Kategori -->
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">
-                        Nama Kategori <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" name="name" value="{{ old('name') }}" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 @error('name') border-red-500 @enderror"
-                           placeholder="Contoh: Seafood, Masakan Sunda, dll">
-                    @error('name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Deskripsi -->
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Deskripsi</label>
-                    <textarea name="description" rows="4" 
-                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                              placeholder="Deskripsi kategori...">{{ old('description') }}</textarea>
-                </div>
-
-                <!-- Upload Gambar -->
-                <div x-data="{ imagePreview: '' }">
-                    <label class="block text-gray-700 font-semibold mb-2">Gambar Kategori</label>
-                    
-                    <!-- Preview Area -->
-                    <div class="mb-4 flex justify-center">
-                        <template x-if="imagePreview">
-                            <div class="relative">
-                                <img :src="imagePreview" class="max-h-48 rounded-lg shadow-lg">
-                                <button type="button" @click="imagePreview = ''; $refs.fileInput.value = ''" 
-                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600">
-                                    <i class="fas fa-times text-sm"></i>
-                                </button>
-                            </div>
-                        </template>
-                        <template x-if="!imagePreview">
-                            <div class="w-full max-w-md h-48 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
-                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
-                                <p class="text-gray-500">Preview gambar akan muncul di sini</p>
-                            </div>
-                        </template>
-                    </div>
-
-                    <!-- Upload Button -->
-                    <div class="flex items-center justify-center w-full">
-                        <label class="w-full flex flex-col items-center px-4 py-6 bg-white rounded-lg border-2 border-dashed border-gray-300 cursor-pointer hover:border-orange-500 transition">
-                            <i class="fas fa-image text-3xl text-gray-400 mb-2"></i>
-                            <span class="text-gray-600 font-semibold">Klik untuk upload gambar</span>
-                            <span class="text-xs text-gray-500 mt-1">PNG, JPG, JPEG (Maks. 2MB)</span>
-                            <input type="file" x-ref="fileInput" name="image" accept="image/*" class="hidden"
-                                   @change="imagePreview = URL.createObjectURL($event.target.files[0])">
-                        </label>
-                    </div>
-                    @error('image')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Informasi -->
-                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-info-circle text-blue-500"></i>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-blue-700">
-                                Kategori yang sudah memiliki produk tidak dapat dihapus. Pastikan tidak ada produk sebelum menghapus kategori.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Submit Buttons -->
-            <div class="flex gap-4 mt-8">
-                <button type="submit" class="flex-1 bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition font-semibold">
-                    <i class="fas fa-save mr-2"></i>Simpan Kategori
-                </button>
-                <a href="{{ route('admin.categories.index') }}" 
-                   class="flex-1 bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition text-center font-semibold">
-                    <i class="fas fa-arrow-left mr-2"></i>Batal
-                </a>
-            </div>
-        </form>
     </div>
+
+    <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: Basic Info -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8">
+                    <div class="space-y-5">
+                        <!-- Nama Kategori -->
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Nama Kategori <span class="text-rose-500">*</span></label>
+                            <div class="relative group">
+                                <i data-lucide="tag" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"></i>
+                                <input type="text" name="name" value="{{ old('name') }}" required
+                                       placeholder="Contoh: Makanan Utama"
+                                       class="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all">
+                            </div>
+                            @error('name') <p class="text-rose-500 text-[10px] font-bold mt-1 px-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <!-- Deskripsi -->
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Deskripsi Kategori</label>
+                            <textarea name="description" rows="4" 
+                                      placeholder="Jelaskan kategori ini..."
+                                      class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all resize-none">{{ old('description') }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Image -->
+            <div class="space-y-6">
+                <!-- Image Upload Card -->
+                <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8" x-data="{ imagePreview: null }">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-1">Gambar Kategori</h3>
+                    
+                    <div class="relative group">
+                        <input type="file" name="image" accept="image/*" class="hidden" x-ref="fileInput"
+                               @change="const file = $event.target.files[0]; if (file) imagePreview = URL.createObjectURL(file);">
+                        
+                        <div @click="$refs.fileInput.click()" 
+                             class="aspect-square bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 group-hover:border-orange-500 group-hover:bg-orange-50/30 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center gap-3">
+                            
+                            <template x-if="!imagePreview">
+                                <div class="flex flex-col items-center justify-center text-center px-4">
+                                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-300 shadow-sm mb-2 group-hover:scale-110 transition-transform">
+                                        <i data-lucide="image-plus" class="w-6 h-6"></i>
+                                    </div>
+                                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">Klik untuk Upload</p>
+                                    <p class="text-[8px] font-bold text-slate-300 uppercase mt-1">PNG, JPG up to 2MB</p>
+                                </div>
+                            </template>
+
+                            <template x-if="imagePreview">
+                                <div class="w-full h-full relative">
+                                    <img :src="imagePreview" class="w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <p class="text-white text-[10px] font-black uppercase tracking-widest">Ganti Gambar</p>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    @error('image') <p class="text-rose-500 text-[10px] font-bold mt-2 px-1">{{ $message }}</p> @enderror
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" 
+                        class="w-full py-4 bg-orange-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest shadow-xl shadow-orange-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
+                    <i data-lucide="save" class="w-4 h-4 group-hover:rotate-12 transition-transform"></i>
+                    Simpan Kategori
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 @endsection

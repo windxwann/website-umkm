@@ -54,6 +54,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // ============================================
         // QR CODE MANAGEMENT (ADMIN)
         // ============================================
+        Route::get('/qrcodes/export', [AdminQrCodeController::class, 'exportPage'])->name('qrcodes.export');
+        Route::get('/qrcodes/export/csv', [AdminQrCodeController::class, 'exportCsv'])->name('qrcodes.export.csv');
+        Route::get('/qrcodes/export/excel', [AdminQrCodeController::class, 'exportExcel'])->name('qrcodes.export.excel');
+        Route::get('/qrcodes/export/pdf', [AdminQrCodeController::class, 'exportPdf'])->name('qrcodes.export.pdf');
+        
         Route::resource('qrcodes', AdminQrCodeController::class);
         Route::post('/qrcodes/{qrcode}/toggle-status', [AdminQrCodeController::class, 'toggleStatus'])
             ->name('qrcodes.toggle-status');
@@ -65,10 +70,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->name('qrcodes.bulk-delete');
         Route::post('/qrcodes/{qrcode}/duplicate', [AdminQrCodeController::class, 'duplicate'])
             ->name('qrcodes.duplicate');
-        Route::get('/qrcodes/export', [AdminQrCodeController::class, 'exportPage'])->name('qrcodes.export');
-        Route::get('/qrcodes/export/csv', [AdminQrCodeController::class, 'exportCsv'])->name('qrcodes.export.csv');
-        Route::get('/qrcodes/export/excel', [AdminQrCodeController::class, 'exportExcel'])->name('qrcodes.export.excel');
-        Route::get('/qrcodes/export/pdf', [AdminQrCodeController::class, 'exportPdf'])->name('qrcodes.export.pdf');
         
         // ============================================
         // PRODUCTS MANAGEMENT
@@ -96,7 +97,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::put('/orders/{order}/status', 'updateStatus')->name('orders.update-status');
             Route::post('/orders/{order}/confirm-payment', 'confirmPayment')->name('orders.confirm-payment');
             Route::get('/orders/{order}/invoice', 'printInvoice')->name('orders.invoice');
-            Route::get('/orders/export/pdf', 'exportPdf')->name('orders.export.pdf');
+            Route::get('/orders/{order}/export/pdf', 'exportPdf')->name('orders.export.pdf');
         });
 
         // ============================================

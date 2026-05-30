@@ -6,204 +6,196 @@
     <title>Invoice #{{ $order->order_number }}</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Helvetica', 'Arial', sans-serif;
             margin: 0;
-            padding: 20px;
-            font-size: 12px;
+            padding: 0;
+            font-size: 11px;
+            color: #334155;
         }
         .invoice-box {
             max-width: 800px;
             margin: auto;
             padding: 30px;
-            border: 1px solid #eee;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
         }
         .header {
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid #f1f5f9;
             padding-bottom: 20px;
             margin-bottom: 20px;
         }
-        .company-info {
-            text-align: right;
-        }
         .invoice-title {
             font-size: 24px;
-            font-weight: bold;
-            color: #333;
+            font-weight: 900;
+            color: #0f172a;
+            letter-spacing: -1px;
         }
-        .status {
-            padding: 5px 10px;
-            border-radius: 3px;
-            font-weight: bold;
+        .company-name {
+            font-size: 14px;
+            font-weight: 900;
+            color: #ea580c;
+            margin-bottom: 5px;
         }
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-processing { background: #cce5ff; color: #004085; }
-        .status-completed { background: #d4edda; color: #155724; }
-        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 9px;
+        }
+        .status-waiting { background: #fef3c7; color: #92400e; }
+        .status-processed { background: #dbeafe; color: #1e40af; }
+        .status-completed { background: #d1fae5; color: #065f46; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
         }
-        table th {
-            background: #333;
-            color: white;
+        .items-table th {
+            background: #f8fafc;
+            color: #64748b;
             padding: 10px;
             text-align: left;
+            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #e2e8f0;
         }
-        table td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
+        .items-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f1f5f9;
         }
-        .text-right {
-            text-align: right;
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
+        .totals-table td {
+            padding: 5px 0;
         }
-        .text-center {
-            text-align: center;
-        }
-        .total-row {
-            font-weight: bold;
-            background: #f5f5f5;
+        .grand-total {
+            font-size: 16px;
+            font-weight: 900;
+            color: #ea580c;
+            border-top: 2px solid #f1f5f9;
+            padding-top: 10px !important;
         }
         .footer {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-            text-align: center;
-            font-size: 10px;
-            color: #666;
-        }
-        .signature {
             margin-top: 50px;
-        }
-        .signature-line {
-            width: 200px;
-            border-top: 1px solid #333;
-            margin-top: 40px;
+            text-align: center;
+            font-size: 9px;
+            color: #94a3b8;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="invoice-box">
         <div class="header">
-            <table style="border: none; margin: 0;">
+            <table style="border: none;">
                 <tr>
-                    <td style="width: 50%; border: none;">
+                    <td style="width: 50%; vertical-align: top;">
                         <div class="invoice-title">INVOICE</div>
-                        <div>No. {{ $order->order_number }}</div>
+                        <div style="font-weight: bold; margin-top: 5px;">#{{ $order->order_number }}</div>
+                        <div style="margin-top: 10px;">
+                            <span class="status-badge status-{{ $order->order_status }}">
+                                {{ $order->order_status }}
+                            </span>
+                        </div>
                     </td>
-                    <td style="width: 50%; border: none; text-align: right;">
-                        <div style="font-weight: bold;">{{ config('app.name') }}</div>
-                        <div>{{ config('app.address', 'Jl. Contoh No. 123') }}</div>
-                        <div>Telp: {{ config('app.phone', '(021) 1234567') }}</div>
-                        <div>Email: {{ config('app.email', 'info@example.com') }}</div>
+                    <td style="width: 50%; text-align: right; vertical-align: top;">
+                        <div class="company-name">{{ setting('restaurant_name', 'Dapoer Jiemas') }}</div>
+                        <div style="color: #64748b; line-height: 1.5;">
+                            {{ setting('address', 'Jl. Raya Contoh No. 123') }}<br>
+                            Telp: {{ setting('phone', '0812-3456-7890') }}<br>
+                            Email: {{ setting('email', 'halo@dapoerjiemas.com') }}
+                        </div>
                     </td>
                 </tr>
             </table>
         </div>
 
-        <table style="border: none; margin: 20px 0;">
+        <table style="margin-bottom: 30px;">
             <tr>
-                <td style="width: 50%; border: none;">
-                    <strong>Bill To:</strong><br>
-                    {{ $order->customer_name }}<br>
-                    {{ $order->customer_email }}<br>
-                    {{ $order->customer_phone }}<br>
-                    {{ $order->shipping_address ?? '-' }}
+                <td style="width: 50%; vertical-align: top;">
+                    <div style="font-weight: 900; text-transform: uppercase; font-size: 9px; color: #94a3b8; margin-bottom: 5px;">Tagihan Untuk:</div>
+                    <div style="font-weight: bold; font-size: 12px; color: #0f172a;">{{ $order->customer_name }}</div>
+                    <div style="margin-top: 5px; color: #64748b;">
+                        {{ $order->customer_phone ?? '-' }}<br>
+                        Meja: #{{ $order->qr_code ?? $order->table_number ?? 'Take Away' }}
+                    </div>
                 </td>
-                <td style="width: 50%; border: none; text-align: right;">
-                    <strong>Tanggal:</strong> {{ $order->created_at->format('d/m/Y H:i') }}<br>
-                    <strong>Status:</strong> 
-                    <span class="status status-{{ $order->status }}">{{ ucfirst($order->status) }}</span><br>
-                    <strong>Pembayaran:</strong> {{ $order->payment_method ?? '-' }}<br>
-                    @if($order->tracking_number)
-                        <strong>No. Resi:</strong> {{ $order->tracking_number }}
-                    @endif
+                <td style="width: 50%; text-align: right; vertical-align: top;">
+                    <div style="font-weight: 900; text-transform: uppercase; font-size: 9px; color: #94a3b8; margin-bottom: 5px;">Rincian Pesanan:</div>
+                    <div style="color: #64748b;">
+                        Tanggal: <strong>{{ $order->created_at->format('d/m/Y H:i') }}</strong><br>
+                        Metode: <strong>{{ strtoupper($order->payment_method) }}</strong><br>
+                        Status: <strong>{{ strtoupper($order->payment_status) }}</strong>
+                    </div>
                 </td>
             </tr>
         </table>
 
-        <table>
+        <table class="items-table">
             <thead>
                 <tr>
-                    <th style="width: 5%;">No</th>
-                    <th style="width: 45%;">Produk</th>
-                    <th style="width: 15%;" class="text-right">Harga</th>
-                    <th style="width: 10%;" class="text-center">Jml</th>
-                    <th style="width: 25%;" class="text-right">Subtotal</th>
+                    <th style="width: 50%;">Menu</th>
+                    <th style="width: 10%;" class="text-center">Qty</th>
+                    <th style="width: 20%;" class="text-right">Harga</th>
+                    <th style="width: 20%;" class="text-right">Subtotal</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($order->items as $index => $item)
+                @foreach($order->items as $item)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $item->product_name }}</td>
+                    <td>
+                        <div style="font-weight: bold; color: #0f172a;">{{ $item->product_name }}</div>
+                        @if($item->notes)
+                            <div style="font-size: 8px; color: #94a3b8; font-style: italic; margin-top: 2px;">"{{ $item->notes }}"</div>
+                        @endif
+                    </td>
+                    <td class="text-center" style="font-weight: bold;">{{ $item->quantity }}</td>
                     <td class="text-right">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
-                    <td class="text-center">{{ $item->quantity }}</td>
-                    <td class="text-right">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                    <td class="text-right" style="font-weight: bold; color: #0f172a;">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
 
-        <table style="border: none; margin-top: 10px;">
-            <tr>
-                <td style="width: 70%; border: none;"></td>
-                <td style="width: 30%; border: none;">
-                    <table style="margin: 0;">
-                        <tr>
-                            <td>Subtotal</td>
-                            <td class="text-right">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
-                        </tr>
-                        @if($order->discount > 0)
-                        <tr>
-                            <td>Diskon</td>
-                            <td class="text-right">- Rp {{ number_format($order->discount, 0, ',', '.') }}</td>
-                        </tr>
-                        @endif
-                        @if($order->shipping_cost > 0)
-                        <tr>
-                            <td>Ongkos Kirim</td>
-                            <td class="text-right">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</td>
-                        </tr>
-                        @endif
-                        <tr style="font-weight: bold;">
-                            <td>Grand Total</td>
-                            <td class="text-right">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-
-        @if($order->notes)
-        <div style="margin-top: 20px; padding: 10px; background: #f9f9f9;">
-            <strong>Catatan:</strong><br>
-            {{ $order->notes }}
-        </div>
-        @endif
-
-        <div class="signature">
-            <table style="border: none;">
+        <div style="margin-top: 20px;">
+            <table style="width: 250px; margin-left: auto;" class="totals-table">
                 <tr>
-                    <td style="width: 50%; border: none;">
-                        <div>Penerima,</div>
-                        <div class="signature-line"></div>
-                        <div>({{ $order->customer_name }})</div>
-                    </td>
-                    <td style="width: 50%; border: none; text-align: right;">
-                        <div>Hormat kami,</div>
-                        <div class="signature-line" style="margin-left: auto;"></div>
-                        <div>(Admin)</div>
-                    </td>
+                    <td style="color: #64748b; font-weight: bold; text-transform: uppercase; font-size: 9px;">Subtotal</td>
+                    <td class="text-right" style="font-weight: bold;">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
+                </tr>
+                @if(isset($order->packaging_fee) && $order->packaging_fee > 0)
+                <tr>
+                    <td style="color: #64748b; font-weight: bold; text-transform: uppercase; font-size: 9px;">Biaya Packing</td>
+                    <td class="text-right" style="font-weight: bold;">Rp {{ number_format($order->packaging_fee, 0, ',', '.') }}</td>
+                </tr>
+                @endif
+                @if(isset($order->discount) && $order->discount > 0)
+                <tr>
+                    <td style="color: #ef4444; font-weight: bold; text-transform: uppercase; font-size: 9px;">Potongan</td>
+                    <td class="text-right" style="font-weight: bold; color: #ef4444;">-Rp {{ number_format($order->discount, 0, ',', '.') }}</td>
+                </tr>
+                @endif
+                <tr>
+                    <td class="grand-total uppercase tracking-widest" style="font-size: 10px;">Total Bayar</td>
+                    <td class="text-right grand-total">Rp {{ number_format($order->grand_total ?? ($order->total_amount + ($order->packaging_fee ?? 0) - ($order->discount ?? 0)), 0, ',', '.') }}</td>
                 </tr>
             </table>
         </div>
 
+        @if($order->notes)
+        <div style="margin-top: 30px; padding: 15px; background: #f8fafc; border-radius: 8px; border-left: 4px solid #e2e8f0;">
+            <div style="font-weight: 900; text-transform: uppercase; font-size: 9px; color: #94a3b8; margin-bottom: 5px;">Catatan Order:</div>
+            <div style="color: #475569; font-style: italic;">{{ $order->notes }}</div>
+        </div>
+        @endif
+
         <div class="footer">
-            <p>Terima kasih telah berbelanja di {{ config('app.name') }}</p>
-            <p>Invoice ini adalah bukti pembayaran yang sah</p>
-            <p>Dicetak pada: {{ now()->format('d/m/Y H:i:s') }}</p>
+            <p style="font-weight: 900; color: #0f172a; margin-bottom: 5px;">TERIMA KASIH TELAH BERBELANJA!</p>
+            <p>Invoice ini dihasilkan secara otomatis dan merupakan bukti pembayaran yang sah.</p>
+            <p style="margin-top: 10px;">&copy; {{ date('Y') }} {{ setting('restaurant_name', 'Dapoer Jiemas') }} Digital System</p>
         </div>
     </div>
 </body>

@@ -1,55 +1,54 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Buat QR Code')
-@section('page-title', 'Buat QR Code Baru')
+@section('page-title', 'QR Codes')
 
 @section('content')
-<div class="max-w-lg mx-auto">
-    <div class="bg-white rounded-xl shadow-sm">
-        <div class="bg-orange-600 px-6 py-4 rounded-t-xl">
-            <h2 class="text-white font-semibold text-lg">Buat QR Code Baru</h2>
+<div class="max-w-xl mx-auto">
+    <!-- Breadcrumb & Header - Compact -->
+    <div class="flex items-center gap-3 mb-6">
+        <a href="{{ route('admin.qrcodes.index') }}" 
+           class="p-2 bg-white border border-slate-100 text-slate-400 hover:text-slate-600 rounded-xl transition-all shadow-sm">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </a>
+        <div>
+            <h1 class="text-lg font-black text-slate-900 tracking-tight leading-none">Buat QR Baru</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Generate QR untuk Meja</p>
         </div>
+    </div>
 
-        <form action="{{ route('admin.qrcodes.store') }}" method="POST" class="p-6">
-            @csrf
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Nomor Meja</label>
-                <input type="text" name="meja" placeholder="Contoh: 01, 02, 03"
-                       class="w-full px-4 py-2 border rounded-lg focus:border-orange-500"
-                       value="{{ old('meja') }}">
-                <p class="text-xs text-gray-500 mt-1">Kosongkan untuk QR umum</p>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Nama Tempat/Lokasi</label>
-                <input type="text" name="nama_tempat" placeholder="Contoh: Ruang VIP, Outdoor, Dll"
-                       class="w-full px-4 py-2 border rounded-lg focus:border-orange-500"
-                       value="{{ old('nama_tempat') }}">
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium mb-2">Catatan</label>
-                <textarea name="notes" rows="3" class="w-full px-4 py-2 border rounded-lg focus:border-orange-500"
-                          placeholder="Catatan tambahan...">{{ old('notes') }}</textarea>
-            </div>
-
-            <div class="bg-gray-50 rounded-lg p-3 mb-5">
-                <div class="flex items-center gap-2">
-                    <i class="fas fa-info-circle text-orange-600"></i>
-                    <p class="text-sm text-gray-600">Format QR: <span class="font-mono">QR-MEJA-[tanggal]-[nomor]</span></p>
+    <form action="{{ route('admin.qrcodes.store') }}" method="POST">
+        @csrf
+        <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8 space-y-6">
+            
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Nomor Meja</label>
+                <div class="relative group">
+                    <i data-lucide="hash" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"></i>
+                    <input type="text" name="meja" value="{{ old('meja') }}" placeholder="Contoh: 01"
+                           class="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all">
                 </div>
             </div>
 
-            <div class="flex gap-3">
-                <button type="submit" class="flex-1 bg-orange-600 text-white py-2 rounded-lg hover:bg-orange-700">
-                    <i class="fas fa-save mr-2"></i> Simpan
-                </button>
-                <a href="{{ route('admin.qrcodes.index') }}" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 text-center">
-                    Batal
-                </a>
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Nama Lokasi</label>
+                <div class="relative group">
+                    <i data-lucide="map-pin" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"></i>
+                    <input type="text" name="nama_tempat" value="{{ old('nama_tempat') }}" placeholder="Contoh: Outdoor / VIP"
+                           class="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all">
+                </div>
             </div>
-        </form>
-    </div>
+
+            <div>
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Catatan</label>
+                <textarea name="notes" rows="3" class="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all resize-none" placeholder="Catatan tambahan...">{{ old('notes') }}</textarea>
+            </div>
+
+            <button type="submit" class="w-full py-4 bg-orange-600 text-white rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest shadow-xl shadow-orange-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 group">
+                <i data-lucide="save" class="w-4 h-4 group-hover:rotate-12 transition-transform"></i>
+                Simpan QR Code
+            </button>
+        </div>
+    </form>
 </div>
 @endsection

@@ -3,198 +3,183 @@
 @section('title', 'Buat Pesanan')
 
 @section('content')
-<div x-data="orderForm()" class="max-w-4xl mx-auto">
-    <!-- Header dengan informasi -->
-    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 class="text-2xl sm:text-3xl font-bold text-orange-600">Buat Pesanan</h1>
-        <a href="{{ route('menu') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition flex items-center text-sm sm:text-base">
+<div x-data="orderForm()" class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">Buat Pesanan</h1>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                <i class="fas fa-shopping-basket text-orange-600"></i>
+                Lengkapi rincian pesanan Anda
+            </p>
+        </div>
+        <a href="{{ route('menu') }}" class="bg-white border border-slate-100 text-slate-600 px-6 py-2.5 rounded-xl hover:bg-slate-50 transition-all font-black text-[10px] uppercase tracking-widest shadow-sm">
             <i class="fas fa-arrow-left mr-2"></i>Kembali ke Menu
         </a>
     </div>
 
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-xl shadow-2xl">
-            <div class="flex flex-col items-center">
-                <div class="w-16 h-16 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin mb-4"></div>
-                <p class="text-gray-700 font-medium">Memproses pesanan...</p>
-                <p class="text-sm text-gray-500">Mohon tunggu sebentar</p>
-            </div>
+    <div id="loadingOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 rounded-[2rem] shadow-2xl border border-slate-100 max-w-sm w-full text-center">
+            <div class="w-16 h-16 border-4 border-slate-100 border-t-orange-600 rounded-full animate-spin mb-6 mx-auto"></div>
+            <h3 class="text-lg font-black text-slate-900 mb-2">Memproses Pesanan</h3>
+            <p class="text-sm font-medium text-slate-500">Mohon tunggu sebentar...</p>
         </div>
     </div>
 
-    <!-- Cart Info Banner -->
-    <div x-show="form.items.length > 0" class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg mb-6">
-        <div class="flex items-center">
-            <i class="fas fa-shopping-cart text-green-600 text-xl mr-3"></i>
-            <div>
-                <p class="text-green-800 font-medium">
-                    <span x-text="form.items.length"></span> item dalam pesanan
-                </p>
-                <p class="text-green-600 text-sm">Total: Rp <span x-text="formatPrice(total)"></span></p>
-            </div>
-        </div>
-    </div>
-
-    <form @submit.prevent="submitOrder" class="space-y-6">
+    <form @submit.prevent="submitOrder" class="space-y-8">
         <!-- Customer Information -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4 flex items-center">
-                <i class="fas fa-user text-orange-600 mr-2"></i>
+        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8">
+            <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                <div class="w-8 h-8 bg-orange-50 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user text-orange-600 text-xs"></i>
+                </div>
                 Informasi Pelanggan
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Nama <span class="text-red-500">*</span>
-                    </label>
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Nama Lengkap <span class="text-rose-500">*</span></label>
                     <input type="text" 
                            x-model="form.customer_name" 
-                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition"
-                           placeholder="Masukkan nama Anda"
+                           class="w-full bg-slate-50 border-none px-5 py-3 rounded-xl text-sm font-bold text-slate-900 focus:ring-4 focus:ring-orange-500/5 transition-all"
+                           placeholder="Nama pemesan"
                            required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        <i class="fas fa-phone text-gray-500 mr-1"></i>
-                        No. Telepon
-                    </label>
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">No. WhatsApp</label>
                     <input type="tel" 
                            x-model="form.customer_phone" 
-                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition"
-                           placeholder="Contoh: 08123456789">
+                           class="w-full bg-slate-50 border-none px-5 py-3 rounded-xl text-sm font-bold text-slate-900 focus:ring-4 focus:ring-orange-500/5 transition-all"
+                           placeholder="0812xxxxxx">
                 </div>
             </div>
         </div>
 
-        <!-- Order Type (Simplified to Only Offline) -->
-        <input type="hidden" x-model="form.order_type" value="offline">
-
         <!-- Order Items Summary -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4 flex items-center">
-                <i class="fas fa-shopping-bag text-orange-600 mr-2"></i>
+        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8">
+            <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                <div class="w-8 h-8 bg-orange-50 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-shopping-bag text-orange-600 text-xs"></i>
+                </div>
                 Ringkasan Pesanan
             </h2>
             
             <!-- Items List -->
-            <div class="space-y-3 mb-4">
+            <div class="space-y-4 mb-8">
                 <template x-if="form.items.length === 0">
-                    <div class="text-center py-8 bg-gray-50 rounded-lg">
-                        <i class="fas fa-shopping-cart text-5xl text-gray-300 mb-3"></i>
-                        <p class="text-gray-500">Belum ada item yang dipilih</p>
-                        <a href="{{ route('menu') }}" class="text-orange-600 hover:text-orange-700 mt-2 inline-block">
-                            <i class="fas fa-arrow-left mr-1"></i>Kembali ke Menu
-                        </a>
+                    <div class="text-center py-12 bg-slate-50 rounded-[2rem] border border-slate-100">
+                        <i class="fas fa-shopping-cart text-4xl text-slate-200 mb-4"></i>
+                        <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Keranjang masih kosong</p>
                     </div>
                 </template>
                 
                 <template x-for="(item, index) in form.items" :key="index">
-                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <div>
-                            <p class="font-semibold" x-text="item.name"></p>
-                            <p class="text-sm text-gray-500">
+                    <div class="flex items-center justify-between p-5 bg-slate-50 rounded-2xl border border-slate-100 group transition-all hover:bg-white hover:shadow-md">
+                        <div class="flex-1">
+                            <h3 class="text-sm font-black text-slate-900 mb-1" x-text="item.name"></h3>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                 <span x-text="item.quantity"></span> x Rp <span x-text="formatPrice(item.price)"></span>
                             </p>
                         </div>
-                        <div class="text-right">
-                            <p class="font-bold text-orange-600">Rp <span x-text="formatPrice(item.subtotal)"></span></p>
+                        <div class="flex items-center gap-6 text-right">
+                            <p class="text-sm font-black text-orange-600" x-text="'Rp ' + formatPrice(item.subtotal)"></p>
                             <button type="button" 
                                     @click="removeItem(index)"
-                                    class="text-red-500 hover:text-red-700 text-sm">
-                                <i class="fas fa-trash-alt mr-1"></i>Hapus
+                                    class="text-rose-400 hover:text-rose-600 transition-colors">
+                                <i class="fas fa-trash-alt"></i>
                             </button>
                         </div>
                     </div>
                 </template>
             </div>
             
-            <!-- Subtotal & Fees -->
-            <div class="border-t pt-4 space-y-2">
-                <div class="flex justify-between items-center text-gray-600">
-                    <span>Subtotal</span>
-                    <span>Rp <span x-text="formatPrice(subtotal)"></span></span>
+            <!-- Total -->
+            <div class="border-t border-slate-100 pt-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Subtotal</span>
+                    <span class="text-sm font-black text-slate-600">Rp <span x-text="formatPrice(subtotal)"></span></span>
                 </div>
-                
-                <!-- No online fees -->
-
-                <div class="flex justify-between items-center text-lg pt-2 border-t border-dashed">
-                    <span class="font-bold">Total Pembayaran</span>
-                    <span class="font-bold text-orange-600 text-2xl">
-                        Rp <span x-text="formatPrice(total)"></span>
-                    </span>
+                <div class="flex justify-between items-center pt-4 border-t border-dashed border-slate-200">
+                    <span class="text-xs font-black text-slate-900 uppercase tracking-widest">Total Bayar</span>
+                    <span class="text-2xl font-black text-slate-900">Rp <span x-text="formatPrice(total)"></span></span>
                 </div>
             </div>
         </div>
 
-        <!-- Delivery Address (Only for Online) -->
-        <!-- Removed Delivery Address -->
-
         <!-- Payment Method -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4 flex items-center">
-                <i class="fas fa-credit-card text-orange-600 mr-2"></i>
+        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8">
+            <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                <div class="w-8 h-8 bg-orange-50 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-credit-card text-orange-600 text-xs"></i>
+                </div>
                 Metode Pembayaran
             </h2>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                <label class="flex items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition hover:border-orange-500"
-                       :class="{'border-orange-500 bg-orange-50': form.payment_method === 'e_wallet', 'border-gray-200': form.payment_method !== 'e_wallet'}">
-                    <input type="radio" 
-                           x-model="form.payment_method" 
-                           value="e_wallet" 
-                           class="mr-3 w-4 h-4 text-orange-600 shrink-0">
-                    <div>
-                        <span class="font-semibold text-sm sm:text-base">📱 E-Wallet</span>
-                        <p class="text-[10px] sm:text-xs text-gray-500">QRIS, OVO, Dana</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <label class="relative flex items-center p-4 border rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-md"
+                       :class="form.payment_method === 'e_wallet' ? 'bg-orange-50 border-orange-200 ring-4 ring-orange-500/5' : 'bg-white border-slate-100'">
+                    <input type="radio" x-model="form.payment_method" value="e_wallet" class="hidden">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" :class="form.payment_method === 'e_wallet' ? 'bg-orange-600 text-white' : 'bg-slate-50 text-slate-400'">
+                            <i class="fas fa-qrcode text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest" :class="form.payment_method === 'e_wallet' ? 'text-orange-900' : 'text-slate-900'">QRIS</span>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">E-Wallet</p>
+                        </div>
                     </div>
                 </label>
-                <label class="flex items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition hover:border-orange-500"
-                       :class="{'border-orange-500 bg-orange-50': form.payment_method === 'cashier', 'border-gray-200': form.payment_method !== 'cashier'}">
-                    <input type="radio" 
-                           x-model="form.payment_method" 
-                           value="cashier" 
-                           class="mr-3 w-4 h-4 text-orange-600 shrink-0">
-                    <div>
-                        <span class="font-semibold text-sm sm:text-base">💰 Ke Kasir</span>
-                        <p class="text-[10px] sm:text-xs text-gray-500">Tunai / Kartu</p>
+
+                <label class="relative flex items-center p-4 border rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-md"
+                       :class="form.payment_method === 'cashier' ? 'bg-orange-50 border-orange-200 ring-4 ring-orange-500/5' : 'bg-white border-slate-100'">
+                    <input type="radio" x-model="form.payment_method" value="cashier" class="hidden">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" :class="form.payment_method === 'cashier' ? 'bg-orange-600 text-white' : 'bg-slate-50 text-slate-400'">
+                            <i class="fas fa-wallet text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest" :class="form.payment_method === 'cashier' ? 'text-orange-900' : 'text-slate-900'">KASIR</span>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Tunai</p>
+                        </div>
                     </div>
                 </label>
-                <label class="flex items-center p-3 sm:p-4 border-2 rounded-lg cursor-pointer transition hover:border-orange-500"
-                       :class="{'border-orange-500 bg-orange-50': form.payment_method === 'bank_transfer', 'border-gray-200': form.payment_method !== 'bank_transfer'}">
-                    <input type="radio" 
-                           x-model="form.payment_method" 
-                           value="bank_transfer" 
-                           class="mr-3 w-4 h-4 text-orange-600 shrink-0">
-                    <div>
-                        <span class="font-semibold text-sm sm:text-base">🏦 Transfer</span>
-                        <p class="text-[10px] sm:text-xs text-gray-500">BCA, Mandiri</p>
+
+                <label class="relative flex items-center p-4 border rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-md"
+                       :class="form.payment_method === 'bank_transfer' ? 'bg-orange-50 border-orange-200 ring-4 ring-orange-500/5' : 'bg-white border-slate-100'">
+                    <input type="radio" x-model="form.payment_method" value="bank_transfer" class="hidden">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" :class="form.payment_method === 'bank_transfer' ? 'bg-orange-600 text-white' : 'bg-slate-50 text-slate-400'">
+                            <i class="fas fa-university text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-black uppercase tracking-widest" :class="form.payment_method === 'bank_transfer' ? 'text-orange-900' : 'text-slate-900'">TRANSFER</span>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Bank</p>
+                        </div>
                     </div>
                 </label>
             </div>
         </div>
 
         <!-- Notes -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4 flex items-center">
-                <i class="fas fa-pen text-orange-600 mr-2"></i>
+        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8">
+            <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                <div class="w-8 h-8 bg-orange-50 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-pen text-orange-600 text-xs"></i>
+                </div>
                 Catatan Tambahan
             </h2>
             <textarea x-model="form.notes" 
                       rows="3" 
-                      class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition"
-                      placeholder="Contoh: Tidak pakai bawang, Level pedas sedang, dll..."></textarea>
+                      class="w-full bg-slate-50 border-none px-5 py-3 rounded-xl text-sm font-bold text-slate-900 focus:ring-4 focus:ring-orange-500/5 transition-all resize-none"
+                      placeholder="Contoh: Level pedas sedang, jangan pakai bawang..."></textarea>
         </div>
 
         <!-- Submit Button -->
-        <div class="sticky bottom-4">
+        <div class="pb-12">
             <button type="submit" 
-                    class="w-full bg-orange-600 text-white py-4 px-4 rounded-xl font-bold text-lg hover:bg-orange-700 transition shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full bg-slate-900 text-white py-5 px-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:bg-orange-600 transition-all shadow-xl shadow-slate-900/10 disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center gap-3"
                     :disabled="form.items.length === 0">
-                <i class="fas fa-check-circle mr-2"></i>
-                Buat Pesanan
-                <span x-show="form.items.length > 0" class="ml-2 bg-white text-orange-600 px-2 py-1 rounded-full text-sm">
-                    <span x-text="form.items.length"></span> item
-                </span>
+                <i class="fas fa-check-circle text-orange-500 group-hover:text-white transition-colors"></i>
+                KONFIRMASI PESANAN SEKARANG
             </button>
         </div>
     </form>
@@ -203,14 +188,6 @@
 @push('styles')
 <style>
     [x-cloak] { display: none !important; }
-    
-    .radio-card {
-        transition: all 0.2s ease;
-    }
-    
-    .radio-card:hover {
-        transform: translateY(-2px);
-    }
 </style>
 @endpush
 
@@ -229,18 +206,11 @@ function orderForm() {
         packagingFee: 0,
         quantities: {},
         
-        // 🔥 INISIALISASI: Load cart dari session
         init() {
-            // Ambil data cart dari session (dikirim dari controller)
             const cartItems = @json($cartItems ?? []);
             
             if (cartItems && cartItems.length > 0) {
-                console.log('Loading cart from session:', cartItems);
-                
-                // Reset quantities
                 this.quantities = {};
-                
-                // Load items ke form
                 cartItems.forEach(item => {
                     this.quantities[item.id] = item.quantity;
                     this.form.items.push({
@@ -251,9 +221,6 @@ function orderForm() {
                         subtotal: item.price * item.quantity
                     });
                 });
-                
-                // Tampilkan notifikasi
-                this.showNotification(`${cartItems.length} item dimuat dari keranjang`, 'success');
             }
         },
         
@@ -286,20 +253,14 @@ function orderForm() {
                     subtotal: price * quantity
                 });
             }
-            
-            // Urutkan items berdasarkan product_id
             this.form.items.sort((a, b) => a.product_id - b.product_id);
         },
         
-        // 🔥 FUNGSI BARU: Hapus item dari form
         removeItem(index) {
             const item = this.form.items[index];
             if (item) {
-                // Hapus dari quantities
                 delete this.quantities[item.product_id];
-                // Hapus dari form.items
                 this.form.items.splice(index, 1);
-                this.showNotification(`${item.name} dihapus dari pesanan`, 'info');
             }
         },
         
@@ -315,30 +276,16 @@ function orderForm() {
             return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         },
         
-        // 🔥 FUNGSI BARU: Show notification
         showNotification(message, type = 'success') {
-            // Cek apakah sudah ada toast
-            let toast = document.getElementById('notificationToast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'notificationToast';
-                toast.className = 'fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 z-50';
-                document.body.appendChild(toast);
-            }
-            
-            const bgColor = type === 'success' ? 'bg-green-500' : (type === 'error' ? 'bg-red-500' : 'bg-blue-500');
-            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-500 z-50 ${bgColor} text-white flex items-center`;
-            
-            let icon = type === 'success' ? 'fa-check-circle' : (type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
-            toast.innerHTML = `<i class="fas ${icon} mr-2"></i>${message}`;
-            
-            toast.style.transform = 'translateX(0)';
-            toast.style.opacity = '1';
-            
-            setTimeout(() => {
-                toast.style.transform = 'translateX(100%)';
-                toast.style.opacity = '0';
-            }, 3000);
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                icon: type,
+                title: message
+            });
         },
         
         submitOrder() {
@@ -347,16 +294,12 @@ function orderForm() {
                 return;
             }
             
-            // Tampilkan loading
             const loadingOverlay = document.getElementById('loadingOverlay');
             loadingOverlay.classList.remove('hidden');
             loadingOverlay.classList.add('flex');
             
-            // Disable submit button
             const submitBtn = event.target.querySelector('button[type="submit"]');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-            }
+            if (submitBtn) submitBtn.disabled = true;
             
             fetch('{{ route("order.store") }}', {
                 method: 'POST',
@@ -369,13 +312,8 @@ function orderForm() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Hapus cart dari localStorage
                     localStorage.removeItem('restaurant_cart');
-                    
-                    // Set flag untuk reset cart di halaman lain
                     sessionStorage.setItem('order_success', 'true');
-                    
-                    // Redirect ke halaman sukses
                     window.location.href = data.redirect;
                 } else {
                     this.showNotification(data.message || 'Terjadi kesalahan', 'error');
@@ -386,7 +324,7 @@ function orderForm() {
             })
             .catch(error => {
                 console.error('Error:', error);
-                this.showNotification('Terjadi kesalahan saat memproses pesanan', 'error');
+                this.showNotification('Terjadi kesalahan', 'error');
                 loadingOverlay.classList.add('hidden');
                 loadingOverlay.classList.remove('flex');
                 if (submitBtn) submitBtn.disabled = false;

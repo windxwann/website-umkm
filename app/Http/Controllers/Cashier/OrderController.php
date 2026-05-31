@@ -22,7 +22,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::with('items');
+        $query = Order::with(['items', 'qrCodeRelation']);
 
         // Filter by status
         if ($request->has('status') && $request->status != '') {
@@ -149,6 +149,11 @@ class OrderController extends Controller
                             'paid_amount' => $order->total_amount
                         ]);
                     }
+                    // 🔥 AUTO-ARCHIVE PESANAN
+                    $order->update([
+                        'is_archived_for_table' => true
+                    ]);
+                    
                     // 🔥 RESET SESSION CUSTOMER
                     if ($order->session_id) {
                         try {
@@ -535,6 +540,7 @@ class OrderController extends Controller
 
             $order->update([
                 'order_status' => 'completed',
+                'is_archived_for_table' => true,
                 'completed_at' => now()
             ]);
 

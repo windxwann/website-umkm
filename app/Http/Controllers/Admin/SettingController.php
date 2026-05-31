@@ -133,8 +133,6 @@ class SettingController extends Controller
 
             // Banners
             'banner1_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'banner2_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'banner3_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
 
             // Geolocation
             'restaurant_latitude' => 'nullable|numeric',
@@ -144,7 +142,7 @@ class SettingController extends Controller
 
         try {
             // Simpan semua settings ke database atau file config
-            $settings = $request->except(['_token', '_method', 'logo', 'favicon', 'qris_image', 'banner1_image', 'banner2_image', 'banner3_image']);
+            $settings = $request->except(['_token', '_method', 'logo', 'favicon', 'qris_image', 'banner1_image']);
             
             foreach ($settings as $key => $value) {
                 // Handle boolean values untuk checkbox
@@ -159,15 +157,13 @@ class SettingController extends Controller
             }
 
             // Handle Banner Uploads
-            for ($i = 1; $i <= 3; $i++) {
-                if ($request->hasFile("banner{$i}_image")) {
-                    $oldImage = setting("banner{$i}_image");
-                    if ($oldImage && \Storage::disk('public')->exists($oldImage)) {
-                        \Storage::disk('public')->delete($oldImage);
-                    }
-                    $path = $request->file("banner{$i}_image")->store('banners', 'public');
-                    setting(["banner{$i}_image" => $path]);
+            if ($request->hasFile("banner1_image")) {
+                $oldImage = setting("banner1_image");
+                if ($oldImage && \Storage::disk('public')->exists($oldImage)) {
+                    \Storage::disk('public')->delete($oldImage);
                 }
+                $path = $request->file("banner1_image")->store('banners', 'public');
+                setting(["banner1_image" => $path]);
             }
 
             // Handle Logo Upload

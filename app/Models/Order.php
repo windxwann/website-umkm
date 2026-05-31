@@ -313,13 +313,21 @@ class Order extends Model
      */
     public function getLocationDescriptionAttribute(): string
     {
-        if (!$this->table_id || !$this->table) {
-            return '-';
+        if ($this->table_id && $this->table) {
+            $location = $this->table->location ?? 'indoor';
+            $locationName = $location === 'indoor' ? 'Indoor' : 'Outdoor';
+            return $this->table->table_number . ' - ' . $locationName;
         }
         
-        $location = $this->table->location ?? 'indoor';
-        $locationName = $location === 'indoor' ? 'Indoor' : 'Outdoor';
-        return $this->table->table_number . ' - ' . $locationName;
+        if ($this->qr_code) {
+            // Coba ambil dari relasi QrCode
+            if ($this->qrCodeRelation) {
+                return $this->qrCodeRelation->meja ?? $this->qr_code;
+            }
+            return $this->qr_code;
+        }
+
+        return '-';
     }
 
     /**

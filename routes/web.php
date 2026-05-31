@@ -34,6 +34,8 @@ Route::get('/scan/validate', function () {
 Route::get('/scan/check', [QrCodeController::class, 'check'])->name('scan.qr.check');
 Route::get('/scan/reset', [QrCodeController::class, 'resetSession'])->name('scan.qr.reset');
 
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+
 /*
 |--------------------------------------------------------------------------
 | ADMIN ROUTES
@@ -147,7 +149,6 @@ Route::prefix('cashier')->name('cashier.')->middleware(['auth', 'cashier'])->gro
     Route::get('/dashboard', [CashierDashboardController::class, 'index'])->name('dashboard');
     
     // Order Management
-    Route::get('/orders', [CashierOrderController::class, 'index'])->name('orders');
     Route::get('/orders/{order}', [CashierOrderController::class, 'show'])->name('order.show');
     Route::get('/orders/{order}/details', [CashierOrderController::class, 'getOrderDetails'])->name('order.details');
     Route::put('/orders/{order}/status', [CashierOrderController::class, 'updateStatus'])->name('order.update-status');
@@ -195,7 +196,14 @@ Route::middleware(['check.qr'])->prefix('cart')->name('cart.')->group(function (
 Route::middleware(['check.qr'])->group(function () {
     // Home
     Route::get('/', function () {
-        return view('home');
+        $categories = App\Models\Category::all();
+        // Query for most popular products based on number of times ordered
+        $products = App\Models\Product::where('is_available', true)
+            ->withCount('orderItems')
+            ->orderBy('order_items_count', 'desc')
+            ->take(8)
+            ->get();
+        return view('home', compact('categories', 'products'));
     })->name('home');
 
     // Menu
@@ -238,7 +246,7 @@ Route::middleware(['check.qr'])
         
         // Route untuk reset session (jika diperlukan)
         Route::post('/reset', [CustomerController::class, 'reset'])->name('reset');
-        Route::get('/check-session', [CustomerController::class, 'checkSession'])->name('check-session');
+        Route::get('/check-session', [CustomerController::class, 'checkSession'])->name('checkSession');
     });
 
 /*

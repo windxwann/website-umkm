@@ -23,24 +23,23 @@
     @stack('styles')
 
     <style>
-        /* Custom Scrollbar */
+        /* Modern, Subtle Scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         
         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
+            background: transparent;
         }
         
         ::-webkit-scrollbar-thumb {
-            background: #f97316;
+            background: rgba(200, 200, 200, 0.5);
             border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: #ea580c;
+            background: rgba(150, 150, 150, 0.7);
         }
         
         /* Animations */
@@ -81,106 +80,86 @@
         }
         
         .cart-modal-content::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
         }
     </style>
 </head>
 <body class="bg-gray-50">
-    <nav class="bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg sticky top-0 z-40">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex justify-between items-center">
-                <a href="{{ route('home') }}" class="text-xl md:text-2xl font-bold hover:text-orange-200 transition flex items-center max-w-[60%] truncate">
-                    @if(setting('logo'))
-                        <img src="{{ asset('storage/' . setting('logo')) }}" alt="Logo" class="h-8 md:h-10 w-auto mr-2 shrink-0">
-                    @else
-                        <i class="fas fa-utensils mr-2 shrink-0"></i>
-                    @endif
-                    <span class="truncate">{{ setting('restaurant_name', 'Dapoer Cemal Cemil') }}</span>
+    <nav class="bg-white border-b border-slate-100 sticky top-0 z-40" x-data="{ mobileMenuOpen: false }">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <a href="{{ route('home') }}" class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 overflow-hidden {{ setting('logo') ? 'bg-slate-50 border border-slate-100' : 'bg-orange-600 shadow-lg shadow-orange-600/20' }}">
+                        @if(setting('logo'))
+                            <img src="{{ asset('storage/' . setting('logo')) }}" alt="Logo" class="w-full h-full object-contain p-1">
+                        @else
+                            <i class="fas fa-utensils text-white text-sm"></i>
+                        @endif
+                    </div>
+                    <span class="text-lg font-black text-slate-900 tracking-tight">{{ setting('restaurant_name', 'Dapoer Jiemas') }}</span>
                 </a>
-                
-                <div class="hidden md:flex items-center space-x-6">
-                    <a href="{{ route('home') }}" class="hover:text-orange-200 transition {{ request()->routeIs('home') ? 'text-orange-200' : '' }}">Home</a>
-                    <a href="{{ route('menu') }}" class="hover:text-orange-200 transition {{ request()->routeIs('menu') ? 'text-orange-200 font-semibold' : '' }}">Menu</a>
-                    <a href="{{ route('about') }}" class="hover:text-orange-200 transition {{ request()->routeIs('about') ? 'text-orange-200 font-semibold' : '' }}">Tentang Kami</a>
+
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="{{ route('home') }}" class="px-4 py-2 rounded-xl text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition {{ request()->routeIs('home') ? 'text-orange-600 bg-orange-50' : '' }}">Home</a>
+                    <a href="{{ route('menu') }}" class="px-4 py-2 rounded-xl text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition {{ request()->routeIs('menu') ? 'text-orange-600 bg-orange-50' : '' }}">Menu</a>
+                    <a href="{{ route('about') }}" class="px-4 py-2 rounded-xl text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition {{ request()->routeIs('about') ? 'text-orange-600 bg-orange-50' : '' }}">Tentang</a>
                     @if(session('qr_code'))
-                    <a href="{{ route('customer.dashboard') }}" class="hover:text-orange-200 transition">Dashboard</a>
+                    <a href="{{ route('customer.dashboard') }}" class="px-4 py-2 rounded-xl text-sm font-bold text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition {{ request()->routeIs('customer.dashboard') ? 'text-orange-600 bg-orange-50' : '' }}">Dashboard</a>
                     @endif
-                    
-                    <!-- Cart Button Desktop -->
-                    <div class="relative inline-block">
-                        <button id="cartButtonDesktop" class="cart-btn p-2 hover:text-orange-200 transition focus:outline-none relative">
-                            <i class="fas fa-shopping-cart text-xl"></i>
-                            <span id="cartCount" class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center border-2 border-orange-600 shadow-sm">
-                                0
-                            </span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="md:hidden flex items-center space-x-2">
-                    <!-- Cart Button Mobile -->
-                    <div class="relative inline-block mr-2">
-                        <button id="cartButtonMobile" class="cart-btn p-2 focus:outline-none relative">
-                            <i class="fas fa-shopping-cart text-xl"></i>
-                            <span id="cartCountMobile" class="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 px-1 flex items-center justify-center border-2 border-orange-600 shadow-sm">
-                                0
-                            </span>
-                        </button>
-                    </div>
-                    <button id="mobileMenuBtn" class="p-2 focus:outline-none">
-                        <i class="fas fa-bars text-2xl"></i>
+
+                    <button id="cartButtonDesktop" class="ml-4 w-11 h-11 flex items-center justify-center bg-slate-50 text-slate-600 rounded-xl hover:bg-orange-600 hover:text-white transition relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartCount" class="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-black rounded-lg min-w-[16px] h-4 flex items-center justify-center">0</span>
                     </button>
-                </div>
+                    </div>
+
+                    <div class="md:hidden flex items-center gap-2">
+                    <button id="cartButtonMobile" class="w-11 h-11 flex items-center justify-center bg-slate-50 text-slate-600 rounded-xl relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartCountMobile" class="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-black rounded-lg min-w-[16px] h-4 flex items-center justify-center">0</span>
+                    </button>
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="w-11 h-11 flex items-center justify-center bg-slate-50 text-slate-600 rounded-xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    </div>
             </div>
-            
-            <div id="mobileMenu" class="hidden md:hidden mt-4 pb-4 space-y-2 border-t border-orange-500 pt-2">
-                <a href="{{ route('home') }}" class="block py-2 px-4 hover:bg-orange-700 rounded transition">Home</a>
-                <a href="{{ route('menu') }}" class="block py-2 px-4 hover:bg-orange-700 rounded transition">Menu</a>
-                <a href="{{ route('about') }}" class="block py-2 px-4 hover:bg-orange-700 rounded transition">Tentang Kami</a>
+
+            <!-- Mobile Menu -->
+            <div x-show="mobileMenuOpen" 
+                 x-transition:enter="transition ease-out duration-200" 
+                 x-transition:enter-start="opacity-0 -translate-y-2" 
+                 x-transition:enter-end="opacity-100 translate-y-0" 
+                 x-transition:leave="transition ease-in duration-150" 
+                 x-transition:leave-start="opacity-100 translate-y-0" 
+                 x-transition:leave-end="opacity-0 -translate-y-2"
+                 class="md:hidden pb-6 space-y-2 bg-white border-t border-slate-50"
+                 style="display: none;">
+                <a href="{{ route('home') }}" class="block py-3 px-4 rounded-xl font-black text-slate-600 hover:bg-slate-50 hover:text-orange-600 transition">Home</a>
+                <a href="{{ route('menu') }}" class="block py-3 px-4 rounded-xl font-black text-slate-600 hover:bg-slate-50 hover:text-orange-600 transition">Menu</a>
+                <a href="{{ route('about') }}" class="block py-3 px-4 rounded-xl font-black text-slate-600 hover:bg-slate-50 hover:text-orange-600 transition">Tentang</a>
                 @if(session('qr_code'))
-                <a href="{{ route('customer.dashboard') }}" class="block py-2 px-4 hover:bg-orange-700 rounded transition">Dashboard</a>
+                <a href="{{ route('customer.dashboard') }}" class="block py-3 px-4 rounded-xl font-black text-slate-600 hover:bg-slate-50 hover:text-orange-600 transition">Dashboard</a>
                 @endif
             </div>
         </div>
     </nav>
-
-    <main class="container mx-auto px-4 py-8 min-h-screen">
-        @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-600 text-green-700 px-4 py-3 rounded-lg mb-6 animate-slideDown" 
-                 x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
-                <div class="flex items-center">
-                    <i class="fas fa-check-circle text-green-600 mr-3"></i>
-                    <span>{{ session('success') }}</span>
-                    <button @click="show = false" class="ml-auto text-green-700">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="bg-red-100 border-l-4 border-red-600 text-red-700 px-4 py-3 rounded-lg mb-6 animate-slideDown"
-                 x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
-                    <span>{{ session('error') }}</span>
-                    <button @click="show = false" class="ml-auto text-red-700">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-        @endif
-
-        @yield('content')
-    </main>
+    @hasSection('full_width_content')
+        @yield('full_width_content')
+    @else
+        <main class="container mx-auto px-4 py-8 min-h-screen">
+            @yield('content')
+        </main>
+    @endif
 
     <footer class="bg-gray-800 text-white mt-12 py-8">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <!-- About -->
                 <div>
                     <h3 class="text-xl font-bold mb-4">{{ setting('restaurant_name', 'Dapoer Cemal Cemil') }}</h3>
                     <p class="text-gray-300">{{ setting('address', 'Nikmati kelezatan seafood, masakan Sunda, dan aneka gorengan.') }}</p>
                 </div>
+                <!-- Hours -->
                 <div>
                     <h3 class="text-xl font-bold mb-4">Jam Operasional</h3>
                     <ul class="text-gray-300">
@@ -188,6 +167,7 @@
                         <li>Sabtu - Minggu: {{ setting('sat_sun_open', '09:00') }} - {{ setting('sat_sun_close', '23:00') }}</li>
                     </ul>
                 </div>
+                <!-- Contact -->
                 <div>
                     <h3 class="text-xl font-bold mb-4">Kontak</h3>
                     <ul class="text-gray-300 text-sm">
@@ -203,58 +183,85 @@
     </footer>
 
     <!-- Cart Modal -->
-    <div id="cartModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 cart-modal-overlay">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 cart-modal-content">
-            <div class="p-4 md:p-6 border-b bg-gradient-to-r from-orange-600 to-orange-500 text-white rounded-t-xl">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl md:text-2xl font-bold flex items-center">
-                        <i class="fas fa-shopping-cart mr-2"></i>
-                        Keranjang Pesanan
-                    </h2>
-                    <button id="closeCartBtn" class="text-white hover:text-orange-200 transition">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
+    <div id="cartModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg overflow-hidden border border-slate-100">
+            <div class="p-6 border-b border-slate-50 flex justify-between items-center bg-white">
+                <h2 class="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+                    <i class="fas fa-shopping-cart text-orange-600"></i>
+                    Keranjang
+                </h2>
+                <button id="closeCartBtn" class="text-slate-400 hover:text-slate-900 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div id="cartItems" class="p-6 max-h-[60vh] overflow-y-auto space-y-4">
+                <div class="text-center text-slate-400 py-12">
+                    <i class="fas fa-shopping-cart text-4xl mb-3 opacity-20"></i>
+                    <p class="text-xs font-black uppercase tracking-widest">Keranjang kosong</p>
                 </div>
             </div>
-            <div id="cartItems" class="p-4 md:p-6 max-h-[60vh] overflow-y-auto">
-                <div class="text-center text-gray-500 py-8">
-                    <i class="fas fa-shopping-cart text-5xl mb-3 text-gray-300"></i>
-                    <p>Keranjang kosong</p>
+
+            <div id="cartFooter" class="p-6 border-t border-slate-50 bg-slate-50/50">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Total</span>
+                    <span id="cartTotal" class="text-xl font-black text-slate-900">Rp 0</span>
                 </div>
-            </div>
-            <div id="cartFooter" class="p-4 md:p-6 border-t bg-gray-50 rounded-b-xl">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-lg font-semibold text-gray-700">Total:</span>
-                    <span id="cartTotal" class="text-2xl font-bold text-orange-600">Rp 0</span>
-                </div>
-                <div class="flex gap-3">
-                    <button id="clearCartBtn" class="flex-1 bg-red-500 text-white py-2 md:py-3 rounded-lg hover:bg-red-600 transition font-semibold">
-                        <i class="fas fa-trash-alt mr-2"></i>Kosongkan
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="clearCartBtn" class="py-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition font-black text-[10px] uppercase tracking-widest">
+                        Kosongkan
                     </button>
-                    <button id="checkoutBtn" class="flex-1 bg-orange-600 text-white py-2 md:py-3 rounded-lg hover:bg-orange-700 transition font-semibold shadow-lg">
-                        <i class="fas fa-check-circle mr-2"></i>Checkout
+                    <button id="checkoutBtn" class="py-3 rounded-xl bg-slate-900 text-white hover:bg-orange-600 transition font-black text-[10px] uppercase tracking-widest shadow-lg">
+                        Checkout
                     </button>
                 </div>
             </div>
         </div>
     </div>
-
-    <div id="notificationToast" class="fixed bottom-4 right-4 left-4 md:left-auto bg-green-600 text-white px-4 md:px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-20 opacity-0 z-50">
-        <div class="flex items-center justify-center md:justify-start">
-            <i class="fas fa-check-circle mr-2"></i>
-            <span id="notificationMessage" class="text-sm md:text-base">Notifikasi</span>
-        </div>
-    </div>
-
     <script>
-        // Mobile menu toggle
-        var mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', function() {
-                var mobileMenu = document.getElementById('mobileMenu');
-                mobileMenu.classList.toggle('hidden');
-            });
+        // Cart toggle functions
+        function openCart() {
+            var modal = document.getElementById('cartModal');
+            if (modal) {
+                renderCart();
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            }
         }
+        
+        function closeCart() {
+            var modal = document.getElementById('cartModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Initialize click handlers for cart
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCart();
+            var cartButtonDesktop = document.getElementById('cartButtonDesktop');
+            var cartButtonMobile = document.getElementById('cartButtonMobile');
+            var closeCartBtn = document.getElementById('closeCartBtn');
+            var clearCartBtn = document.getElementById('clearCartBtn');
+            var checkoutBtn = document.getElementById('checkoutBtn');
+            
+            if (cartButtonDesktop) cartButtonDesktop.addEventListener('click', openCart);
+            if (cartButtonMobile) cartButtonMobile.addEventListener('click', openCart);
+            if (closeCartBtn) closeCartBtn.addEventListener('click', closeCart);
+            if (clearCartBtn) clearCartBtn.addEventListener('click', clearCart);
+            if (checkoutBtn) checkoutBtn.addEventListener('click', checkout);
+            
+            // Close modal when clicking outside
+            var modal = document.getElementById('cartModal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) closeCart();
+                });
+            }
+        });
 
         // ============================================
         // CART SYSTEM
@@ -334,14 +341,14 @@
             
             if (window.cart.length === 0) {
                 cartItems.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-shopping-cart text-5xl mb-3 text-gray-300"></i>
-                        <p>Keranjang kosong</p>
+                    <div class="text-center text-slate-400 py-12">
+                        <i class="fas fa-shopping-cart text-4xl mb-3 opacity-20"></i>
+                        <p class="text-xs font-black uppercase tracking-widest">Keranjang kosong</p>
                     </div>
                 `;
                 if (cartTotal) cartTotal.textContent = 'Rp 0';
             } else {
-                var html = '<div class="space-y-3">';
+                var html = '<div class="space-y-4">';
                 var total = 0;
                 
                 for (var i = 0; i < window.cart.length; i++) {
@@ -350,28 +357,25 @@
                     total += subtotal;
                     
                     html += `
-                        <div class="flex flex-col md:flex-row md:items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                            <div class="flex-1 mb-3 md:mb-0">
-                                <h3 class="font-semibold text-gray-800">${escapeHtml(item.name)}</h3>
-                                <p class="text-sm text-orange-600 font-semibold">Rp ${formatPrice(item.price)}</p>
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <div class="flex-1">
+                                <h3 class="text-sm font-black text-slate-900">${escapeHtml(item.name)}</h3>
+                                <p class="text-[10px] font-black text-orange-600 uppercase tracking-widest">Rp ${formatPrice(item.price)}</p>
                             </div>
-                            <div class="flex items-center justify-between md:justify-end space-x-4">
-                                <div class="flex items-center space-x-2">
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center bg-white rounded-xl border border-slate-100 p-1">
                                     <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" 
-                                            class="w-8 h-8 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition">
-                                        <i class="fas fa-minus"></i>
+                                            class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-orange-600">
+                                        <i class="fas fa-minus text-[10px]"></i>
                                     </button>
-                                    <span class="w-12 text-center font-semibold">${item.quantity}</span>
+                                    <span class="w-8 text-center text-xs font-black text-slate-900">${item.quantity}</span>
                                     <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" 
-                                            class="w-8 h-8 bg-gray-200 text-gray-600 rounded-lg hover:bg-gray-300 transition">
-                                        <i class="fas fa-plus"></i>
+                                            class="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-orange-600">
+                                        <i class="fas fa-plus text-[10px]"></i>
                                     </button>
-                                </div>
-                                <div class="text-right min-w-[100px]">
-                                    <p class="font-bold text-orange-600">Rp ${formatPrice(subtotal)}</p>
                                 </div>
                                 <button onclick="removeItem(${item.id})" 
-                                        class="text-red-500 hover:text-red-700 transition">
+                                        class="text-rose-400 hover:text-rose-600 transition ml-2">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
@@ -382,27 +386,6 @@
                 
                 cartItems.innerHTML = html;
                 if (cartTotal) cartTotal.textContent = 'Rp ' + formatPrice(total);
-            }
-        }
-        
-        // Open cart modal
-        function openCart() {
-            var modal = document.getElementById('cartModal');
-            if (modal) {
-                renderCart();
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                document.body.style.overflow = 'hidden';
-            }
-        }
-        
-        // Close cart modal
-        function closeCart() {
-            var modal = document.getElementById('cartModal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.body.style.overflow = '';
             }
         }
         
@@ -430,12 +413,7 @@
             }
             
             saveCart();
-            showNotification(name + ' ditambahkan ke keranjang', 'success');
-            
-            if (button) {
-                button.classList.add('scale-105');
-                setTimeout(function() { button.classList.remove('scale-105'); }, 200);
-            }
+            showNotification(name + ' ditambahkan', 'success');
         }
         
         // Update quantity
@@ -462,34 +440,19 @@
             window.cart = window.cart.filter(function(item) { return item.id != id; });
             saveCart();
             renderCart();
-            showNotification('Item dihapus dari keranjang', 'info');
         }
         
         // Clear cart
         function clearCart() {
-            Swal.fire({
-                title: 'Kosongkan Keranjang?',
-                text: 'Semua item akan dihapus dari keranjang.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Ya, Kosongkan!',
-                cancelButtonText: 'Batal'
-            }).then(function(result) {
-                if (result.isConfirmed) {
-                    window.cart = [];
-                    saveCart();
-                    renderCart();
-                    showNotification('Keranjang telah dikosongkan', 'info');
-                }
-            });
+            window.cart = [];
+            saveCart();
+            renderCart();
         }
         
         // Checkout
         function checkout() {
             if (window.cart.length === 0) {
-                showNotification('Keranjang masih kosong!', 'warning');
+                showNotification('Keranjang kosong!', 'warning');
                 return;
             }
             
@@ -504,109 +467,26 @@
             .then(function(res) { return res.json(); })
             .then(function(data) {
                 if (data.success) {
-                    showNotification('Mengalihkan ke halaman pemesanan...', 'success');
-                    setTimeout(function() {
-                        window.location.href = '{{ route("order.create") }}';
-                    }, 1000);
+                    window.location.href = '{{ route("order.create") }}';
                 } else {
-                    showNotification('Gagal: ' + data.message, 'error');
+                    showNotification('Gagal checkout', 'error');
                 }
-            })
-            .catch(function(error) {
-                console.error('Error:', error);
-                showNotification('Terjadi kesalahan', 'error');
             });
         }
         
         // Show notification
         function showNotification(message, type) {
-            var toast = document.getElementById('notificationToast');
-            var messageEl = document.getElementById('notificationMessage');
-            
-            if (!toast || !messageEl) return;
-            
-            toast.className = 'fixed bottom-4 right-4 left-4 md:left-auto px-4 md:px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 z-50 ' + (type === 'success' ? 'bg-green-600' : type === 'warning' ? 'bg-yellow-500' : 'bg-red-600') + ' text-white';
-            messageEl.textContent = message;
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            
-            setTimeout(function() {
-                toast.classList.add('translate-y-20', 'opacity-0');
-                toast.classList.remove('translate-y-0', 'opacity-100');
-            }, 3000);
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                icon: type,
+                title: message
+            });
         }
-        
-        // Global functions untuk halaman lain
-        window.openCart = openCart;
-        window.closeCart = closeCart;
-        window.showNotification = showNotification;
-        window.globalUpdateCartCount = updateCartCount;
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCart();
-            
-            // Setup cart buttons - menggunakan ID
-            var cartButtonDesktop = document.getElementById('cartButtonDesktop');
-            var cartButtonMobile = document.getElementById('cartButtonMobile');
-            var closeCartBtn = document.getElementById('closeCartBtn');
-            var clearCartBtn = document.getElementById('clearCartBtn');
-            var checkoutBtn = document.getElementById('checkoutBtn');
-            
-            if (cartButtonDesktop) {
-                cartButtonDesktop.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    openCart();
-                });
-            }
-            
-            if (cartButtonMobile) {
-                cartButtonMobile.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    openCart();
-                });
-            }
-            
-            if (closeCartBtn) {
-                closeCartBtn.addEventListener('click', function() {
-                    closeCart();
-                });
-            }
-            
-            if (clearCartBtn) {
-                clearCartBtn.addEventListener('click', function() {
-                    clearCart();
-                });
-            }
-            
-            if (checkoutBtn) {
-                checkoutBtn.addEventListener('click', function() {
-                    checkout();
-                });
-            }
-            
-            // Close modal when clicking outside
-            var modal = document.getElementById('cartModal');
-            if (modal) {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        closeCart();
-                    }
-                });
-            }
-        });
-        
-        // Listen for storage events (sync across tabs)
-        window.addEventListener('storage', function(e) {
-            if (e.key === CART_STORAGE_KEY) {
-                loadCart();
-                if (document.getElementById('cartModal') && !document.getElementById('cartModal').classList.contains('hidden')) {
-                    renderCart();
-                }
-            }
-        });
     </script>
-
     @stack('scripts')
 </body>
 </html>

@@ -118,16 +118,16 @@
                 <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 sm:p-8">
                     <h3 class="text-[10px] font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-2">
                         <i data-lucide="image" class="w-4 h-4 text-orange-600"></i>
-                        Banner Promosi
+                        Hero Background (Halaman Beranda)
                     </h3>
                     <div class="space-y-6">
-                        @for($i = 1; $i <= 3; $i++)
+                        @php $i = 1; @endphp
                         <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <h4 class="text-[9px] font-black text-orange-600 uppercase mb-3">Banner Slide #{{ $i }}</h4>
+                            <h4 class="text-[9px] font-black text-orange-600 uppercase mb-3">Welcome Greeting Background</h4>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div class="space-y-3">
-                                    <input type="text" name="banner{{ $i }}_title" value="{{ old('banner'.$i.'_title', $settings['banner'.$i.'_title'] ?? '') }}" placeholder="Judul Banner" class="w-full bg-white border-none px-4 py-2 rounded-lg text-[10px] font-bold">
-                                    <textarea name="banner{{ $i }}_desc" placeholder="Deskripsi..." class="w-full bg-white border-none px-4 py-2 rounded-lg text-[10px] font-bold resize-none">{{ old('banner'.$i.'_desc', $settings['banner'.$i.'_desc'] ?? '') }}</textarea>
+                                    <input type="text" name="banner{{ $i }}_title" value="{{ old('banner'.$i.'_title', $settings['banner'.$i.'_title'] ?? '') }}" placeholder="Judul Selamat Datang" class="w-full bg-white border-none px-4 py-2 rounded-lg text-[10px] font-bold">
+                                    <textarea name="banner{{ $i }}_desc" placeholder="Deskripsi Selamat Datang..." class="w-full bg-white border-none px-4 py-2 rounded-lg text-[10px] font-bold resize-none">{{ old('banner'.$i.'_desc', $settings['banner'.$i.'_desc'] ?? '') }}</textarea>
                                 </div>
                                 <div x-data="{ bPreview: '{{ isset($settings['banner'.$i.'_image']) && $settings['banner'.$i.'_image'] ? asset('storage/'.$settings['banner'.$i.'_image']) : '' }}' }">
                                     <input type="file" name="banner{{ $i }}_image" class="hidden" x-ref="bInput{{$i}}" @change="bPreview = URL.createObjectURL($event.target.files[0])">
@@ -138,7 +138,6 @@
                                 </div>
                             </div>
                         </div>
-                        @endfor
                     </div>
                 </div>
             </div>

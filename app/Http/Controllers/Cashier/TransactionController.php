@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Table;
+use App\Exports\TransactionsExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TransactionController extends Controller
 {
@@ -17,7 +20,7 @@ class TransactionController extends Controller
     public function today(Request $request)
     {
         $query = Order::whereDate('created_at', today())
-            ->with(['items', 'table']); // Eager load table relation
+            ->with(['items', 'table', 'qrCodeRelation']); // Eager load table and qrCodeRelation
 
         // Apply filters
         if ($request->filled('status')) {
@@ -49,7 +52,7 @@ class TransactionController extends Controller
      */
     public function history(Request $request)
     {
-        $query = Order::with(['items', 'table']); // Eager load table
+        $query = Order::with(['items', 'table', 'qrCodeRelation']); // Eager load table and qrCodeRelation
 
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
@@ -92,7 +95,7 @@ class TransactionController extends Controller
         
         // Data untuk tanggal yang dipilih dengan relasi table
         $transactions = Order::whereDate('created_at', $selectedDate)
-            ->with(['table'])
+            ->with(['table', 'qrCodeRelation'])
             ->get();
 
         // Summary untuk tanggal yang dipilih
@@ -290,7 +293,20 @@ class TransactionController extends Controller
      */
     public function exportExcel(Request $request)
     {
-        return redirect()->back()->with('info', 'Fitur export Excel akan segera tersedia');
+        $query = Order::with(['table', 'qrCodeRelation']);
+        
+        // Terapkan filter yang sama dengan metode history
+        if ($request->filled('start_date')) $query->whereDate('created_at', '>=', $request->start_date);
+        if ($request->filled('end_date')) $query->whereDate('created_at', '<=', $request->end_date);
+        if ($request->filled('payment_method')) $query->where('payment_method', $request->payment_method);
+        if ($request->filled('payment_status')) $query->where('payment_status', $request->payment_status);
+        if ($request->filled('search')) {
+            $query->where('order_number', 'like', '%' . $request->search . '%')
+                  ->orWhere('customer_name', 'like', '%' . $request->search . '%');
+        }
+
+        $orders = $query->latest()->get();
+        return Excel::download(new TransactionsExport($orders), 'transaksi_' . now()->format('Ymd_His') . '.xlsx');
     }
 
     /**
@@ -298,6 +314,20 @@ class TransactionController extends Controller
      */
     public function exportPDF(Request $request)
     {
-        return redirect()->back()->with('info', 'Fitur export PDF akan segera tersedia');
+        $query = Order::with(['items', 'table', 'qrCodeRelation']);
+        
+        if ($request->filled('start_date')) $query->whereDate('created_at', '>=', $request->start_date);
+        if ($request->filled('end_date')) $query->whereDate('created_at', '<=', $request->end_date);
+        if ($request->filled('payment_method')) $query->where('payment_method', $request->payment_method);
+        if ($request->filled('payment_status')) $query->where('payment_status', $request->payment_status);
+        if ($request->filled('search')) {
+            $query->where('order_number', 'like', '%' . $request->search . '%')
+                  ->orWhere('customer_name', 'like', '%' . $request->search . '%');
+        }
+
+        $orders = $query->latest()->get();
+        
+        $pdf = Pdf::loadView('cashier.transactions.pdf', compact('orders'));
+        return $pdf->download('transaksi_' . now()->format('Ymd_His') . '.pdf');
     }
 }

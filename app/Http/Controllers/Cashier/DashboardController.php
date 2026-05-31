@@ -46,7 +46,7 @@ class DashboardController extends Controller
         ];
 
         // Recent orders untuk ditampilkan di dashboard
-        $recentOrders = Order::with('items')
+        $recentOrders = Order::with(['items', 'qrCodeRelation'])
             ->latest()
             ->limit(10)
             ->get();
@@ -54,14 +54,15 @@ class DashboardController extends Controller
         // ============================================
         // DATA MEJA (QR CODES) DENGAN PESANAN AKTIF
         // ============================================
+        // DATA MEJA (QR CODES) DENGAN PESANAN AKTIF
         $tables = \App\Models\QrCode::where('status', 'active')
+            ->with(['orders' => function($query) {
+                $query->whereIn('order_status', ['waiting', 'processed'])
+                      ->with('items');
+            }])
             ->get()
             ->map(function ($qr) {
-                $activeOrders = Order::where('qr_code', $qr->code)
-                    ->whereIn('order_status', ['waiting', 'processed'])
-                    ->with('items')
-                    ->get();
-
+                $activeOrders = $qr->orders;
                 $completedOrders = Order::where('qr_code', $qr->code)
                     ->where('order_status', 'completed')
                     ->whereDate('created_at', today())
@@ -76,10 +77,10 @@ class DashboardController extends Controller
                     'total_active_amount' => $activeOrders->sum('total_amount'),
                     'completed_today' => $completedOrders->count(),
                     'has_unpaid' => $activeOrders->where('payment_status', 'pending')->count() > 0,
-                    'is_locked' => $qr->current_session_id && (!$qr->session_expires_at || $qr->session_expires_at->isFuture())
+                    // Perbaikan: Meja dianggap terkunci jika sesi masih aktif (is_locked = true)
+                    'is_locked' => ($qr->current_session_id && (!$qr->session_expires_at || $qr->session_expires_at->isFuture())) || $activeOrders->count() > 0
                 ];
             });
-
         return view('cashier.dashboard', compact('stats', 'recentOrders', 'tables'));
     }
 }

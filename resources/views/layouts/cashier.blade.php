@@ -26,52 +26,55 @@
     @stack('styles')
 </head>
 <body class="bg-gray-100">
-    <!-- Navbar dengan Hamburger Menu -->
-    <nav x-data="{ mobileMenuOpen: false }" class="bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg sticky top-0 z-40">
+    <!-- Modern Navbar -->
+    <nav x-data="{ mobileMenuOpen: false }" class="bg-white border-b border-slate-100 sticky top-0 z-40">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center h-16">
+            <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
-                <div class="flex items-center space-x-3">
-                    @if(setting('logo'))
-                        <img src="{{ asset('storage/' . setting('logo')) }}" alt="Logo" class="h-10 w-auto">
-                    @else
-                        <i class="fas fa-cash-register text-2xl"></i>
-                    @endif
-                    <span class="font-bold text-xl hidden sm:inline">{{ setting('restaurant_name', 'Dapoer Cemal Cemil') }}</span>
-                    <span class="font-bold text-xl sm:hidden">Kasir</span>
-                </div>
+                <a href="{{ route('cashier.dashboard') }}" class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
+                        @if(setting('logo'))
+                            <img src="{{ asset('storage/' . setting('logo')) }}" alt="Logo" class="w-full h-full object-contain p-1">
+                        @else
+                            <i class="fas fa-cash-register text-orange-600 text-sm"></i>
+                        @endif
+                    </div>
+                    <div>
+                        <span class="text-lg font-black text-slate-900 tracking-tight leading-none block">{{ setting('restaurant_name', 'Dapoer Jiemas') }}</span>
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Kasir Panel</span>
+                    </div>
+                </a>
                 
                 <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-6">
+                <div class="hidden md:flex items-center gap-1">
                     <a href="{{ route('cashier.dashboard') }}" 
-                       class="hover:text-orange-200 transition {{ request()->routeIs('cashier.dashboard') ? 'text-orange-200 border-b-2 border-orange-200' : '' }}">
-                        <i class="fas fa-dashboard mr-1"></i>Dashboard
+                       class="px-4 py-2 rounded-xl text-sm font-bold transition {{ request()->routeIs('cashier.dashboard') ? 'text-orange-600 bg-orange-50' : 'text-slate-600 hover:text-orange-600 hover:bg-orange-50' }}">
+                        Dashboard
                     </a>
                     <a href="{{ route('cashier.transactions.today') }}" 
-                       class="hover:text-orange-200 transition {{ request()->routeIs('cashier.transactions*') ? 'text-orange-200 border-b-2 border-orange-200' : '' }}">
-                        <i class="fas fa-money-bill-wave mr-1"></i>Transaksi
+                       class="px-4 py-2 rounded-xl text-sm font-bold transition {{ request()->routeIs('cashier.transactions*') ? 'text-orange-600 bg-orange-50' : 'text-slate-600 hover:text-orange-600 hover:bg-orange-50' }}">
+                        Transaksi
                     </a>
                 </div>
                 
                 <!-- Right Section -->
-                <div class="flex items-center space-x-4">
-                    <!-- User Info Desktop -->
-                    <span class="text-sm hidden md:block">
-                        <i class="fas fa-user mr-1"></i>{{ auth()->user()->name }}
-                    </span>
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:block text-right">
+                        <p class="text-sm font-bold text-slate-900">{{ auth()->user()->name }}</p>
+                        <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Aktif</p>
+                    </div>
                     
-                    <!-- Logout Button Desktop -->
                     <form method="POST" action="{{ route('admin.logout') }}" class="hidden md:block">
                         @csrf
-                        <button type="submit" class="bg-orange-700 hover:bg-orange-800 px-4 py-2 rounded-lg transition text-sm">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        <button type="submit" class="w-11 h-11 flex items-center justify-center bg-slate-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition">
+                            <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </form>
                     
                     <!-- Hamburger Menu Button (Mobile) -->
                     <button @click="mobileMenuOpen = !mobileMenuOpen" 
-                            class="md:hidden p-2 rounded-lg hover:bg-orange-700 transition focus:outline-none focus:ring-2 focus:ring-orange-300">
-                        <i class="fas fa-bars text-2xl"></i>
+                            class="md:hidden w-11 h-11 flex items-center justify-center bg-slate-50 text-slate-600 rounded-xl transition">
+                        <i class="fas fa-bars"></i>
                     </button>
                 </div>
             </div>
@@ -79,113 +82,38 @@
             <!-- Mobile Menu Dropdown -->
             <div x-show="mobileMenuOpen" 
                  x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 transform -translate-y-2"
-                 x-transition:enter-end="opacity-100 transform translate-y-0"
-                 x-transition:leave="transition ease-in duration-150"
-                 x-transition:leave-start="opacity-100 transform translate-y-0"
-                 x-transition:leave-end="opacity-0 transform -translate-y-2"
-                 @click.away="mobileMenuOpen = false"
-                 class="md:hidden absolute top-16 left-0 right-0 bg-orange-600 shadow-xl z-50">
+                 x-transition:enter-start="opacity-0 -translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition-ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-2"
+                 class="md:hidden pb-6 space-y-2 border-t border-slate-50"
+                 style="display: none;">
                 
-                <div class="flex flex-col py-2">
-                    <!-- User Info Mobile -->
-                    <div class="px-4 py-3 border-b border-orange-500">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-orange-700 flex items-center justify-center">
-                                <i class="fas fa-user text-white"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold">{{ auth()->user()->name }}</div>
-                                <div class="text-xs text-orange-200">{{ auth()->user()->email ?? 'Cashier' }}</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Navigation Links Mobile -->
-                    <a href="{{ route('cashier.dashboard') }}" 
-                       @click="mobileMenuOpen = false"
-                       class="px-4 py-3 hover:bg-orange-700 transition flex items-center space-x-3 {{ request()->routeIs('cashier.dashboard') ? 'bg-orange-700' : '' }}">
-                        <i class="fas fa-dashboard w-5"></i>
-                        <span>Dashboard</span>
-                        @if(request()->routeIs('cashier.dashboard'))
-                            <i class="fas fa-check ml-auto"></i>
-                        @endif
-                    </a>
-                    
-                    <a href="{{ route('cashier.transactions.today') }}" 
-                       @click="mobileMenuOpen = false"
-                       class="px-4 py-3 hover:bg-orange-700 transition flex items-center space-x-3 {{ request()->routeIs('cashier.transactions*') ? 'bg-orange-700' : '' }}">
-                        <i class="fas fa-money-bill-wave w-5"></i>
-                        <span>Transaksi</span>
-                        @if(request()->routeIs('cashier.transactions*'))
-                            <i class="fas fa-check ml-auto"></i>
-                        @endif
-                    </a>
-                    
-                    <!-- Divider -->
-                    <div class="border-t border-orange-500 my-2"></div>
-                    
-                    <!-- Logout Button Mobile -->
-                    <form method="POST" action="{{ route('admin.logout') }}">
-                        @csrf
-                        <button type="submit" 
-                                @click="mobileMenuOpen = false"
-                                class="w-full text-left px-4 py-3 hover:bg-orange-700 transition flex items-center space-x-3 text-red-100">
-                            <i class="fas fa-sign-out-alt w-5"></i>
-                            <span>Logout</span>
-                            <i class="fas fa-arrow-right ml-auto"></i>
-                        </button>
-                    </form>
-                </div>
+                <a href="{{ route('cashier.dashboard') }}" 
+                   class="block py-3 px-4 rounded-xl font-black text-slate-600 hover:bg-slate-50 hover:text-orange-600 transition">Dashboard</a>
+                
+                <a href="{{ route('cashier.transactions.today') }}" 
+                   class="block py-3 px-4 rounded-xl font-black text-slate-600 hover:bg-slate-50 hover:text-orange-600 transition">Transaksi</a>
+                
+                <form method="POST" action="{{ route('admin.logout') }}" class="pt-2 border-t border-slate-50">
+                    @csrf
+                    <button type="submit" class="w-full text-left py-3 px-4 rounded-xl font-black text-rose-500 hover:bg-rose-50 transition">
+                        Logout
+                    </button>
+                </form>
             </div>
         </div>
     </nav>
 
-    <!-- Overlay for mobile menu -->
-    <div x-show="mobileMenuOpen" 
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         @click="mobileMenuOpen = false"
-         class="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-         style="display: none;">
-    </div>
-
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-6">
-        @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-600 text-green-700 px-4 py-3 rounded-lg mb-6 animate-slideDown">
-                <div class="flex items-center">
-                    <i class="fas fa-check-circle text-green-600 mr-3"></i>
-                    <span>{{ session('success') }}</span>
-                    <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-green-600 hover:text-green-800">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="bg-red-100 border-l-4 border-red-600 text-red-700 px-4 py-3 rounded-lg mb-6 animate-slideDown">
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
-                    <span>{{ session('error') }}</span>
-                    <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-red-600 hover:text-red-800">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-        @endif
-
+    <main class="container mx-auto px-4 py-8">
         @yield('content')
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t mt-8 py-4">
-        <div class="container mx-auto px-4 text-center text-gray-600 text-sm">
+    <!-- Original Dark Footer -->
+    <footer class="bg-gray-800 text-white mt-12 py-8">
+        <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
             <p>&copy; {{ date('Y') }} {{ setting('restaurant_name', 'Dapoer Cemal Cemil Jiemas') }} - Sistem Kasir</p>
         </div>
     </footer>
@@ -199,6 +127,25 @@
     </div>
 
     <style>
+        /* Modern, Subtle Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(200, 200, 200, 0.5);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(150, 150, 150, 0.7);
+        }
+        
         @keyframes slideDown {
             from { transform: translateY(-100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
@@ -217,25 +164,6 @@
             button, a {
                 min-height: 44px;
             }
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #f97316;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ea580c;
         }
     </style>
 

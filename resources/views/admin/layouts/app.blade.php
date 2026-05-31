@@ -70,8 +70,12 @@
                 <div class="sidebar-content">
                     <div class="p-6 shrink-0">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center shadow-lg shadow-orange-600/20 p-2 shrink-0">
-                                <i data-lucide="utensils" class="text-white w-full h-full"></i>
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 overflow-hidden {{ setting('logo') ? 'bg-white' : 'bg-orange-600 shadow-lg shadow-orange-600/20' }}">
+                                @if(setting('logo'))
+                                    <img src="{{ asset('storage/' . setting('logo')) }}" alt="Logo" class="w-full h-full object-contain p-1">
+                                @else
+                                    <i data-lucide="utensils" class="text-white w-5 h-5"></i>
+                                @endif
                             </div>
                             <div class="overflow-hidden">
                                 <h1 class="text-white font-extrabold text-lg leading-tight truncate">{{ setting('restaurant_name', 'Dapoer Jiemas') }}</h1>

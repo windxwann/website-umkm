@@ -24,18 +24,18 @@ class DashboardController extends Controller
                       ->latest()
                       ->get();
         
-        // Filter HANYA order aktif untuk daftar history/tabel
-        $activeOrders = $allOrders->whereIn('order_status', ['waiting', 'processed']);
+        // Ambil SEMUA order yang belum diarsip (termasuk yang selesai)
+        $orders = $allOrders; // Tampilkan semua order dalam sesi/meja ini
         
         $stats = [
             'total_orders' => $allOrders->count(),
-            'pending_orders' => $allOrders->where('order_status', 'waiting')->count(),
+            'pending_orders' => $allOrders->whereIn('order_status', ['waiting', 'processed'])->count(),
             'completed_orders' => $allOrders->where('order_status', 'completed')->count(),
             'total_spent' => $allOrders->where('payment_status', 'paid')->sum('total_amount')
         ];
         
         return view('customer.dashboard', [
-            'orders' => $activeOrders, // Kirim hanya yang aktif ke tabel
+            'orders' => $orders,
             'stats' => $stats
         ]);
     }

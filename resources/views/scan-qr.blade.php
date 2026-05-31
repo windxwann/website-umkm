@@ -3,81 +3,51 @@
 @section('title', 'Scan QR Meja')
 
 @section('content')
-<div class="min-h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
+<div class="min-h-[70vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
         
         <!-- Header -->
         <div class="text-center">
-            <div class="mx-auto h-24 w-24 bg-orange-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
-                <i class="fas fa-qrcode text-4xl text-orange-600"></i>
+            <div class="mx-auto h-20 w-20 bg-orange-50 rounded-2xl flex items-center justify-center mb-6">
+                <i class="fas fa-qrcode text-3xl text-orange-600"></i>
             </div>
-            <h2 class="text-3xl font-extrabold text-gray-900">
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight">
                 Selamat Datang!
             </h2>
-            <p class="mt-2 text-sm text-gray-600">
-                Silakan scan QR Code yang tertempel di meja Anda menggunakan kamera HP untuk mulai memesan.
+            <p class="mt-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                Scan QR Meja Untuk Memulai Pesanan
             </p>
-        </div>
-
-        <!-- Desktop/Laptop Notice -->
-        <div class="hidden md:block bg-blue-50 border-l-4 border-blue-400 p-4 rounded-md my-6">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-laptop text-blue-400"></i>
-                </div>
-                <div class="ml-3">
-                    <p class="text-sm text-blue-700">
-                        Anda menggunakan Laptop/Desktop? <br> 
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="relative py-4">
-            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="w-full border-t border-gray-200"></div>
-            </div>
-            <div class="relative flex justify-center text-sm">
-                <span class="px-2 bg-white text-gray-500 uppercase tracking-widest text-xs font-bold">Silahkan Masukkan Code Meja</span>
-            </div>
         </div>
 
         <!-- Manual Form -->
         <form class="mt-8 space-y-6" action="{{ route('scan.qr.validate') }}" method="POST">
             @csrf
-            <div class="rounded-md shadow-sm">
-                <div>
-                    <label for="qr_code" class="sr-only">Kode Meja</label>
-                    <input id="qr_code" name="qr_code" type="text" required 
-                        class="appearance-none rounded-xl relative block w-full px-4 py-4 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-orange-500 focus:border-orange-500 focus:z-10 sm:text-sm text-center font-bold tracking-widest uppercase" 
-                        placeholder="CONTOH: QR-MEJA-001"
-                        value="{{ old('qr_code') }}">
-                </div>
+            <div>
+                <label for="qr_code" class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 text-center">Masukkan Kode Meja</label>
+                <input id="qr_code" name="qr_code" type="text" required 
+                    class="appearance-none rounded-2xl relative block w-full px-4 py-4 border border-slate-100 placeholder-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm text-center font-black tracking-widest uppercase bg-slate-50" 
+                    placeholder="CONTOH: MEJA-01"
+                    value="{{ old('qr_code') }}">
             </div>
 
-            <!-- No more location fields needed -->
-
             @if(session('error'))
-            <div class="text-red-500 text-sm p-3 bg-red-50 rounded-lg border border-red-100 flex items-center">
+            <div class="text-rose-500 text-[10px] font-black uppercase tracking-widest text-center p-3 bg-rose-50 rounded-xl border border-rose-100 flex items-center justify-center">
                 <i class="fas fa-exclamation-circle mr-2"></i>
                 {{ session('error') }}
             </div>
             @endif
 
             <div>
-                <button type="submit" class="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 shadow-lg transition-all transform hover:-translate-y-1">
-                    <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                        <i class="fas fa-utensils text-orange-500 group-hover:text-orange-400"></i>
-                    </span>
+                <button type="submit" class="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-black rounded-2xl text-white bg-slate-900 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 shadow-lg transition-all duration-300">
                     LIHAT MENU & PESAN
                 </button>
             </div>
         </form>
 
         <!-- Help Info -->
-        <div class="pt-6 text-center">
-            <p class="text-xs text-gray-400">
-                Butuh bantuan? Silakan hubungi pelayan kami di area restoran.
+        <div class="pt-4 text-center">
+            <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest">
+                Butuh bantuan? Hubungi Pelayan.
             </p>
         </div>
 
@@ -85,7 +55,6 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.getElementById('qr_code').addEventListener('input', function() {
         this.value = this.value.toUpperCase();
@@ -95,7 +64,6 @@
     const submitBtn = qrForm.querySelector('button[type="submit"]');
 
     qrForm.addEventListener('submit', function(e) {
-        // Simple submission, no geolocation check
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
     });

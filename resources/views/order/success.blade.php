@@ -3,66 +3,71 @@
 @section('title', 'Pesanan Berhasil')
 
 @section('content')
-<div class="max-w-2xl mx-auto text-center">
-    <div class="bg-white rounded-lg shadow-lg p-8">
-        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fas fa-check text-4xl text-green-600"></i>
+<div class="max-w-2xl mx-auto px-4 py-12">
+    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8 md:p-12 text-center">
+        <!-- Success Icon -->
+        <div class="w-24 h-24 bg-emerald-50 rounded-[2rem] flex items-center justify-center mx-auto mb-8 animate-bounce">
+            <i class="fas fa-check text-4xl text-emerald-600"></i>
         </div>
         
-        <h1 class="text-3xl font-bold mb-2">Pesanan Berhasil!</h1>
-        <p class="text-gray-600 mb-6">Nomor Pesanan Anda: <strong>{{ $order->order_number }}</strong></p>
+        <h1 class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight mb-3">Pesanan Berhasil!</h1>
+        <p class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-10">
+            Nomor Pesanan: <span class="text-slate-900">#{{ $order->order_number }}</span>
+        </p>
         
-        <div class="bg-gray-50 rounded-lg p-6 mb-6 text-left">
-            <h2 class="font-semibold mb-3">Detail Pesanan</h2>
+        <!-- Details Card -->
+        <div class="bg-slate-50 rounded-[2rem] border border-slate-100 p-8 text-left mb-10">
+            <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Detail Pesanan</h2>
             
-            <div class="space-y-2 mb-4">
+            <div class="space-y-4 mb-6">
                 @foreach($order->items as $item)
-                <div class="flex justify-between">
-                    <span>{{ $item->product_name }} x{{ $item->quantity }}</span>
-                    <span>Rp {{ number_format($item->subtotal, 0, ',', '.') }}</span>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-bold text-slate-700">{{ $item->product_name }} <span class="text-slate-400 font-medium">x{{ $item->quantity }}</span></span>
+                    <span class="text-sm font-black text-slate-900">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</span>
                 </div>
                 @endforeach
             </div>
             
-            <div class="border-t pt-3 space-y-2">
-                <!-- Packaging fee removed -->
-                <div class="flex justify-between font-bold text-lg">
-                    <span>Total</span>
-                    <span class="text-orange-600">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+            <div class="border-t border-slate-200 border-dashed pt-6 space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-black text-slate-900 uppercase tracking-widest">Total Pembayaran</span>
+                    <span class="text-2xl font-black text-orange-600">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
                 </div>
-            </div>
 
-            <!-- Delivery address removed -->
-            
-            <div class="mt-4 p-3 bg-blue-50 rounded">
-                <p class="text-sm">
-                    <span class="font-semibold">Metode Pembayaran:</span> 
-                    {{ $order->payment_method === 'e_wallet' ? 'E-Wallet (QRIS)' : ($order->payment_method === 'cashier' ? 'Bayar di Kasir' : 'Transfer Bank') }}
-                </p>
-                <p class="text-sm mt-1">
-                    <span class="font-semibold">Status:</span> 
-                    {{ $order->payment_status === 'paid' ? 'Lunas' : 'Menunggu Pembayaran' }}
-                </p>
+                <div class="pt-4 space-y-2">
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-600 uppercase tracking-tight">
+                        <i class="fas fa-credit-card text-orange-600 w-4"></i>
+                        <span>{{ $order->payment_method === 'e_wallet' ? 'E-Wallet (QRIS)' : ($order->payment_method === 'cashier' ? 'Bayar di Kasir' : 'Transfer Bank') }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-tight {{ $order->payment_status === 'paid' ? 'text-emerald-600' : 'text-amber-600' }}">
+                        <i class="fas {{ $order->payment_status === 'paid' ? 'fa-check-circle' : 'fa-clock' }} w-4"></i>
+                        <span>{{ $order->payment_status === 'paid' ? 'LUNAS' : 'MENUNGGU PEMBAYARAN' }}</span>
+                    </div>
+                </div>
             </div>
         </div>
         
-        @if($order->payment_status !== 'paid')
-            <a href="{{ route('order.payment', $order->order_number) }}" 
-               class="inline-block bg-orange-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-orange-700 transition mb-3">
-                Lanjutkan Pembayaran
-            </a>
-        @endif
-        
-        <div class="space-x-4">
-            <a href="{{ route('menu') }}" class="text-orange-600 hover:text-orange-700">
-                <i class="fas fa-utensils mr-1"></i> Pesan Lagi
-            </a>
-            <a href="{{ route('home') }}" class="text-gray-600 hover:text-gray-700">
-                <i class="fas fa-home mr-1"></i> Kembali ke Beranda
-            </a>
+        <!-- Action Buttons -->
+        <div class="flex flex-col gap-4">
+            @if($order->payment_status !== 'paid')
+                <a href="{{ route('order.payment', $order->order_number) }}" 
+                   class="w-full bg-slate-900 text-white py-4 px-8 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-orange-600 transition-all shadow-xl shadow-slate-900/10">
+                    Selesaikan Pembayaran
+                </a>
+            @endif
+            
+            <div class="grid grid-cols-2 gap-4">
+                <a href="{{ route('menu') }}" class="bg-white border border-slate-200 text-slate-600 py-4 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all">
+                    <i class="fas fa-utensils mr-2"></i> Pesan Lagi
+                </a>
+                <a href="{{ route('home') }}" class="bg-white border border-slate-200 text-slate-600 py-4 px-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all">
+                    <i class="fas fa-home mr-2"></i> Beranda
+                </a>
+            </div>
         </div>
     </div>
 </div>
+
 @push('scripts')
 <script>
     // Pastikan cart kosong di halaman sukses

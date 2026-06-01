@@ -18,9 +18,6 @@
             <div class="w-9 h-9 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 shadow-sm shadow-orange-500/10">
                 <i data-lucide="wallet" class="w-4 h-4"></i>
             </div>
-            <span class="text-[8px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md uppercase">
-                +12%
-            </span>
         </div>
         <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Pendapatan</p>
         <h3 class="text-base sm:text-lg font-black text-slate-900 mt-0.5 truncate">

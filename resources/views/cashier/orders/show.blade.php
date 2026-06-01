@@ -225,8 +225,6 @@
 
 @push('scripts')
 <script>
-// Logic polling, status update, payment processing dll sama dengan dashboard
-// Menggunakan CSRF dynamic dari meta tag
 function getCsrf() { return document.querySelector('meta[name="csrf-token"]').getAttribute('content'); }
 
 function updateOrderStatus(orderId, status) {
@@ -258,10 +256,14 @@ function updateOrderStatus(orderId, status) {
     });
 }
 
-// ... sisanya fungsi processPayment, formatPrice, dll ...
+let currentOrderTotal = 0;
 function formatPrice(price) { return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+
 function processPayment(id, total, number) {
+    currentOrderTotal = total;
     document.getElementById('orderId').value = id;
+    document.getElementById('amountPaid').value = '';
+    document.getElementById('changeDisplay').innerText = 'Rp 0';
     document.getElementById('paymentDetail').innerHTML = `
         <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Pesanan #${number}</p>
         <p class="text-3xl font-black text-slate-900 tracking-tighter">Rp ${formatPrice(total)}</p>
@@ -269,11 +271,74 @@ function processPayment(id, total, number) {
     document.getElementById('paymentModal').classList.remove('hidden');
     document.getElementById('paymentModal').classList.add('flex');
 }
+
+document.getElementById('amountPaid').addEventListener('input', function() {
+    const paid = parseFloat(this.value) || 0;
+    const change = paid - currentOrderTotal;
+    document.getElementById('changeDisplay').innerText = change > 0 ? 'Rp ' + formatPrice(change) : 'Rp 0';
+});
+
+document.getElementById('paymentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const orderId = document.getElementById('orderId').value;
+    const amountPaid = document.getElementById('amountPaid').value;
+    
+    fetch(`/cashier/orders/${orderId}/process-cash-payment`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': getCsrf(),
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ amount_paid: amountPaid })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, timer: 1500, showConfirmButton: false });
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
+        }
+    });
+});
+
 function closePaymentModal() {
     document.getElementById('paymentModal').classList.add('hidden');
     document.getElementById('paymentModal').classList.remove('flex');
 }
-// Handle form submission and other listeners
+
+function confirmPayment(orderId) {
+    Swal.fire({
+        title: 'Konfirmasi Pembayaran?',
+        text: 'Apakah Anda yakin pesanan ini sudah dibayar melalui transfer?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#f59e0b',
+        confirmButtonText: 'Ya, Konfirmasi',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/cashier/orders/${orderId}/confirm-payment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': getCsrf(),
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, timer: 1500, showConfirmButton: false });
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
+                }
+            });
+        }
+    });
+}
 </script>
 @endpush
 @endsection

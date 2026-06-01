@@ -86,14 +86,16 @@ class OrderController extends Controller
 
             // Cek apakah meja masih ada order aktif
             if (session()->has('qr_code')) {
-                $activeOrder = Order::where('qr_code', session('qr_code'))
+                // HANYA BLOKIR JIKA ADA ORDER PENDING (BELUM BAYAR)
+                $pendingOrder = Order::where('qr_code', session('qr_code'))
+                    ->where('payment_status', 'pending')
                     ->whereIn('order_status', ['waiting', 'processed'])
                     ->exists();
                     
-                if ($activeOrder) {
+                if ($pendingOrder) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Meja ini masih memiliki pesanan aktif. Silakan selesaikan pesanan sebelumnya.'
+                        'message' => 'Meja ini masih memiliki pesanan yang belum dibayar. Silakan selesaikan pembayaran pesanan sebelumnya.'
                     ], 400);
                 }
             }

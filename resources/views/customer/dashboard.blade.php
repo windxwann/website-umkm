@@ -292,6 +292,7 @@ function finishVisit() {
 }
 
 // Refresh data
+let isRefreshing = false;
 function refreshData() {
     if (isRefreshing) return;
     
@@ -402,6 +403,19 @@ function checkOrderStatus() {
     });
 }
 setInterval(checkOrderStatus, 5000);
+
+function updateConnectionStatus(isConnected) {
+    const statusBadge = document.getElementById('connection-status');
+    if (!statusBadge) return;
+    
+    if (isConnected) {
+        statusBadge.className = 'flex items-center gap-2 px-4 py-2 rounded-2xl bg-green-50 text-green-700 text-[10px] font-black uppercase tracking-widest';
+        statusBadge.innerHTML = '<i class="fas fa-wifi"></i> <span>Terhubung</span>';
+    } else {
+        statusBadge.className = 'flex items-center gap-2 px-4 py-2 rounded-2xl bg-rose-50 text-rose-700 text-[10px] font-black uppercase tracking-widest';
+        statusBadge.innerHTML = '<i class="fas fa-wifi-slash"></i> <span>Terputus</span>';
+    }
+}
 </script>
 @endpush
 @endsection

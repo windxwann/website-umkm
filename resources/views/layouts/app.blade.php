@@ -486,6 +486,21 @@
                 title: message
             });
         }
+
+        @if(session('qr_code'))
+        // Poll for session validity (more frequent check)
+        setInterval(function() {
+            fetch('{{ route("customer.checkSession") }}', {
+                headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.valid) {
+                    window.location.href = '{{ route("scan.qr") }}';
+                }
+            });
+        }, 2000);
+        @endif
     </script>
     @stack('scripts')
 </body>

@@ -40,6 +40,24 @@
         @endforeach
     </div>
 
+    <!-- Pending Payment Alerts -->
+    @if(($stats['pending_payments'] ?? 0) > 0)
+    <div class="mb-10 p-6 bg-amber-50 border border-amber-200 rounded-[2rem] flex items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-amber-500 text-white rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/20">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-black text-amber-800 uppercase tracking-widest">Pembayaran Perlu Konfirmasi</h3>
+                <p class="text-[10px] font-bold text-amber-700 mt-1">Ada {{ $stats['pending_payments'] }} pesanan yang menunggu konfirmasi pembayaran tunai.</p>
+            </div>
+        </div>
+        <a href="{{ route('cashier.orders') }}?status=pending" class="bg-amber-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-amber-700 transition shadow-lg shadow-amber-600/20">
+            Lihat Pesanan
+        </a>
+    </div>
+    @endif
+
     <!-- Management Meja -->
     <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden mb-10">
         <div class="p-8 border-b border-slate-50 flex justify-between items-center">

@@ -47,10 +47,13 @@ class CheckQrCode
         // --- TAMBAHAN KEAMANAN: VERIFIKASI LOCK SESSION ---
         // Jika QR Code terkunci oleh session ID lain, maka paksa scan ulang
         if ($qrCode->current_session_id && $qrCode->current_session_id !== session()->getId()) {
-            session()->forget(['qr_code', 'qr_validated']);
-            return redirect()->route('scan.qr')->with('error', 'Sesi Anda telah berakhir atau meja ini telah direset/digunakan orang lain. Silakan scan ulang.');
+            session()->forget(['qr_code', 'qr_validated', 'cart', 'customer_phone']); // Hapus juga data sensitif lainnya
+
+            // Tambahkan flag untuk frontend agar tahu sesi kadaluarsa
+            return redirect()->route('scan.qr')->with('error', 'Sesi Anda telah berakhir karena meja ini telah digunakan oleh pelanggan lain. Silakan scan ulang.');
         }
-        
+        // -------------------------------------------------
+
         // Perpanjang lock session setiap kali ada aktivitas (optional)
         if ($qrCode->current_session_id === session()->getId()) {
             $qrCode->update(['session_expires_at' => now()->addMinutes(60)]);

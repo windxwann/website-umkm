@@ -11,6 +11,13 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // 🔥 PROTEKSI: Validasi ulang sesi vs database
+        $qrCodeRecord = \App\Models\QrCode::where('code', session('qr_code'))->first();
+        if (!$qrCodeRecord || ($qrCodeRecord->current_session_id && $qrCodeRecord->current_session_id !== session()->getId())) {
+            session()->forget(['qr_code', 'qr_validated', 'cart', 'customer_phone']);
+            return redirect()->route('scan.qr')->with('error', 'Sesi Anda telah berakhir.');
+        }
+
         // Get customer identifier from session (qr code or phone)
         $qrCode = session('qr_code');
         
@@ -42,6 +49,13 @@ class DashboardController extends Controller
     
     public function trackOrder($orderNumber)
     {
+        // 🔥 PROTEKSI: Validasi ulang sesi vs database
+        $qrCodeRecord = \App\Models\QrCode::where('code', session('qr_code'))->first();
+        if (!$qrCodeRecord || ($qrCodeRecord->current_session_id && $qrCodeRecord->current_session_id !== session()->getId())) {
+            session()->forget(['qr_code', 'qr_validated', 'cart', 'customer_phone']);
+            return redirect()->route('scan.qr')->with('error', 'Sesi Anda telah berakhir.');
+        }
+
         $order = Order::where('order_number', $orderNumber)
                     ->with('items')
                     ->firstOrFail();

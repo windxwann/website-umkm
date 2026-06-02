@@ -163,7 +163,8 @@ class OrderController extends Controller
                             Log::error('Failed to trigger session reset: ' . $e->getMessage());
                         }
                     }
-                    // 🔥 RESET QR SESSION LOCK
+                    // 🔥 RESET QR SESSION LOCK (Dihapus agar meja tetap terkunci sampai reset manual)
+                    /*
                     if ($order->qr_code) {
                         QrCode::where('code', $order->qr_code)->update([
                             'current_session_id' => null,
@@ -171,6 +172,7 @@ class OrderController extends Controller
                         ]);
                         Log::info('QR Session Lock released for: ' . $order->qr_code);
                     }
+                    */
                     // 🔥 BROADCAST KE CUSTOMER DASHBOARD - NOTIFIKASI PESANAN SELESAI
                     try {
                         broadcast(new OrderCompleted($order));
@@ -412,7 +414,8 @@ class OrderController extends Controller
                 }
             }
 
-            // 🔥 RESET QR SESSION LOCK
+            // 🔥 RESET QR SESSION LOCK (Dihapus agar meja tetap terkunci sampai reset manual)
+            /*
             if ($order->qr_code) {
                 QrCode::where('code', $order->qr_code)->update([
                     'current_session_id' => null,
@@ -420,6 +423,7 @@ class OrderController extends Controller
                 ]);
                 Log::info('QR Session Lock released from cancelOrder for: ' . $order->qr_code);
             }
+            */
 
             PaymentNotification::create([
                 'order_id' => $order->id,
@@ -554,7 +558,8 @@ class OrderController extends Controller
                 }
             }
 
-            // 🔥 RESET QR SESSION LOCK
+            // 🔥 RESET QR SESSION LOCK (Dihapus agar meja tetap terkunci sampai reset manual)
+            /*
             if ($order->qr_code) {
                 QrCode::where('code', $order->qr_code)->update([
                     'current_session_id' => null,
@@ -562,6 +567,7 @@ class OrderController extends Controller
                 ]);
                 Log::info('QR Session Lock released from markAsCompleted for: ' . $order->qr_code);
             }
+            */
 
             PaymentNotification::create([
                 'order_id' => $order->id,

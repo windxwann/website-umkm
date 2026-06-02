@@ -149,6 +149,7 @@ Route::prefix('cashier')->name('cashier.')->middleware(['auth', 'cashier'])->gro
     Route::get('/dashboard', [CashierDashboardController::class, 'index'])->name('dashboard');
     
     // Order Management
+    Route::get('/orders', [CashierOrderController::class, 'index'])->name('orders');
     Route::get('/orders/{order}', [CashierOrderController::class, 'show'])->name('order.show');
     Route::get('/orders/{order}/details', [CashierOrderController::class, 'getOrderDetails'])->name('order.details');
     Route::put('/orders/{order}/status', [CashierOrderController::class, 'updateStatus'])->name('order.update-status');

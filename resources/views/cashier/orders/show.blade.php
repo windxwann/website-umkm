@@ -247,12 +247,14 @@ function updateOrderStatus(orderId, status) {
             .then(data => {
                 if (data.success) {
                     Swal.fire({ icon: 'success', title: 'Berhasil', timer: 1500, showConfirmButton: false });
-                    setTimeout(() => location.reload(), 1500);
+                    setTimeout(() => {
+                        window.location.href = "{{ route('cashier.order.show', $order->id) }}";
+                    }, 1500);
                 } else {
                     Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
                 }
             });
-        } else { location.reload(); }
+        } else { window.location.href = "{{ route('cashier.order.show', $order->id) }}"; }
     });
 }
 
@@ -280,8 +282,10 @@ document.getElementById('amountPaid').addEventListener('input', function() {
 
 document.getElementById('paymentForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    console.log('Form submitted');
     const orderId = document.getElementById('orderId').value;
     const amountPaid = document.getElementById('amountPaid').value;
+    console.log('OrderId:', orderId, 'Amount:', amountPaid);
     
     fetch(`/cashier/orders/${orderId}/process-cash-payment`, {
         method: 'POST',
@@ -292,14 +296,24 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
         },
         body: JSON.stringify({ amount_paid: amountPaid })
     })
-    .then(res => res.json())
+    .then(res => {
+        console.log('Response received:', res);
+        return res.json();
+    })
     .then(data => {
+        console.log('Data:', data);
         if (data.success) {
             Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, timer: 1500, showConfirmButton: false });
-            setTimeout(() => location.reload(), 1500);
+            setTimeout(() => {
+                window.location.href = "{{ route('cashier.order.show', $order->id) }}";
+            }, 1500);
         } else {
             Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
         }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        Swal.fire({ icon: 'error', title: 'Terjadi Kesalahan', text: 'Gagal menghubungi server.' });
     });
 });
 
@@ -331,7 +345,9 @@ function confirmPayment(orderId) {
             .then(data => {
                 if (data.success) {
                     Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, timer: 1500, showConfirmButton: false });
-                    setTimeout(() => location.reload(), 1500);
+                    setTimeout(() => {
+                        window.location.href = "{{ route('cashier.order.show', $order->id) }}";
+                    }, 1500);
                 } else {
                     Swal.fire({ icon: 'error', title: 'Gagal', text: data.message });
                 }

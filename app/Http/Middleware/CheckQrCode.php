@@ -22,7 +22,7 @@ class CheckQrCode
             return $next($request);
         }
 
-        if ($request->is('admin/*') || $request->is('scan*')) {
+        if ($request->is('admin/*') || $request->is('scan*') || $request->is('cashier/*') || $request->is('login')) {
             return $next($request);
         }
 

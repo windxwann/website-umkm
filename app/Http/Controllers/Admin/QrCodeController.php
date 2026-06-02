@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 
 class QrCodeController extends Controller
 {
-    // 🔥 HAPUS method showScan(), validateQr(), processScan()
+    //  HAPUS method showScan(), validateQr(), processScan()
     // Method tersebut HARUS ADA di App\Http\Controllers\QrCodeController (Public)
 
     /**

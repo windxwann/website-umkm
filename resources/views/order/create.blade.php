@@ -94,10 +94,22 @@
             </div>
             
             <!-- Total -->
-            <div class="border-t border-slate-100 pt-6">
-                <div class="flex justify-between items-center mb-2">
+            <div class="border-t border-slate-100 pt-6 space-y-2">
+                <div class="flex justify-between items-center">
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Subtotal</span>
                     <span class="text-sm font-black text-slate-600">Rp <span x-text="formatPrice(subtotal)"></span></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pajak ({{ setting('tax', 0) }}%)</span>
+                    <span class="text-sm font-black text-slate-600">Rp <span x-text="formatPrice(Math.round(subtotal * {{ setting('tax', 0) }} / 100))"></span></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Service Charge ({{ setting('service_charge', 0) }}%)</span>
+                    <span class="text-sm font-black text-slate-600">Rp <span x-text="formatPrice(Math.round(subtotal * {{ setting('service_charge', 0) }} / 100))"></span></span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Packaging Fee</span>
+                    <span class="text-sm font-black text-slate-600">Rp <span x-text="formatPrice({{ setting('packaging_fee', 0) }})"></span></span>
                 </div>
                 <div class="flex justify-between items-center pt-4 border-t border-dashed border-slate-200">
                     <span class="text-xs font-black text-slate-900 uppercase tracking-widest">Total Bayar</span>
@@ -269,7 +281,9 @@ function orderForm() {
         },
         
         get total() {
-            return this.subtotal;
+            const tax = Math.round(this.subtotal * {{ setting('tax', 0) }} / 100);
+            const serviceCharge = Math.round(this.subtotal * {{ setting('service_charge', 0) }} / 100);
+            return this.subtotal + tax + serviceCharge + this.packagingFee;
         },
         
         formatPrice(price) {

@@ -17,7 +17,8 @@ class AutoResetTables extends Command
 
     public function handle()
     {
-        $inactiveHours = 0;
+        //  AUTO RESET DINONAKTIFKAN UNTUK TEST: Set ke 9999 jam
+        $inactiveHours = 9999;
         $cutoffDate = Carbon::now()->subHours($inactiveHours);
 
         // Cari QR yang ada sesi aktif dengan lockForUpdate untuk mencegah race condition

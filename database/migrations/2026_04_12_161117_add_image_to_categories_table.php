@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            // 🔥 CEK DULU APAKAH KOLOM SUDAH ADA
+            //  CEK DULU APAKAH KOLOM SUDAH ADA
             if (!Schema::hasColumn('categories', 'image')) {
                 $table->string('image')->nullable()->after('description');
             }
@@ -25,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            // 🔥 CEK APAKAH KOLOM ADA SEBELUM DIHAPUS
+            //  CEK APAKAH KOLOM ADA SEBELUM DIHAPUS
             if (Schema::hasColumn('categories', 'image')) {
                 $table->dropColumn('image');
             }

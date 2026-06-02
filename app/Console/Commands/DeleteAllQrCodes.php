@@ -16,9 +16,9 @@ class DeleteAllQrCodes extends Command
         
         if ($this->confirm("Are you sure you want to delete all $count QR codes?")) {
             QrCode::truncate();
-            $this->info("✅ Successfully deleted all $count QR codes!");
+            $this->info(" Successfully deleted all $count QR codes!");
         } else {
-            $this->info("❌ Operation cancelled.");
+            $this->info(" Operation cancelled.");
         }
     }
 }

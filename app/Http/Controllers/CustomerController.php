@@ -9,7 +9,7 @@ class CustomerController extends Controller
 {
     public function reset()
     {
-        // 🔥 TAMBAHAN: Lepaskan kunci di tabel QR Codes
+        //  TAMBAHAN: Lepaskan kunci di tabel QR Codes
         if (session()->has('qr_code')) {
             \App\Models\QrCode::where('code', session('qr_code'))->update([
                 'current_session_id' => null,
@@ -48,6 +48,7 @@ class CustomerController extends Controller
         }
         
         // Check session lock
+        $qrCode = $qrCode->fresh();
         if ($qrCode->current_session_id && $qrCode->current_session_id !== session()->getId()) {
             return response()->json(['valid' => false]);
         }

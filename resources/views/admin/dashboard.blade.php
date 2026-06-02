@@ -6,7 +6,7 @@
 @section('content')
 <!-- Welcome Section - Compact -->
 <div class="mb-6">
-    <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Halo, {{ explode(' ', auth()->user()->name)[0] }}! 👋</h2>
+    <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Halo, {{ explode(' ', auth()->user()->name)[0] }}! </h2>
     <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ringkasan Restoran Hari Ini</p>
 </div>
 

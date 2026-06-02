@@ -172,10 +172,10 @@ function updateOrderStatus(orderId, status) {
     let statusText = '';
     let statusIcon = '';
     switch(status) {
-        case 'waiting': statusText = 'Menunggu'; statusIcon = '⏳'; break;
-        case 'processed': statusText = 'Diproses'; statusIcon = '⚙️'; break;
-        case 'completed': statusText = 'Selesai'; statusIcon = '✅'; break;
-        case 'cancelled': statusText = 'Dibatalkan'; statusIcon = '❌'; break;
+        case 'waiting': statusText = 'Menunggu'; statusIcon = ''; break;
+        case 'processed': statusText = 'Diproses'; statusIcon = ''; break;
+        case 'completed': statusText = 'Selesai'; statusIcon = ''; break;
+        case 'cancelled': statusText = 'Dibatalkan'; statusIcon = ''; break;
     }
     
     Swal.fire({

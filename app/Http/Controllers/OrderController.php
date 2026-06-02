@@ -57,8 +57,8 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            // Hitung total amount
-            $totalAmount = 0;
+            // Hitung subtotal produk
+            $subtotal = 0;
             $orderItems = [];
 
             foreach ($request->items as $item) {
@@ -72,38 +72,33 @@ class OrderController extends Controller
                     ], 400);
                 }
                 
-                $subtotal = $product->price * $item['quantity'];
-                $totalAmount += $subtotal;
+                $itemSubtotal = $product->price * $item['quantity'];
+                $subtotal += $itemSubtotal;
 
                 $orderItems[] = [
                     'product_id' => $product->id,
                     'product_name' => $product->name,
                     'price' => $product->price,
                     'quantity' => $item['quantity'],
-                    'subtotal' => $subtotal
+                    'subtotal' => $itemSubtotal
                 ];
             }
 
-            // Cek apakah meja masih ada order aktif
-            if (session()->has('qr_code')) {
-                // HANYA BLOKIR JIKA ADA ORDER PENDING (BELUM BAYAR)
-                $pendingOrder = Order::where('qr_code', session('qr_code'))
-                    ->where('payment_status', 'pending')
-                    ->whereIn('order_status', ['waiting', 'processed'])
-                    ->exists();
-                    
-                if ($pendingOrder) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Meja ini masih memiliki pesanan yang belum dibayar. Silakan selesaikan pembayaran pesanan sebelumnya.'
-                    ], 400);
-                }
-            }
-
-            // 🔥 FORCED OFFLINE MODE
+            // Ambil pengaturan pajak dan service charge
+            $taxRate = setting('tax', 0); // %
+            $serviceChargeRate = setting('service_charge', 0); // %
+            
+            $taxAmount = ($subtotal * $taxRate) / 100;
+            $serviceChargeAmount = ($subtotal * $serviceChargeRate) / 100;
+            
+            $totalAmount = $subtotal + $taxAmount + $serviceChargeAmount;
+            
+            //  FORCED OFFLINE MODE
             $finalOrderType = 'offline';
             $qrCode = session('qr_code');
-            $packagingFee = 0;
+            $packagingFee = setting('packaging_fee', 0); // Ambil packaging fee dari setting
+            
+            $totalAmount += $packagingFee;
 
             // Buat order baru
             $order = Order::create([
@@ -116,7 +111,10 @@ class OrderController extends Controller
                 'payment_method' => $request->payment_method,
                 'payment_status' => 'pending',
                 'order_status' => 'waiting',
-                'total_amount' => $totalAmount,
+                'subtotal' => $subtotal, // Simpan subtotal
+                'tax' => $taxAmount,     // Simpan nilai pajak
+                'service_charge' => $serviceChargeAmount, // Simpan nilai service charge
+                'total_amount' => $totalAmount, // Total akhir
                 'packaging_fee' => $packagingFee,
                 'delivery_address' => null,
                 'paid_amount' => 0,
@@ -129,7 +127,7 @@ class OrderController extends Controller
                 $order->items()->create($item);
             }
 
-            // 🔥 TRIGGER REAL-TIME NOTIFICATION untuk order baru
+            //  TRIGGER REAL-TIME NOTIFICATION untuk order baru
             try {
                 broadcast(new NewOrderNotification($order));
                 
@@ -148,7 +146,7 @@ class OrderController extends Controller
                 Log::warning('Broadcast notification failed: ' . $e->getMessage());
             }
 
-            // 🔥 Hapus cart dari session dan localStorage
+            //  Hapus cart dari session dan localStorage
             session()->forget('cart');
             
             // Simpan order_number ke session untuk tracking
@@ -167,7 +165,7 @@ class OrderController extends Controller
                 'success' => true,
                 'redirect' => route('order.success', $order->order_number),
                 'order_number' => $order->order_number,
-                'clear_cart' => true // 🔥 Tanda untuk clear cart di frontend
+                'clear_cart' => true //  Tanda untuk clear cart di frontend
             ]);
 
         } catch (\Exception $e) {
@@ -264,7 +262,7 @@ class OrderController extends Controller
                     'order_status' => 'processed'
                 ]);
 
-                // 🔥 TRIGGER NOTIFIKASI ORDER DIPROSES
+                //  TRIGGER NOTIFIKASI ORDER DIPROSES
                 try {
                     broadcast(new OrderProcessed($order));
                 } catch (\Exception $e) {
@@ -303,14 +301,14 @@ class OrderController extends Controller
         }
 
         try {
-            // 🔥 SAVE TO DATABASE
+            //  SAVE TO DATABASE
             \App\Models\PaymentNotification::create([
                 'order_id' => $order->id,
                 'type' => 'cashier',
                 'message' => "Pelanggan mengklaim sudah bayar via " . ($order->payment_method === 'e_wallet' ? 'QRIS' : 'Transfer') . ". Mohon cek dan konfirmasi pesanan #{$order->order_number}."
             ]);
 
-            // 🔥 TRIGGER REAL-TIME NOTIFICATION KE ADMIN
+            //  TRIGGER REAL-TIME NOTIFICATION KE ADMIN
             broadcast(new PaymentNotification($order, 'customer_claim'));
             
             Log::info('Payment confirmation intent sent by customer', [
@@ -380,7 +378,7 @@ class OrderController extends Controller
                 'old_status' => $oldStatus
             ]);
 
-            // 🔥 RESET SESSION & QR LOCK IF COMPLETED OR CANCELLED
+            //  RESET SESSION & QR LOCK IF COMPLETED OR CANCELLED
             if ($newStatus === 'completed' || $newStatus === 'cancelled') {
                 if ($order->qr_code) {
                     \App\Models\QrCode::where('code', $order->qr_code)->update([
@@ -399,7 +397,7 @@ class OrderController extends Controller
                 }
             }
 
-            // 🔥 TRIGGER NOTIFIKASI BERDASARKAN STATUS
+            //  TRIGGER NOTIFIKASI BERDASARKAN STATUS
             try {
                 if ($newStatus === 'processed' && $oldStatus !== 'processed') {
                     broadcast(new OrderProcessed($order));
@@ -545,7 +543,7 @@ class OrderController extends Controller
     }
 
     /**
-     * 🔥 RESET CART (untuk dipanggil dari frontend setelah checkout)
+     *  RESET CART (untuk dipanggil dari frontend setelah checkout)
      */
     public function resetCart(Request $request)
     {

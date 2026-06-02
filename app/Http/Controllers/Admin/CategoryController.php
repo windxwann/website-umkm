@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;  // 🔥 PERBAIKI NAMESPACE
+namespace App\Http\Controllers\Admin;  //  PERBAIKI NAMESPACE
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;  // 🔥 TAMBAHKAN INI
+use Illuminate\Support\Facades\Auth;  //  TAMBAHKAN INI
 
 class CategoryController extends Controller
 {

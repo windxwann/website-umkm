@@ -21,66 +21,65 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-10">
         @foreach([
             ['pending_payments', 'Pending', 'bg-amber-50', 'text-amber-600', 'fa-clock'],
-            ['waiting_orders', 'Pesanan Baru', 'bg-blue-50', 'text-blue-600', 'fa-shopping-cart'],
-            ['processed_orders', 'Diproses', 'bg-purple-50', 'text-purple-600', 'fa-spinner'],
+            ['waiting_orders', 'Baru', 'bg-blue-50', 'text-blue-600', 'fa-shopping-cart'],
+            ['processed_orders', 'Proses', 'bg-purple-50', 'text-purple-600', 'fa-spinner'],
             ['completed_orders', 'Selesai', 'bg-emerald-50', 'text-emerald-600', 'fa-check-circle']
         ] as $stat)
-        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm transition-all hover:shadow-md">
-            <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 {{ $stat[2] }} rounded-xl flex items-center justify-center border {{ str_replace('text-', 'border-', $stat[3]) }}">
-                    <i class="fas {{ $stat[4] }} {{ $stat[3] }} text-xs"></i>
+        <div class="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border border-slate-100 shadow-sm transition-all hover:shadow-md">
+            <div class="flex items-center justify-between mb-2 md:mb-4">
+                <div class="w-8 h-8 md:w-10 md:h-10 {{ $stat[2] }} rounded-xl flex items-center justify-center border {{ str_replace('text-', 'border-', $stat[3]) }}">
+                    <i class="fas {{ $stat[4] }} {{ $stat[3] }} text-[10px] md:text-xs"></i>
                 </div>
-                <span class="text-2xl font-black text-slate-900">{{ $stats[$stat[0]] ?? 0 }}</span>
+                <span class="text-xl md:text-2xl font-black text-slate-900">{{ $stats[$stat[0]] ?? 0 }}</span>
             </div>
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $stat[1] }}</p>
+            <p class="text-[8px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $stat[1] }}</p>
         </div>
         @endforeach
     </div>
 
-    <!-- Pending Payment Alerts (Removed) -->
-
     <!-- Management Meja -->
-    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden mb-10">
-        <div class="p-8 border-b border-slate-50 flex justify-between items-center">
-            <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center">
+    <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden mb-10">
+        <div class="p-6 md:p-8 border-b border-slate-50 flex justify-between items-center">
+            <h2 class="text-xs md:text-sm font-black text-slate-900 uppercase tracking-widest flex items-center">
                 <i class="fas fa-chair text-orange-600 mr-3"></i>
-                Manajemen Meja
+                Meja
             </h2>
         </div>
         
-        <div class="p-8">
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+        <div class="p-4 md:p-8">
+            <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 md:gap-3">
                 @foreach($tables as $table)
-                <div class="p-4 rounded-[1.5rem] border-2 transition-all duration-300 {{ $table->active_orders_count > 0 ? 'border-orange-100 bg-orange-50/30' : ($table->is_locked ? 'border-blue-100 bg-blue-50/30' : 'border-slate-50 bg-slate-50') }}">
-                    <div class="flex flex-col h-full justify-between gap-2">
+                <div class="p-3 md:p-4 rounded-xl md:rounded-[1.5rem] border-2 transition-all duration-300 
+                    {{ $table->active_orders_count > 0 ? 'border-orange-100 bg-orange-50/30' : ($table->is_locked ? 'border-blue-300 bg-blue-50/50 animate-pulse' : 'border-slate-50 bg-slate-50') }}">
+                    <div class="flex flex-col h-full justify-between gap-1 md:gap-2">
                         <div class="flex items-center justify-between">
-                            <span class="font-black text-slate-900 text-sm truncate">{{ $table->meja }}</span>
-                            <div class="w-2.5 h-2.5 rounded-full {{ $table->active_orders_count > 0 ? 'bg-orange-500' : 'bg-emerald-400' }}"></div>
+                            <span class="font-black text-slate-900 text-[10px] md:text-sm truncate">{{ $table->meja }}</span>
+                            <div class="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full {{ $table->active_orders_count > 0 ? 'bg-orange-500' : ($table->is_locked ? 'bg-blue-500' : 'bg-emerald-400') }}"></div>
                         </div>
                         
                         @if($table->active_orders_count > 0)
-                            <p class="text-[9px] font-black text-orange-600 uppercase tracking-widest truncate">
-                                Rp {{ number_format($table->total_active_amount, 0, ',', '.') }}
+                            <p class="text-[8px] md:text-[9px] font-black text-orange-600 uppercase tracking-widest truncate">
+                                {{ number_format($table->total_active_amount / 1000, 1) }}k
                             </p>
                             <button onclick="resetTable('{{ $table->qr_code }}', '{{ $table->meja }}', {{ $table->active_orders_count }}, {{ $table->has_unpaid ? 'true' : 'false' }})"
-                                    class="w-full bg-slate-900 text-white py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-rose-600 transition">
+                                    class="w-full bg-slate-900 text-white py-1.5 md:py-2 rounded-lg text-[8px] md:text-[9px] font-black uppercase tracking-widest hover:bg-rose-600 transition">
                                 Reset
                             </button>
                         @elseif($table->is_locked)
                             <div class="my-1">
-                                <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded-lg text-[8px] font-black uppercase tracking-widest border border-blue-100 block text-center truncate">
+                                <span class="px-1 md:px-2 py-0.5 md:py-1 bg-blue-50 text-blue-600 rounded-lg text-[7px] md:text-[8px] font-black uppercase tracking-widest border border-blue-100 block text-center truncate">
                                     Memilih
                                 </span>
                             </div>
                             <button onclick="resetTable('{{ $table->qr_code }}', '{{ $table->meja }}', 0, false)"
-                                    class="w-full bg-white border border-slate-200 text-slate-600 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest hover:bg-rose-50 transition">
+                                    class="w-full bg-white border border-slate-200 text-slate-600 py-1.5 md:py-2 rounded-lg text-[8px] md:text-[9px] font-black uppercase tracking-widest hover:bg-rose-50 transition">
                                 Reset
                             </button>
                         @else
-                            <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest py-1">Tersedia</p>
+                            <p class="text-[8px] md:text-[9px] font-black text-emerald-500 uppercase tracking-widest py-1 text-center">Ready</p>
                         @endif
                     </div>
                 </div>
@@ -90,64 +89,58 @@
     </div>
 
     <!-- Recent Transactions Table -->
-    <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
-        <div class="p-8 border-b border-slate-50 flex justify-between items-center">
-            <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center">
+    <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
+        <div class="p-6 md:p-8 border-b border-slate-50 flex justify-between items-center">
+            <h2 class="text-xs md:text-sm font-black text-slate-900 uppercase tracking-widest flex items-center">
                 <i class="fas fa-history text-orange-600 mr-3"></i>
-                Transaksi Terbaru
+                Transaksi
             </h2>
-            <a href="{{ route('cashier.transactions.today') }}" class="text-[9px] font-black text-orange-600 uppercase tracking-widest hover:text-orange-700">Lihat Semua</a>
+            <a href="{{ route('cashier.transactions.today') }}" class="text-[9px] font-black text-orange-600 uppercase tracking-widest hover:text-orange-700">Semua</a>
         </div>
         
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="w-full text-[10px] md:text-sm">
                 <thead class="bg-slate-50 text-slate-400">
                     <tr class="text-left">
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest">No. Order</th>
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest">Pelanggan</th>
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest text-right">Total</th>
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest">Status</th>
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest">Waktu</th>
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest text-center">Aksi</th>
+                        <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest whitespace-nowrap">Order</th>
+                        <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest whitespace-nowrap">Pelanggan</th>
+                        <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest whitespace-nowrap">Status</th>
+                        <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest text-right whitespace-nowrap">Total</th>
+                        <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
                     @forelse($recentOrders ?? [] as $order)
                     <tr class="hover:bg-slate-50/50 transition">
-                        <td class="px-8 py-6 font-black text-slate-900">#{{ $order->order_number }}</td>
-                        <td class="px-8 py-6">
+                        <td class="px-4 md:px-8 py-4 font-black text-slate-900 whitespace-nowrap">#{{ substr($order->order_number, -4) }}</td>
+                        <td class="px-4 md:px-8 py-4">
                             <div class="flex flex-col">
-                                <span class="font-black text-slate-900 text-sm tracking-tight">{{ $order->customer_name }}</span>
-                                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-1">Meja {{ $order->qrCodeRelation->meja ?? $order->qr_code ?? '-' }}</span>
+                                <span class="font-black text-slate-900 text-[10px] md:text-sm tracking-tight truncate">{{ $order->customer_name }}</span>
+                                <span class="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Meja {{ $order->qrCodeRelation->meja ?? $order->qr_code ?? '-' }}</span>
                             </div>
                         </td>
-                        <td class="px-8 py-6 text-right font-black text-orange-600">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
-                        <td class="px-8 py-6">
-                            <div class="flex flex-wrap gap-2">
-                                <span class="px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest
-                                    @if($order->order_status === 'completed') bg-emerald-50 text-emerald-600
-                                    @elseif($order->order_status === 'processed') bg-blue-50 text-blue-600
-                                    @elseif($order->order_status === 'waiting') bg-amber-50 text-amber-600
-                                    @else bg-rose-50 text-rose-600 @endif">
-                                    {{ $order->order_status }}
-                                </span>
-                            </div>
+                        <td class="px-4 md:px-8 py-4">
+                            <span class="px-2 py-1 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest
+                                @if($order->order_status === 'completed') bg-emerald-50 text-emerald-600
+                                @elseif($order->order_status === 'processed') bg-blue-50 text-blue-600
+                                @elseif($order->order_status === 'waiting') bg-amber-50 text-amber-600
+                                @else bg-rose-50 text-rose-600 @endif">
+                                {{ $order->order_status }}
+                            </span>
                         </td>
-                        <td class="px-8 py-6 text-[10px] font-bold text-slate-400">
-                            {{ $order->created_at->format('H:i') }}
-                        </td>
-                        <td class="px-8 py-6">
+                        <td class="px-4 md:px-8 py-4 text-right font-black text-orange-600 whitespace-nowrap">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
+                        <td class="px-4 md:px-8 py-4">
                             <div class="flex justify-center gap-2">
                                 <a href="{{ route('cashier.order.show', $order) }}" 
-                                   class="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-600 rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-sm">
-                                    <i class="fas fa-eye text-xs"></i>
+                                   class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-slate-50 text-slate-600 rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-sm">
+                                    <i class="fas fa-eye text-[10px] md:text-xs"></i>
                                 </a>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-8 py-20 text-center text-slate-400 font-black uppercase tracking-widest">Tidak ada pesanan terbaru</td>
+                        <td colspan="5" class="px-8 py-10 text-center text-slate-400 font-black uppercase tracking-widest text-[10px]">Kosong</td>
                     </tr>
                     @endforelse
                 </tbody>

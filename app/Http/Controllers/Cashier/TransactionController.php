@@ -33,7 +33,7 @@ class TransactionController extends Controller
 
         $transactions = $query->latest()->paginate(10);
         
-        // 🔥 Summary data
+        //  Summary data
         $allTodayTransactions = Order::whereDate('created_at', today())->get();
         
         $summary = [

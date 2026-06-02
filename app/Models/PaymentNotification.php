@@ -16,7 +16,7 @@ class PaymentNotification extends Model
         'read_at' => 'datetime'
     ];
 
-    // 🔥 KONSTANTA TYPE
+    //  KONSTANTA TYPE
     const TYPE_CASHIER = 'cashier';
     const TYPE_CUSTOMER = 'customer';
 

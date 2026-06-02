@@ -11,7 +11,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // 🔥 PROTEKSI: Validasi ulang sesi vs database
+        //  PROTEKSI: Validasi ulang sesi vs database
         $qrCodeRecord = \App\Models\QrCode::where('code', session('qr_code'))->first();
         if (!$qrCodeRecord || ($qrCodeRecord->current_session_id && $qrCodeRecord->current_session_id !== session()->getId())) {
             session()->forget(['qr_code', 'qr_validated', 'cart', 'customer_phone']);
@@ -49,7 +49,7 @@ class DashboardController extends Controller
     
     public function trackOrder($orderNumber)
     {
-        // 🔥 PROTEKSI: Validasi ulang sesi vs database
+        //  PROTEKSI: Validasi ulang sesi vs database
         $qrCodeRecord = \App\Models\QrCode::where('code', session('qr_code'))->first();
         if (!$qrCodeRecord || ($qrCodeRecord->current_session_id && $qrCodeRecord->current_session_id !== session()->getId())) {
             session()->forget(['qr_code', 'qr_validated', 'cart', 'customer_phone']);

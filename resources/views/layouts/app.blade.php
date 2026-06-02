@@ -488,18 +488,21 @@
         }
 
         @if(session('qr_code'))
-        // Poll for session validity (more frequent check)
-        setInterval(function() {
-            fetch('{{ route("customer.checkSession") }}', {
-                headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (!data.valid) {
-                    window.location.href = '{{ route("scan.qr") }}';
+        // Polling status kunci meja secara sangat ringan (setiap 5 detik)
+        setInterval(async () => {
+            try {
+                const response = await fetch('{{ route("qr.check-lock") }}', {
+                    headers: { 'Accept': 'application/json', 'Cache-Control': 'no-cache' }
+                });
+                const data = await response.json();
+                if (data.locked) {
+                    // Sesi diputus, langsung arahkan ke scan
+                    window.location.replace('{{ route("scan.qr") }}');
                 }
-            });
-        }, 2000);
+            } catch (e) {
+                // Abaikan error jaringan ringan
+            }
+        }, 5000);
         @endif
     </script>
     @stack('scripts')

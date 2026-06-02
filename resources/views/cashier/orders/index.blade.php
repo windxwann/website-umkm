@@ -34,10 +34,10 @@
                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Status Pesanan</label>
                 <select name="status" class="w-full bg-slate-50 border-none px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest focus:ring-4 focus:ring-orange-500/5 transition-all">
                     <option value="">Semua Status</option>
-                    <option value="waiting" {{ request('status') == 'waiting' ? 'selected' : '' }}>⏳ Menunggu</option>
-                    <option value="processed" {{ request('status') == 'processed' ? 'selected' : '' }}>⚙️ Diproses</option>
-                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>✅ Selesai</option>
-                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>❌ Dibatalkan</option>
+                    <option value="waiting" {{ request('status') == 'waiting' ? 'selected' : '' }}> Menunggu</option>
+                    <option value="processed" {{ request('status') == 'processed' ? 'selected' : '' }}> Diproses</option>
+                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}> Selesai</option>
+                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}> Dibatalkan</option>
                 </select>
             </div>
 
@@ -46,8 +46,8 @@
                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Status Bayar</label>
                 <select name="payment" class="w-full bg-slate-50 border-none px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest focus:ring-4 focus:ring-orange-500/5 transition-all">
                     <option value="">Semua</option>
-                    <option value="pending" {{ request('payment') == 'pending' ? 'selected' : '' }}>⏳ Pending</option>
-                    <option value="paid" {{ request('payment') == 'paid' ? 'selected' : '' }}>✅ Lunas</option>
+                    <option value="pending" {{ request('payment') == 'pending' ? 'selected' : '' }}> Pending</option>
+                    <option value="paid" {{ request('payment') == 'paid' ? 'selected' : '' }}> Lunas</option>
                 </select>
             </div>
 

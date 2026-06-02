@@ -77,10 +77,10 @@
                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Status</label>
                 <select name="status" class="w-full bg-slate-50 border-none px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest focus:ring-4 focus:ring-orange-500/5 transition-all">
                     <option value="">Semua Status</option>
-                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>✅ Selesai</option>
-                    <option value="waiting" {{ request('status') == 'waiting' ? 'selected' : '' }}>⏳ Menunggu</option>
-                    <option value="processed" {{ request('status') == 'processed' ? 'selected' : '' }}>⚙️ Diproses</option>
-                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>❌ Dibatalkan</option>
+                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}> Selesai</option>
+                    <option value="waiting" {{ request('status') == 'waiting' ? 'selected' : '' }}> Menunggu</option>
+                    <option value="processed" {{ request('status') == 'processed' ? 'selected' : '' }}> Diproses</option>
+                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}> Dibatalkan</option>
                 </select>
             </div>
             
@@ -88,9 +88,9 @@
                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Metode Bayar</label>
                 <select name="payment_method" class="w-full bg-slate-50 border-none px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest focus:ring-4 focus:ring-orange-500/5 transition-all">
                     <option value="">Semua Metode</option>
-                    <option value="cashier" {{ request('payment_method') == 'cashier' ? 'selected' : '' }}>💵 Tunai (Kasir)</option>
-                    <option value="e_wallet" {{ request('payment_method') == 'e_wallet' ? 'selected' : '' }}>📱 E-Wallet</option>
-                    <option value="bank_transfer" {{ request('payment_method') == 'bank_transfer' ? 'selected' : '' }}>🏦 Transfer Bank</option>
+                    <option value="cashier" {{ request('payment_method') == 'cashier' ? 'selected' : '' }}> Tunai (Kasir)</option>
+                    <option value="e_wallet" {{ request('payment_method') == 'e_wallet' ? 'selected' : '' }}> E-Wallet</option>
+                    <option value="bank_transfer" {{ request('payment_method') == 'bank_transfer' ? 'selected' : '' }}> Transfer Bank</option>
                 </select>
             </div>
             

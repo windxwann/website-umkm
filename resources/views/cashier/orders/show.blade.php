@@ -120,10 +120,10 @@
                                 class="w-full bg-slate-50 border-none px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest focus:ring-4 focus:ring-orange-500/5 transition-all
                                 @if($order->order_status == 'completed') text-emerald-600 @elseif($order->order_status == 'processed') text-blue-600 @else text-amber-600 @endif"
                                 {{ in_array($order->order_status, ['completed', 'cancelled']) ? 'disabled' : '' }}>
-                            <option value="waiting" {{ $order->order_status == 'waiting' ? 'selected' : '' }}>⏳ Menunggu</option>
-                            <option value="processed" {{ $order->order_status == 'processed' ? 'selected' : '' }}>⚙️ Diproses</option>
-                            <option value="completed" {{ $order->order_status == 'completed' ? 'selected' : '' }}>✅ Selesai</option>
-                            <option value="cancelled" {{ $order->order_status == 'cancelled' ? 'selected' : '' }}>❌ Dibatalkan</option>
+                            <option value="waiting" {{ $order->order_status == 'waiting' ? 'selected' : '' }}> Menunggu</option>
+                            <option value="processed" {{ $order->order_status == 'processed' ? 'selected' : '' }}> Diproses</option>
+                            <option value="completed" {{ $order->order_status == 'completed' ? 'selected' : '' }}> Selesai</option>
+                            <option value="cancelled" {{ $order->order_status == 'cancelled' ? 'selected' : '' }}> Dibatalkan</option>
                         </select>
                     </div>
 

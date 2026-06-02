@@ -86,17 +86,24 @@ class QrCodeController extends Controller
                 return back()->with('error', 'Meja ini sedang digunakan oleh pelanggan lain.');
             }
         } else {
-            // Jika tidak ada order aktif, cek apakah session lock masih berlaku
+            // DEBUGGING: Tambahkan log ini
+            Log::info('--- DEBUG SCAN ---');
+            Log::info('Meja: ' . $qrCode->code);
+            Log::info('DB Session ID: ' . $qrCode->current_session_id);
+            Log::info('Current Session ID: ' . session()->getId());
+
+            // Jika tidak ada order aktif, cek apakah meja masih terkunci oleh sesi sebelumnya
             if ($qrCode->current_session_id && 
-                $qrCode->current_session_id !== session()->getId() && 
-                $qrCode->session_expires_at && 
-                $qrCode->session_expires_at->isFuture()) {
+                $qrCode->current_session_id !== session()->getId()) {
+                
+                Log::info('BLOCK: Meja terkunci!');
                 
                 if ($request->wantsJson()) {
-                    return response()->json(['success' => false, 'message' => 'Meja ini baru saja dipesan/diakses. Silakan tunggu beberapa saat atau hubungi kasir.']);
+                    return response()->json(['success' => false, 'message' => 'Meja ini sedang digunakan. Silakan hubungi kasir untuk mereset meja.']);
                 }
-                return back()->with('error', 'Meja ini sedang diakses oleh pelanggan lain.');
+                return back()->with('error', 'Meja ini sedang digunakan. Silakan hubungi kasir untuk mereset meja.');
             }
+            Log::info('PASS: Meja bebas!');
         }
 
         // 3. PERBAIKAN FATAL: Menghindari session()->flush();
@@ -117,12 +124,12 @@ class QrCodeController extends Controller
         // Update scan count
         $qrCode->update([
             'current_session_id' => $newSessionId,
-            'session_expires_at' => now()->addMinutes(60), // Lock selama 1 jam (atau sampai order selesai)
+            'session_expires_at' => now()->addMinutes(1), // Lock selama 1 menit (dipercepat untuk pengujian)
             'scan_count' => $qrCode->scan_count + 1,
             'last_scanned_at' => now()
         ]);
 
-        // 🔥 FORCED OFFLINE MODE (REMOVED GEOLOCATION)
+        //  FORCED OFFLINE MODE (REMOVED GEOLOCATION)
         $orderMode = 'offline';
         $distance = null;
 
@@ -145,6 +152,31 @@ class QrCodeController extends Controller
         $message = 'Selamat datang! Silakan pesan makanan.'; 
 
         return redirect()->route('home')->with('success', $message);
+    }
+
+    /**
+     * Cek status kunci meja secara ringan
+     */
+    public function checkLockStatus(Request $request)
+    {
+        if (!session()->has('qr_code')) {
+            return response()->json(['locked' => true]); // Jika tidak punya sesi, langsung anggap locked (keluar)
+        }
+
+        $qrCode = QrCodeModel::where('code', session('qr_code'))->first();
+        
+        // Meja terkunci (bagi user INI) JIKA current_session_id tidak sama dengan ID sesi saat ini
+        // Termasuk jika current_session_id adalah null (baru saja direset kasir)
+        $isLocked = !$qrCode || $qrCode->current_session_id !== session()->getId();
+        
+        \Log::info('Polling Debug: Meja ' . session('qr_code') . ' | Locked: ' . ($isLocked ? 'Yes' : 'No') . ' | CurrentID: ' . session()->getId() . ' | DBID: ' . ($qrCode->current_session_id ?? 'null'));
+        
+        if ($isLocked) {
+            // Hapus sesi secara proaktif agar saat redirect ke /scan tidak bentrok
+            session()->forget(['qr_code', 'qr_validated', 'cart', 'customer_phone', 'session_start', 'session_id']);
+        }
+        
+        return response()->json(['locked' => $isLocked]);
     }
 
     /**

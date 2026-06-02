@@ -62,6 +62,9 @@ class DashboardController extends Controller
             }])
             ->get()
             ->map(function ($qr) {
+                // DEBUGGING: Cek apakah session_id terbaca
+                \Log::info('Dashboard Debug - Meja: ' . $qr->code . ' | SessionID: ' . $qr->current_session_id);
+                
                 $activeOrders = $qr->orders;
                 $completedOrders = Order::where('qr_code', $qr->code)
                     ->where('order_status', 'completed')
@@ -78,7 +81,7 @@ class DashboardController extends Controller
                     'completed_today' => $completedOrders->count(),
                     'has_unpaid' => $activeOrders->where('payment_status', 'pending')->count() > 0,
                     // Perbaikan: Meja dianggap terkunci jika sesi masih aktif (is_locked = true)
-                    'is_locked' => ($qr->current_session_id && (!$qr->session_expires_at || $qr->session_expires_at->isFuture())) || $activeOrders->count() > 0
+                    'is_locked' => !empty($qr->current_session_id) || $activeOrders->count() > 0
                 ];
             });
         return view('cashier.dashboard', compact('stats', 'recentOrders', 'tables'));

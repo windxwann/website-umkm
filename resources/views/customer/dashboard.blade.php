@@ -82,25 +82,24 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+            <table class="w-full text-[10px] md:text-sm">
                 <thead class="bg-slate-50 text-slate-400">
                     <tr class="text-left">
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest">No. Order</th>
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest">Tanggal</th>
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest">Total</th>
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest">Status</th>
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest">Pembayaran</th>
-                        <th class="px-8 py-4 font-black text-[10px] uppercase tracking-widest">Aksi</th>
+                        <th class="px-3 md:px-8 py-4 font-black uppercase tracking-widest whitespace-nowrap">Order</th>
+                        <th class="px-3 md:px-8 py-4 font-black uppercase tracking-widest whitespace-nowrap">Tanggal</th>
+                        <th class="px-3 md:px-8 py-4 font-black uppercase tracking-widest text-right whitespace-nowrap">Total</th>
+                        <th class="px-3 md:px-4 py-4 font-black uppercase tracking-widest text-center">Status</th>
+                        <th class="px-3 md:px-8 py-4 font-black uppercase tracking-widest text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50" id="orders-tbody">
                     @forelse($orders ?? [] as $order)
                     <tr class="hover:bg-slate-50 transition" id="order-row-{{ $order->order_number }}">
-                        <td class="px-8 py-6 font-black text-slate-900">#{{ $order->order_number }}</td>
-                        <td class="px-8 py-6 font-medium text-slate-600">{{ $order->created_at->format('d M Y, H:i') }}</td>
-                        <td class="px-8 py-6 font-black text-orange-600">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
-                        <td class="px-8 py-6">
-                            <span class="status-badge-{{ $order->order_number }} px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest
+                        <td class="px-3 md:px-8 py-4 font-black text-slate-900 whitespace-nowrap">#{{ substr($order->order_number, -4) }}</td>
+                        <td class="px-3 md:px-8 py-4 font-medium text-slate-600 whitespace-nowrap">{{ $order->created_at->format('d M, H:i') }}</td>
+                        <td class="px-3 md:px-8 py-4 font-black text-orange-600 text-right whitespace-nowrap">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
+                        <td class="px-3 md:px-4 py-4 text-center">
+                            <span class="status-badge-{{ $order->order_number }} px-2 py-1 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest
                                 @if($order->order_status === 'waiting') bg-amber-50 text-amber-600
                                 @elseif($order->order_status === 'processed') bg-blue-50 text-blue-600
                                 @elseif($order->order_status === 'completed') bg-emerald-50 text-emerald-600
@@ -109,26 +108,15 @@
                                 {{ $order->order_status }}
                             </span>
                         </td>
-                        <td class="px-8 py-6">
-                            @if($order->payment_status === 'paid')
-                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600">
-                                    <i class="fas fa-check-circle mr-1"></i> Lunas
-                                </span>
-                            @else
-                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-50 text-amber-600">
-                                    <i class="fas fa-hourglass-half mr-1"></i> Pending
-                                </span>
-                            @endif
-                        </td>
-                        <td class="px-8 py-6">
+                        <td class="px-3 md:px-8 py-4 text-center">
                             <a href="{{ route('customer.track-order', $order->order_number) }}" class="text-slate-400 hover:text-orange-600 transition">
-                                <i class="fas fa-eye"></i>
+                                <i class="fas fa-eye text-xs"></i>
                             </a>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-8 py-16 text-center text-slate-400 font-black uppercase tracking-widest">Belum ada pesanan</td>
+                        <td colspan="5" class="px-8 py-16 text-center text-slate-400 font-black uppercase tracking-widest text-[10px]">Belum ada pesanan</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -361,7 +349,7 @@ function checkOrderStatus() {
                     playNotificationSound();
                     
                     Swal.fire({
-                        title: '🎉 Pesanan Selesai!',
+                        title: ' Pesanan Selesai!',
                         html: `
                             <div class="text-left">
                                 <div class="mb-4 p-4 bg-orange-50 rounded-lg">
@@ -372,12 +360,12 @@ function checkOrderStatus() {
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">Status Pembayaran:</span>
                                         <span class="font-semibold ${order.payment_status === 'paid' ? 'text-green-600' : 'text-yellow-600'}">
-                                            ${order.payment_status === 'paid' ? '✅ LUNAS' : '⏳ PENDING'}
+                                            ${order.payment_status === 'paid' ? ' LUNAS' : ' PENDING'}
                                         </span>
                                     </div>
                                     ${order.payment_status !== 'paid' ? 
-                                        '<div class="mt-3 p-3 bg-yellow-50 rounded-lg text-sm text-yellow-800">⚠️ Silakan selesaikan pembayaran terlebih dahulu</div>' : 
-                                        '<div class="mt-3 p-3 bg-green-50 rounded-lg text-sm text-green-800">✅ Terima kasih! Silakan ambil pesanan Anda</div>'
+                                        '<div class="mt-3 p-3 bg-yellow-50 rounded-lg text-sm text-yellow-800"> Silakan selesaikan pembayaran terlebih dahulu</div>' : 
+                                        '<div class="mt-3 p-3 bg-green-50 rounded-lg text-sm text-green-800"> Terima kasih! Silakan ambil pesanan Anda</div>'
                                     }
                                 </div>
                             </div>

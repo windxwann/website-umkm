@@ -132,12 +132,12 @@ class OrderController extends Controller
                         'type' => 'customer',
                         'message' => "Pesanan #{$order->order_number} sedang diproses. Mohon tunggu."
                     ]);
-                    // 🔥 BROADCAST KE CUSTOMER DASHBOARD
+                    //  BROADCAST KE CUSTOMER DASHBOARD
                     try {
                         broadcast(new OrderProcessed($order));
-                        Log::info('OrderProcessed broadcast sent for: ' . $order->order_number);
+                        \Log::info('OrderProcessed broadcast sent for: ' . $order->order_number);
                     } catch (\Exception $e) {
-                        Log::warning('Broadcast OrderProcessed failed: ' . $e->getMessage());
+                        \Log::warning('Broadcast OrderProcessed failed: ' . $e->getMessage());
                     }
                     break;
                     
@@ -149,36 +149,39 @@ class OrderController extends Controller
                             'paid_amount' => $order->total_amount
                         ]);
                     }
-                    // 🔥 AUTO-ARCHIVE PESANAN
-                    $order->update([
-                        'is_archived_for_table' => true
-                    ]);
+                    //  AUTO-ARCHIVE PESANAN
+                    // Hanya diarsipkan jika sudah selesai dan sudah dibayar
+                    if ($order->order_status === 'completed' && $order->payment_status === 'paid') {
+                        $order->update([
+                            'is_archived_for_table' => true
+                        ]);
+                    }
                     
-                    // 🔥 RESET SESSION CUSTOMER
+                    //  RESET SESSION CUSTOMER
                     if ($order->session_id) {
                         try {
                             event(new CustomerSessionReset($order->session_id));
-                            Log::info('Session reset triggered for order: ' . $order->order_number);
+                            \Log::info('Session reset triggered for order: ' . $order->order_number);
                         } catch (\Exception $e) {
-                            Log::error('Failed to trigger session reset: ' . $e->getMessage());
+                            \Log::error('Failed to trigger session reset: ' . $e->getMessage());
                         }
                     }
-                    // 🔥 RESET QR SESSION LOCK (Dihapus agar meja tetap terkunci sampai reset manual)
+                    //  RESET QR SESSION LOCK (Dihapus agar meja tetap terkunci sampai reset manual)
                     /*
                     if ($order->qr_code) {
                         QrCode::where('code', $order->qr_code)->update([
                             'current_session_id' => null,
                             'session_expires_at' => null
                         ]);
-                        Log::info('QR Session Lock released for: ' . $order->qr_code);
+                        \Log::info('QR Session Lock released for: ' . $order->qr_code);
                     }
                     */
-                    // 🔥 BROADCAST KE CUSTOMER DASHBOARD - NOTIFIKASI PESANAN SELESAI
+                    //  BROADCAST KE CUSTOMER DASHBOARD - NOTIFIKASI PESANAN SELESAI
                     try {
                         broadcast(new OrderCompleted($order));
-                        Log::info('OrderCompleted broadcast sent for: ' . $order->order_number);
+                        \Log::info('OrderCompleted broadcast sent for: ' . $order->order_number);
                     } catch (\Exception $e) {
-                        Log::warning('Broadcast OrderCompleted failed: ' . $e->getMessage());
+                        \Log::warning('Broadcast OrderCompleted failed: ' . $e->getMessage());
                     }
                     break;
                     
@@ -194,16 +197,16 @@ class OrderController extends Controller
                         'payment_status' => 'failed'
                     ]);
 
-                    // 🔥 RESET SESSION CUSTOMER
+                    //  RESET SESSION CUSTOMER
                     if ($order->session_id) {
                         try {
                             event(new CustomerSessionReset($order->session_id));
                         } catch (\Exception $e) {
-                            Log::error('Failed to trigger session reset in updateStatus: ' . $e->getMessage());
+                            \Log::error('Failed to trigger session reset in updateStatus: ' . $e->getMessage());
                         }
                     }
 
-                    // 🔥 RESET QR SESSION LOCK
+                    //  RESET QR SESSION LOCK
                     if ($order->qr_code) {
                         QrCode::where('code', $order->qr_code)->update([
                             'current_session_id' => null,
@@ -211,11 +214,11 @@ class OrderController extends Controller
                         ]);
                     }
 
-                    // 🔥 BROADCAST KE CUSTOMER
+                    //  BROADCAST KE CUSTOMER
                     try {
                         broadcast(new OrderCompleted($order));
                     } catch (\Exception $e) {
-                        Log::warning('Broadcast failed in updateStatus (cancelled): ' . $e->getMessage());
+                        \Log::warning('Broadcast failed in updateStatus (cancelled): ' . $e->getMessage());
                     }
                     break;
             }
@@ -404,24 +407,24 @@ class OrderController extends Controller
                 'payment_status' => 'failed'
             ]);
 
-            // 🔥 RESET SESSION CUSTOMER
+            //  RESET SESSION CUSTOMER
             if ($order->session_id) {
                 try {
                     event(new CustomerSessionReset($order->session_id));
-                    Log::info('Session reset from cancelOrder: ' . $order->order_number);
+                    \Log::info('Session reset from cancelOrder: ' . $order->order_number);
                 } catch (\Exception $e) {
-                    Log::error('Failed to trigger session reset in cancelOrder: ' . $e->getMessage());
+                    \Log::error('Failed to trigger session reset in cancelOrder: ' . $e->getMessage());
                 }
             }
 
-            // 🔥 RESET QR SESSION LOCK (Dihapus agar meja tetap terkunci sampai reset manual)
+            //  RESET QR SESSION LOCK (Dihapus agar meja tetap terkunci sampai reset manual)
             /*
             if ($order->qr_code) {
                 QrCode::where('code', $order->qr_code)->update([
                     'current_session_id' => null,
                     'session_expires_at' => null
                 ]);
-                Log::info('QR Session Lock released from cancelOrder for: ' . $order->qr_code);
+                \Log::info('QR Session Lock released from cancelOrder for: ' . $order->qr_code);
             }
             */
 
@@ -431,11 +434,11 @@ class OrderController extends Controller
                 'message' => "Pesanan #{$order->order_number} telah dibatalkan"
             ]);
 
-            // 🔥 BROADCAST KE CUSTOMER DASHBOARD - NOTIFIKASI PESANAN DIBATALKAN (menggunakan event yang sama atau relevan)
+            //  BROADCAST KE CUSTOMER DASHBOARD - NOTIFIKASI PESANAN DIBATALKAN (menggunakan event yang sama atau relevan)
             try {
                 broadcast(new OrderCompleted($order)); // Customer page treats completed/cancelled similarly for redirection
             } catch (\Exception $e) {
-                Log::warning('Broadcast failed in cancelOrder: ' . $e->getMessage());
+                \Log::warning('Broadcast failed in cancelOrder: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -548,24 +551,24 @@ class OrderController extends Controller
                 'completed_at' => now()
             ]);
 
-            // 🔥 RESET SESSION CUSTOMER
+            //  RESET SESSION CUSTOMER
             if ($order->session_id) {
                 try {
                     event(new CustomerSessionReset($order->session_id));
-                    Log::info('Session reset from markAsCompleted: ' . $order->order_number);
+                    \Log::info('Session reset from markAsCompleted: ' . $order->order_number);
                 } catch (\Exception $e) {
-                    Log::error('Failed to trigger session reset: ' . $e->getMessage());
+                    \Log::error('Failed to trigger session reset: ' . $e->getMessage());
                 }
             }
 
-            // 🔥 RESET QR SESSION LOCK (Dihapus agar meja tetap terkunci sampai reset manual)
+            //  RESET QR SESSION LOCK (Dihapus agar meja tetap terkunci sampai reset manual)
             /*
             if ($order->qr_code) {
                 QrCode::where('code', $order->qr_code)->update([
                     'current_session_id' => null,
                     'session_expires_at' => null
                 ]);
-                Log::info('QR Session Lock released from markAsCompleted for: ' . $order->qr_code);
+                \Log::info('QR Session Lock released from markAsCompleted for: ' . $order->qr_code);
             }
             */
 
@@ -575,12 +578,12 @@ class OrderController extends Controller
                 'message' => "Pesanan #{$order->order_number} selesai. Terima kasih!"
             ]);
 
-            // 🔥 BROADCAST KE CUSTOMER DASHBOARD - NOTIFIKASI PESANAN SELESAI
+            //  BROADCAST KE CUSTOMER DASHBOARD - NOTIFIKASI PESANAN SELESAI
             try {
                 broadcast(new OrderCompleted($order));
-                Log::info('OrderCompleted broadcast sent from markAsCompleted: ' . $order->order_number);
+                \Log::info('OrderCompleted broadcast sent from markAsCompleted: ' . $order->order_number);
             } catch (\Exception $e) {
-                Log::warning('Broadcast OrderCompleted failed: ' . $e->getMessage());
+                \Log::warning('Broadcast OrderCompleted failed: ' . $e->getMessage());
             }
 
             DB::commit();
@@ -660,7 +663,7 @@ class OrderController extends Controller
                     try {
                         event(new CustomerSessionReset($order->session_id));
                     } catch (\Exception $e) {
-                        Log::warning('Failed to reset customer session: ' . $e->getMessage());
+                        \Log::warning('Failed to reset customer session: ' . $e->getMessage());
                     }
                 }
 
@@ -668,7 +671,7 @@ class OrderController extends Controller
                 try {
                     broadcast(new OrderCompleted($order));
                 } catch (\Exception $e) {
-                    Log::warning('Broadcast failed during table reset: ' . $e->getMessage());
+                    \Log::warning('Broadcast failed during table reset: ' . $e->getMessage());
                 }
             }
 
@@ -680,19 +683,19 @@ class OrderController extends Controller
                     'completed_at' => now()
                 ]);
             
-            // 🔥 RESET QR SESSION LOCK (UTAMA)
+            //  RESET QR SESSION LOCK (UTAMA)
             QrCode::where('code', $qrCode)->update([
                 'current_session_id' => null,
                 'session_expires_at' => null
             ]);
-            Log::info('QR Session Lock released via Table Reset for: ' . $qrCode);
+            \Log::info('QR Session Lock released via Table Reset for: ' . $qrCode);
             
             // Hitung total yang diproses
             $cancelledCount = $activeOrders->where('payment_status', 'pending')->count();
             
             DB::commit();
             
-            Log::info('Cashier table reset successfully', [
+            \Log::info('Cashier table reset successfully', [
                 'qr_code' => $qrCode,
                 'completed_count' => $completedCount,
                 'cancelled_count' => $cancelledCount,
@@ -710,7 +713,7 @@ class OrderController extends Controller
             
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Cashier table reset failed', [
+            \Log::error('Cashier table reset failed', [
                 'qr_code' => $qrCode,
                 'error' => $e->getMessage()
             ]);

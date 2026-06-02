@@ -26,6 +26,7 @@ use App\Http\Controllers\CartController;
 |--------------------------------------------------------------------------
 */
 Route::get('/scan', [QrCodeController::class, 'showScan'])->name('scan.qr');
+Route::get('/check-lock-status', [QrCodeController::class, 'checkLockStatus'])->name('qr.check-lock');
 Route::get('/scan/validate/{qr_code}', [QrCodeController::class, 'validateQr'])->name('scan.qr.validate.get')->middleware('throttle:15,1');
 Route::post('/scan/validate', [QrCodeController::class, 'validateQr'])->name('scan.qr.validate')->middleware('throttle:15,1');
 Route::get('/scan/validate', function () {
@@ -240,7 +241,7 @@ Route::middleware(['check.qr'])
         Route::get('/orders-history', [CustomerDashboardController::class, 'history'])->name('history');
         
         // ============================================
-        // 🔥 ROUTE UNTUK NOTIFIKASI PESANAN SELESAI
+        //  ROUTE UNTUK NOTIFIKASI PESANAN SELESAI
         // ============================================
         Route::get('/check-new-completed', [CustomerOrderController::class, 'checkNewCompletedOrders'])
             ->name('check-new-completed');
@@ -266,7 +267,7 @@ Route::prefix('api/v1')->name('api.')->group(function () {
     Route::get('/orders/{order}/details', [AdminOrderController::class, 'getOrderDetails']);
     Route::post('/orders/{order}/payment-confirmation', [AdminOrderController::class, 'apiConfirmPayment']);
     
-    // 🔥 API untuk cek order aktif
+    //  API untuk cek order aktif
     Route::get('/check-active-order/{qrCode}', function($qrCode) {
         $activeOrder = App\Models\Order::where('qr_code', $qrCode)
             ->whereIn('order_status', ['waiting', 'processed'])
@@ -274,7 +275,7 @@ Route::prefix('api/v1')->name('api.')->group(function () {
         return response()->json(['active' => $activeOrder]);
     });
     
-    // 🔥 API untuk cek status cart
+    //  API untuk cek status cart
     Route::get('/cart/status', function() {
         return response()->json([
             'cart_count' => count(session('cart', [])),
@@ -282,7 +283,7 @@ Route::prefix('api/v1')->name('api.')->group(function () {
         ]);
     });
     
-    // 🔥 API untuk cek order baru selesai (untuk mobile apps)
+    //  API untuk cek order baru selesai (untuk mobile apps)
     Route::get('/customer/check-completed/{sessionId}', function($sessionId) {
         $completedOrders = App\Models\Order::where('session_id', $sessionId)
             ->where('order_status', 'completed')
@@ -295,10 +296,10 @@ Route::prefix('api/v1')->name('api.')->group(function () {
         ]);
     });
 
-    // 🔥 API untuk cek status order secara detail
+    //  API untuk cek status order secara detail
     Route::get('/orders/{orderNumber}/status', [CustomerOrderController::class, 'checkStatus'])->name('order.status');
 
-    // 🔥 API untuk konfirmasi niat bayar (QRIS/Transfer)
+    //  API untuk konfirmasi niat bayar (QRIS/Transfer)
     Route::post('/orders/{orderNumber}/confirm-payment-intent', [CustomerOrderController::class, 'confirmPaymentIntent'])
         ->name('order.confirm-payment-intent');
 });
@@ -332,7 +333,7 @@ if (app()->environment('local')) {
         ]);
     });
     
-    // 🔥 Route test notifikasi Pusher
+    //  Route test notifikasi Pusher
     Route::get('/test-notification/{orderNumber}', function($orderNumber) {
         $order = App\Models\Order::where('order_number', $orderNumber)->first();
         if ($order) {

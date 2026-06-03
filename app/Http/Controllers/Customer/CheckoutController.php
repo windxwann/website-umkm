@@ -31,9 +31,38 @@ class CheckoutController extends Controller
         
         DB::beginTransaction();
         try {
+            // Validasi produk, ketersediaan, dan harga dari database
             $totalAmount = 0;
+            $validatedItems = [];
+            
             foreach ($request->items as $item) {
-                $totalAmount += $item['price'] * $item['quantity'];
+                $product = \App\Models\Product::find($item['id']);
+                
+                // 1. Cek apakah produk ada dan sedang tersedia (tidak habis)
+                if (!$product || !$product->is_available) {
+                    throw new \Exception("Mohon maaf, menu {$item['name']} saat ini sedang tidak tersedia.");
+                }
+                
+                // 2. Cek ketersediaan stok (jika sistem menggunakan kolom stok)
+                if ($product->stock !== null && $product->stock < $item['quantity']) {
+                    throw new \Exception("Stok {$product->name} tidak mencukupi. Tersisa: {$product->stock}");
+                }
+                
+                // 3. Gunakan HARGA ASLI dan NAMA ASLI dari database, bukan dari input user
+                $realPrice = $product->price;
+                $quantity = $item['quantity'];
+                
+                $totalAmount += $realPrice * $quantity;
+                
+                // Simpan ke array sementara untuk dimasukkan ke OrderItem nanti
+                $validatedItems[] = [
+                    'product' => $product,
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'quantity' => $quantity,
+                    'price' => $realPrice,
+                    'subtotal' => $realPrice * $quantity
+                ];
             }
             
             $order = Order::create([
@@ -48,15 +77,21 @@ class CheckoutController extends Controller
                 'payment_method' => 'cashier'
             ]);
             
-            foreach ($request->items as $item) {
+            // Simpan setiap item pesanan dan kurangi stok
+            foreach ($validatedItems as $vItem) {
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'product_id' => $item['id'],
-                    'product_name' => $item['name'],
-                    'quantity' => $item['quantity'],
-                    'price' => $item['price'],
-                    'subtotal' => $item['price'] * $item['quantity']
+                    'product_id' => $vItem['product_id'],
+                    'product_name' => $vItem['product_name'],
+                    'quantity' => $vItem['quantity'],
+                    'price' => $vItem['price'],
+                    'subtotal' => $vItem['subtotal']
                 ]);
+                
+                // 4. Kurangi stok produk secara otomatis (jika menggunakan stok)
+                if ($vItem['product']->stock !== null) {
+                    $vItem['product']->decrement('stock', $vItem['quantity']);
+                }
             }
             
             DB::commit();

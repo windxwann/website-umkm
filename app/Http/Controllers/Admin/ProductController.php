@@ -57,6 +57,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'stock' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'is_available' => 'nullable|boolean'
@@ -111,6 +112,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'stock' => 'nullable|integer|min:0',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'is_available' => 'nullable|boolean'
@@ -130,6 +132,14 @@ class ProductController extends Controller
         }
 
         $validated['slug'] = $slug;
+
+        // Fitur Hapus Gambar (Menyamakan dengan Category)
+        if ($request->has('remove_image')) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $validated['image'] = null;
+        }
 
         // Jika upload gambar baru
         if ($request->hasFile('image')) {

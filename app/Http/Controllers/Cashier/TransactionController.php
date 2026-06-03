@@ -248,38 +248,65 @@ class TransactionController extends Controller
         
         DB::beginTransaction();
         try {
-            // Update order info
+            // 1. KEMBALIKAN STOK LAMA DULU SEBELUM ITEM DIHAPUS
+            // Gunakan eager loading untuk memastikan data product terbaca
+            $order->load('items.product');
+            foreach ($order->items as $oldItem) {
+                if ($oldItem->product && $oldItem->product->stock !== null) {
+                    $oldItem->product->increment('stock', $oldItem->quantity);
+                }
+            }
+            
+            // 2. HAPUS SEMUA ITEM PESANAN LAMA (Karena HasMany tidak mendukung sync())
+            $order->items()->delete();
+            
+            // 3. UPDATE INFO PESANAN
             $order->update([
                 'customer_name' => $request->customer_name,
                 'table_id' => $request->table_id,
             ]);
             
-            // Update items
-            $updatedItems = [];
+            // 4. MASUKKAN ITEM BARU & KURANGI STOK BARU
+            $newItems = [];
             $totalAmount = 0;
             
             foreach ($request->items as $item) {
                 $product = Product::find($item['id']);
+                
+                if (!$product) continue;
+                
+                // Cek apakah stok cukup
+                if ($product->stock !== null && $product->stock < $item['quantity']) {
+                    throw new \Exception("Stok {$product->name} tidak mencukupi. Tersisa: {$product->stock}");
+                }
+                
                 $subtotal = $product->price * $item['quantity'];
                 $totalAmount += $subtotal;
                 
-                $updatedItems[$item['id']] = [
+                $newItems[] = [
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
                     'quantity' => $item['quantity'],
                     'price' => $product->price,
                     'subtotal' => $subtotal
                 ];
+                
+                // Kurangi stok baru
+                if ($product->stock !== null) {
+                    $product->decrement('stock', $item['quantity']);
+                }
             }
             
-            // Sync items
-            $order->items()->sync($updatedItems);
+            // Simpan item-item baru ke database
+            $order->items()->createMany($newItems);
             
-            // Update total amount
+            // Update total tagihan yang baru
             $order->update(['total_amount' => $totalAmount]);
             
             DB::commit();
             
             return redirect()->route('cashier.order.show', $order)
-                ->with('success', 'Order berhasil diupdate');
+                ->with('success', 'Order berhasil diupdate. Stok barang telah disesuaikan otomatis.');
                 
         } catch (\Exception $e) {
             DB::rollBack();

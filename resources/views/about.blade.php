@@ -193,7 +193,7 @@
             <!-- Map -->
             <div class="h-80 lg:h-auto min-h-[400px] w-full bg-slate-200 relative">
                 <!-- Using a standard map style to match the friendly/bright UI -->
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126917.18485292444!2d106.75892557440337!3d-6.241585800000002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3e945e34b9d%3A0x100c5e82dd4b820!2sJakarta!5e0!3m2!1sen!2sid!4v1655000000000!5m2!1sen!2sid" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="absolute inset-0 w-full h-full border-0"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3426.1583036451357!2d108.5392796!3d-7.373341999999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f62119bc56749%3A0xc06856d490eb2ad7!2sDapoer%20Cemal%20Cemil%20Jiemas!5e1!3m2!1sid!2sid!4v1780497999517!5m2!1sid!2sid" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" class="absolute inset-0 w-full h-full border-0"></iframe>
             </div>
         </div>
     </div>

@@ -116,10 +116,47 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        $order->delete();
+        DB::beginTransaction();
+        try {
+            // 1. Kembalikan stok jika pesanan masih aktif (belum selesai/batal)
+            if (in_array($order->order_status, ['waiting', 'processed'])) {
+                foreach ($order->items as $item) {
+                    $product = Product::find($item->product_id);
+                    if ($product && $product->stock !== null) {
+                        $product->increment('stock', $item->quantity);
+                    }
+                }
+            }
 
-        return redirect()->route('admin.orders.index')
-            ->with('success', 'Order berhasil dihapus');
+            // 2. Lepaskan/Reset Sesi QR Meja jika pesanan ini masih mengunci meja
+            if ($order->qr_code && in_array($order->order_status, ['waiting', 'processed'])) {
+                \App\Models\QrCode::where('code', $order->qr_code)->update([
+                    'current_session_id' => null,
+                    'session_expires_at' => null
+                ]);
+            }
+
+            // 3. Panggil Event untuk mereset browser/HP pelanggan
+            if ($order->session_id) {
+                try {
+                    event(new \App\Events\CustomerSessionReset($order->session_id));
+                } catch (\Exception $e) {}
+            }
+
+            // 4. Hapus data secara aman
+            $order->items()->delete(); // Hapus item-nya dulu
+            $order->delete(); // Baru hapus pesanannya
+
+            DB::commit();
+
+            return redirect()->route('admin.orders.index')
+                ->with('success', 'Order berhasil dihapus permanen beserta pemulihan stok dan sesi meja.');
+                
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('admin.orders.index')
+                ->with('error', 'Gagal menghapus order: ' . $e->getMessage());
+        }
     }
 
 

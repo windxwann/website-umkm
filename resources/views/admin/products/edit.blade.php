@@ -67,6 +67,19 @@
                             </div>
                         </div>
 
+                        <!-- Stok -->
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Stok (Opsional)</label>
+                            <div class="relative group">
+                                <i data-lucide="boxes" class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-orange-500 transition-colors"></i>
+                                <input type="number" name="stock" value="{{ old('stock', $product->stock) }}" min="0"
+                                       placeholder="Kosongkan jika stok tidak dibatasi"
+                                       class="w-full pl-11 pr-4 py-3 bg-slate-50 border-none rounded-2xl text-xs font-bold focus:ring-4 focus:ring-orange-500/5 transition-all">
+                            </div>
+                            @error('stock') <p class="text-rose-500 text-[10px] font-bold mt-1 px-1">{{ $message }}</p> @enderror
+                            <p class="text-[9px] text-slate-400 font-medium px-1 mt-1">Isi angka untuk mode otomatis. Kosongkan untuk mode semi-manual (tidak terbatas).</p>
+                        </div>
+
                         <!-- Deskripsi -->
                         <div>
                             <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 px-1">Deskripsi Produk</label>

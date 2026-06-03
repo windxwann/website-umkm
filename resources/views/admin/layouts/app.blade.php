@@ -134,21 +134,23 @@
         <!-- Main Content Wrapper -->
         <div class="flex-1 flex flex-col min-w-0 bg-slate-50 relative overflow-hidden">
             <header class="glass-header shrink-0 z-30">
-                <div class="h-20 px-8 flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <button @click="sidebarOpen = !sidebarOpen" class="p-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 lg:hidden shadow-sm">
-                            <i data-lucide="menu" class="w-6 h-6"></i>
+                <div class="h-16 lg:h-20 px-4 lg:px-8 flex items-center justify-between gap-3 lg:gap-4">
+                    <div class="flex items-center gap-3 lg:gap-4 min-w-0">
+                        <button @click="sidebarOpen = !sidebarOpen" class="p-2 lg:p-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 lg:hidden shadow-sm shrink-0">
+                            <i data-lucide="menu" class="w-5 h-5 lg:w-6 lg:h-6"></i>
                         </button>
-                        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">@yield('page-title', 'Dashboard')</h1>
+                        <h1 class="text-xl lg:text-2xl font-extrabold text-slate-900 tracking-tight truncate">@yield('page-title', 'Dashboard')</h1>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <div class="text-right"><p class="text-sm font-bold text-slate-900">{{ auth()->user()->name }}</p></div>
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=f97316&color=fff" class="w-10 h-10 rounded-xl">
+                    <div class="flex items-center gap-3 lg:gap-4 shrink-0">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-sm font-bold text-slate-900">{{ auth()->user()->name ?? 'Administrator' }}</p>
+                        </div>
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'Admin') }}&background=f97316&color=fff" alt="Avatar" class="w-8 h-8 lg:w-10 lg:h-10 rounded-xl shrink-0 shadow-sm">
                     </div>
                 </div>
             </header>
 
-            <main class="flex-1 overflow-y-auto p-8 main-scrollbar">
+            <main class="flex-1 overflow-y-auto p-4 lg:p-8 main-scrollbar">
                 @yield('content')
             </main>
         </div>

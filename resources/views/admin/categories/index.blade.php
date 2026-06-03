@@ -38,34 +38,34 @@
                 </div>
             @endif
             
-            <div class="absolute top-3 right-3">
-                <span class="bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-[9px] font-black text-slate-900 uppercase tracking-widest shadow-sm">
+            <div class="absolute top-2 sm:top-3 right-2 sm:right-3">
+                <span class="bg-white/90 backdrop-blur px-2 sm:px-3 py-1 rounded-lg text-[8px] sm:text-[9px] font-black text-slate-900 uppercase tracking-widest shadow-sm">
                     {{ $category->products_count ?? 0 }} Produk
                 </span>
             </div>
         </div>
 
         <!-- Category Info -->
-        <div class="p-5 flex-grow flex flex-col">
-            <h3 class="text-xs sm:text-sm font-black text-slate-900 tracking-tight line-clamp-1 mb-2">{{ $category->name }}</h3>
-            <p class="text-[9px] sm:text-[11px] font-medium text-slate-400 mb-4 line-clamp-2">
+        <div class="p-3.5 sm:p-5 flex-grow flex flex-col">
+            <h3 class="text-sm sm:text-base font-black text-slate-900 tracking-tight line-clamp-1 mb-1">{{ $category->name }}</h3>
+            <p class="text-[10px] sm:text-[11px] font-medium text-slate-500 mb-3 sm:mb-4 line-clamp-2 leading-relaxed">
                 {{ $category->description ?? 'Tidak ada deskripsi' }}
             </p>
             
             <!-- Actions -->
-            <div class="mt-auto flex items-center justify-between pt-4 border-t border-slate-50">
-                <div class="flex gap-2">
+            <div class="mt-auto flex items-center justify-between pt-3 sm:pt-4 border-t border-slate-50">
+                <div class="flex gap-1.5 sm:gap-2">
                     <a href="{{ route('admin.categories.edit', $category) }}" 
-                       class="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-sm" title="Edit">
+                       class="p-2 sm:p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-orange-600 hover:text-white transition-all shadow-sm" title="Edit">
                         <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                     </a>
                     <button onclick="deleteCategory({{ $category->id }}, '{{ addslashes($category->name) }}')" 
-                            class="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm" title="Hapus">
+                            class="p-2 sm:p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all shadow-sm" title="Hapus">
                         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
                 <a href="{{ route('admin.products.index', ['category' => $category->id]) }}" 
-                   class="text-[9px] font-black text-orange-600 uppercase tracking-widest hover:text-orange-700 flex items-center gap-1">
+                   class="text-[10px] sm:text-[11px] font-black text-orange-600 uppercase tracking-widest hover:text-orange-700 flex items-center gap-0.5 sm:gap-1">
                     Lihat
                     <i data-lucide="chevron-right" class="w-3 h-3"></i>
                 </a>

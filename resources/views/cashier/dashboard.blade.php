@@ -104,6 +104,7 @@
                     <tr class="text-left">
                         <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest whitespace-nowrap">Order</th>
                         <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest whitespace-nowrap">Pelanggan</th>
+                        <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest whitespace-nowrap">Tipe</th>
                         <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest whitespace-nowrap">Status</th>
                         <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest text-right whitespace-nowrap">Total</th>
                         <th class="px-4 md:px-8 py-4 font-black uppercase tracking-widest text-center">Aksi</th>
@@ -118,6 +119,17 @@
                                 <span class="font-black text-slate-900 text-[10px] md:text-sm tracking-tight truncate">{{ $order->customer_name }}</span>
                                 <span class="text-[8px] md:text-[9px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Meja {{ $order->qrCodeRelation->meja ?? $order->qr_code ?? '-' }}</span>
                             </div>
+                        </td>
+                        <td class="px-4 md:px-8 py-4">
+                            @if($order->order_type === 'takeaway')
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest bg-blue-50 text-blue-600 border border-blue-100 whitespace-nowrap">
+                                <i class="fas fa-shopping-bag"></i> Take Away
+                            </span>
+                            @else
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest bg-emerald-50 text-emerald-600 border border-emerald-100 whitespace-nowrap">
+                                <i class="fas fa-chair"></i> Dine In
+                            </span>
+                            @endif
                         </td>
                         <td class="px-4 md:px-8 py-4">
                             <span class="px-2 py-1 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest
@@ -140,7 +152,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-8 py-10 text-center text-slate-400 font-black uppercase tracking-widest text-[10px]">Kosong</td>
+                        <td colspan="6" class="px-8 py-10 text-center text-slate-400 font-black uppercase tracking-widest text-[10px]">Kosong</td>
                     </tr>
                     @endforelse
                 </tbody>

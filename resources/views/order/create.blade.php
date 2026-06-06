@@ -55,6 +55,55 @@
             </div>
         </div>
 
+        <!-- Order Type (Dine In / Take Away) -->
+        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8">
+            <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
+                <div class="w-8 h-8 bg-orange-50 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-utensils text-orange-600 text-xs"></i>
+                </div>
+                Tipe Pesanan
+            </h2>
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Makan di Sini -->
+                <label class="relative flex flex-col items-center justify-center p-6 border-2 rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-md text-center gap-3"
+                       :class="form.order_type === 'dine_in' ? 'bg-orange-50 border-orange-400 ring-4 ring-orange-500/10' : 'bg-white border-slate-100'">
+                    <input type="radio" x-model="form.order_type" value="dine_in" class="hidden">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                         :class="form.order_type === 'dine_in' ? 'bg-orange-600 text-white' : 'bg-slate-50 text-slate-400'">
+                        <i class="fas fa-chair text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-[11px] font-black uppercase tracking-widest"
+                              :class="form.order_type === 'dine_in' ? 'text-orange-900' : 'text-slate-900'">Makan di Sini</span>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">Dine In</p>
+                    </div>
+                    <div x-show="form.order_type === 'dine_in'"
+                         class="absolute top-3 right-3 w-5 h-5 bg-orange-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-check text-white" style="font-size: 8px;"></i>
+                    </div>
+                </label>
+
+                <!-- Take Away -->
+                <label class="relative flex flex-col items-center justify-center p-6 border-2 rounded-2xl cursor-pointer transition-all duration-300 hover:shadow-md text-center gap-3"
+                       :class="form.order_type === 'takeaway' ? 'bg-orange-50 border-orange-400 ring-4 ring-orange-500/10' : 'bg-white border-slate-100'">
+                    <input type="radio" x-model="form.order_type" value="takeaway" class="hidden">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all"
+                         :class="form.order_type === 'takeaway' ? 'bg-orange-600 text-white' : 'bg-slate-50 text-slate-400'">
+                        <i class="fas fa-shopping-bag text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="block text-[11px] font-black uppercase tracking-widest"
+                              :class="form.order_type === 'takeaway' ? 'text-orange-900' : 'text-slate-900'">Take Away</span>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter mt-0.5">Bawa Pulang</p>
+                    </div>
+                    <div x-show="form.order_type === 'takeaway'"
+                         class="absolute top-3 right-3 w-5 h-5 bg-orange-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-check text-white" style="font-size: 8px;"></i>
+                    </div>
+                </label>
+            </div>
+        </div>
+
         <!-- Order Items Summary -->
         <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 p-8">
             <h2 class="text-sm font-black text-slate-900 uppercase tracking-widest mb-6 flex items-center gap-3">
@@ -210,7 +259,7 @@ function orderForm() {
         form: {
             customer_name: '',
             customer_phone: '',
-            order_type: 'offline',
+            order_type: 'dine_in',
             payment_method: 'e_wallet',
             items: [],
             notes: ''

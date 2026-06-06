@@ -46,13 +46,13 @@
             </div>
             <div class="text-slate-600 space-y-6 leading-relaxed text-sm md:text-base">
                 <p>
-                    <strong class="text-slate-900 font-black">Dapoer Cemal Cemil Jiemas</strong> lahir dari kecintaan mendalam terhadap masakan rumahan Indonesia. Bermula dari dapur kecil yang hangat, kami meracik setiap hidangan dengan bahan-bahan segar pilihan dan bumbu rempah autentik yang telah diwariskan turun-temurun.
+                    <strong class="text-slate-900 font-black">Dapoer Cemal Cemil Jiemas</strong> hadir dari kecintaan terhadap cita rasa khas Nusantara dan semangat untuk menghadirkan pengalaman kuliner yang hangat bagi setiap tamu. Berawal dari usaha sederhana di Kota Banjar, kami tumbuh dengan satu komitmen: menyajikan hidangan berkualitas dengan rasa yang autentik dan pelayanan yang tulus.
                 </p>
                 <div class="border-l-4 border-orange-500 pl-6 py-3 my-8 bg-slate-50 rounded-r-2xl text-slate-800 text-lg font-medium italic shadow-sm">
-                    "Kami percaya bahwa setiap gigitan harus membawa senyum. Makan bukan sekadar kebutuhan, tetapi sebuah pengalaman penuh kebahagiaan."
+                    "Setiap hidangan yang kami sajikan bukan sekadar makanan, melainkan cerita, kehangatan, dan kebahagiaan yang ingin kami bagikan."
                 </div>
                 <p>
-                    Dengan dukungan teknologi pemesanan modern, kami terus berinovasi agar pengalaman makan Anda semakin mudah, cepat, dan menyenangkan — tanpa mengorbankan kehangatan layanan personal yang selalu menjadi ciri khas kami.
+                    Menggabungkan resep pilihan, bahan-bahan segar, dan inovasi pelayanan modern, kami terus berupaya menjadi destinasi kuliner yang memberikan kenyamanan, kualitas, dan kenangan terbaik dalam setiap kunjungan.
                 </p>
             </div>
         </div>

@@ -70,10 +70,21 @@
                         @forelse($order->items ?? [] as $item)
                         <tr class="group hover:bg-slate-50/50 transition-colors">
                             <td class="px-6 py-4">
-                                <p class="text-xs font-black text-slate-900 truncate">{{ $item->name ?? $item->product_name ?? $item->menu_name }}</p>
-                                @if($item->notes)
-                                    <p class="text-[9px] text-slate-400 font-bold mt-1 uppercase leading-relaxed italic"><i data-lucide="message-square" class="w-2.5 h-2.5 inline mr-1"></i>{{ $item->notes }}</p>
-                                @endif
+                                <div class="flex items-center gap-3">
+                                    @if($item->product && $item->product->image)
+                                        <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product_name }}" class="w-10 h-10 rounded-lg object-cover">
+                                    @else
+                                        <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400">
+                                            <i data-lucide="image" class="w-5 h-5"></i>
+                                        </div>
+                                    @endif
+                                    <div>
+                                        <p class="text-xs font-black text-slate-900">{{ $item->name ?? $item->product_name ?? $item->menu_name }}</p>
+                                        @if($item->notes)
+                                            <p class="text-[9px] text-slate-400 font-bold mt-1 uppercase leading-relaxed italic"><i data-lucide="message-square" class="w-2.5 h-2.5 inline mr-1"></i>{{ $item->notes }}</p>
+                                        @endif
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <span class="text-xs font-black text-slate-900">{{ $item->quantity }}x</span>

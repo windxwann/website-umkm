@@ -50,8 +50,14 @@
                     @foreach($order->items as $item)
                     <div class="flex items-center justify-between gap-4">
                         <div class="flex items-center gap-4 flex-1">
-                            <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 shrink-0">
-                                <i class="fas fa-utensils text-slate-200"></i>
+                            <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center border border-slate-100 shrink-0 overflow-hidden">
+                                @if($item->product && $item->product->image)
+                                    <img src="{{ asset('storage/' . $item->product->image) }}"
+                                         alt="{{ $item->product_name }}"
+                                         class="w-full h-full object-cover rounded-2xl">
+                                @else
+                                    <i class="fas fa-utensils text-slate-300"></i>
+                                @endif
                             </div>
                             <div>
                                 <p class="font-black text-slate-900 text-sm tracking-tight">{{ $item->product_name }}</p>
@@ -97,6 +103,31 @@
                         </div>
                     </div>
                     
+                    <div>
+                        <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Tipe Pesanan</p>
+                        @if($order->order_type === 'takeaway')
+                        <div class="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex items-center gap-3">
+                            <div class="w-9 h-9 bg-blue-600 text-white rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fas fa-shopping-bag text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-black text-blue-700 text-sm">Take Away</p>
+                                <p class="text-[9px] font-bold text-blue-400 uppercase tracking-widest mt-0.5">Bawa Pulang</p>
+                            </div>
+                        </div>
+                        @else
+                        <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center gap-3">
+                            <div class="w-9 h-9 bg-emerald-600 text-white rounded-xl flex items-center justify-center shrink-0">
+                                <i class="fas fa-chair text-sm"></i>
+                            </div>
+                            <div>
+                                <p class="font-black text-emerald-700 text-sm">Makan di Sini</p>
+                                <p class="text-[9px] font-bold text-emerald-400 uppercase tracking-widest mt-0.5">Dine In</p>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
                     <div>
                         <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Meja / Lokasi</p>
                         <div class="p-4 bg-orange-50/50 rounded-2xl border border-orange-100">

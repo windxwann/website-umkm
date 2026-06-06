@@ -47,6 +47,7 @@ class OrderController extends Controller
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'customer_phone' => 'nullable|string|max:20',
+            'order_type' => 'nullable|in:dine_in,takeaway,offline',
             'payment_method' => 'required|in:e_wallet,cashier,bank_transfer',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
@@ -93,8 +94,8 @@ class OrderController extends Controller
             
             $totalAmount = $subtotal + $taxAmount + $serviceChargeAmount;
             
-            //  FORCED OFFLINE MODE
-            $finalOrderType = 'offline';
+            //  Gunakan order_type dari request customer (dine_in / takeaway)
+            $finalOrderType = $request->order_type ?? 'dine_in';
             $qrCode = session('qr_code');
             $packagingFee = setting('packaging_fee', 0); // Ambil packaging fee dari setting
             
